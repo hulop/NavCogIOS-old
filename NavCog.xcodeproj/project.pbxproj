@@ -1,0 +1,556 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		7E28AF5D1BC38A6B00F122D0 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7E28AF5C1BC38A6B00F122D0 /* Settings.bundle */; settings = {ASSET_TAGS = (); }; };
+		A02EFF811BBC41740026DC98 /* click.wav in Resources */ = {isa = PBXBuildFile; fileRef = A02EFF7C1BBC41740026DC98 /* click.wav */; settings = {ASSET_TAGS = (); }; };
+		A06736781BC575360008B818 /* NavCogMapView in Resources */ = {isa = PBXBuildFile; fileRef = A06736771BC575360008B818 /* NavCogMapView */; settings = {ASSET_TAGS = (); }; };
+		A067367B1BC576130008B818 /* NavNotificationSpeaker.m in Sources */ = {isa = PBXBuildFile; fileRef = A067367A1BC576130008B818 /* NavNotificationSpeaker.m */; settings = {ASSET_TAGS = (); }; };
+		A067367E1BC5763A0008B818 /* NavSoundEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = A067367D1BC5763A0008B818 /* NavSoundEffects.m */; settings = {ASSET_TAGS = (); }; };
+		A06736831BC5764E0008B818 /* NavMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736811BC5764E0008B818 /* NavMachine.m */; settings = {ASSET_TAGS = (); }; };
+		A06736841BC5764E0008B818 /* NavState.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736821BC5764E0008B818 /* NavState.m */; settings = {ASSET_TAGS = (); }; };
+		A06736871BC576820008B818 /* KDTreeLocalization.mm in Sources */ = {isa = PBXBuildFile; fileRef = A06736861BC576820008B818 /* KDTreeLocalization.mm */; settings = {ASSET_TAGS = (); }; };
+		A06736961BC576960008B818 /* NavEdge.m in Sources */ = {isa = PBXBuildFile; fileRef = A067368F1BC576960008B818 /* NavEdge.m */; settings = {ASSET_TAGS = (); }; };
+		A06736971BC576960008B818 /* NavLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736901BC576960008B818 /* NavLayer.m */; settings = {ASSET_TAGS = (); }; };
+		A06736981BC576960008B818 /* NavMapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736911BC576960008B818 /* NavMapManager.m */; settings = {ASSET_TAGS = (); }; };
+		A06736991BC576960008B818 /* NavMinHeap.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736921BC576960008B818 /* NavMinHeap.m */; settings = {ASSET_TAGS = (); }; };
+		A067369A1BC576960008B818 /* NavNeighbor.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736931BC576960008B818 /* NavNeighbor.m */; settings = {ASSET_TAGS = (); }; };
+		A067369B1BC576960008B818 /* NavNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736941BC576960008B818 /* NavNode.m */; settings = {ASSET_TAGS = (); }; };
+		A067369C1BC576960008B818 /* TopoMap.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736951BC576960008B818 /* TopoMap.m */; settings = {ASSET_TAGS = (); }; };
+		A067369F1BC576B80008B818 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A067369E1BC576B80008B818 /* AppDelegate.m */; settings = {ASSET_TAGS = (); }; };
+		A06736AE1BC576CF0008B818 /* NavCogChooseMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A06736A51BC576CF0008B818 /* NavCogChooseMapViewController.xib */; settings = {ASSET_TAGS = (); }; };
+		A06736AF1BC576CF0008B818 /* NavCogDataSamplingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A06736A61BC576CF0008B818 /* NavCogDataSamplingViewController.xib */; settings = {ASSET_TAGS = (); }; };
+		A06736B01BC576CF0008B818 /* NavCogMainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A06736A71BC576CF0008B818 /* NavCogMainViewController.xib */; settings = {ASSET_TAGS = (); }; };
+		A06736B11BC576CF0008B818 /* NavDownloadingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A06736A81BC576CF0008B818 /* NavDownloadingViewController.xib */; settings = {ASSET_TAGS = (); }; };
+		A06736B21BC576CF0008B818 /* NavCogChooseMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736A91BC576CF0008B818 /* NavCogChooseMapViewController.m */; settings = {ASSET_TAGS = (); }; };
+		A06736B31BC576CF0008B818 /* NavCogDataSamplingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AA1BC576CF0008B818 /* NavCogDataSamplingViewController.m */; settings = {ASSET_TAGS = (); }; };
+		A06736B41BC576CF0008B818 /* NavCogFuncViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AB1BC576CF0008B818 /* NavCogFuncViewController.m */; settings = {ASSET_TAGS = (); }; };
+		A06736B51BC576CF0008B818 /* NavCogMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AC1BC576CF0008B818 /* NavCogMainViewController.m */; settings = {ASSET_TAGS = (); }; };
+		A06736B61BC576CF0008B818 /* NavDownloadingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AD1BC576CF0008B818 /* NavDownloadingViewController.m */; settings = {ASSET_TAGS = (); }; };
+		A06736B81BC577050008B818 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A06736B71BC577050008B818 /* Images.xcassets */; settings = {ASSET_TAGS = (); }; };
+		A06736BB1BC577240008B818 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A06736B91BC577240008B818 /* LaunchScreen.xib */; settings = {ASSET_TAGS = (); }; };
+		A06736BE1BC577340008B818 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736BC1BC577340008B818 /* main.m */; settings = {ASSET_TAGS = (); }; };
+		A083F7751BC5B2BE001A1A1B /* NavCogHelpPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */; settings = {ASSET_TAGS = (); }; };
+		A083F7761BC5B2BE001A1A1B /* NavCogHelpPageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A083F7741BC5B2BE001A1A1B /* NavCogHelpPageViewController.xib */; settings = {ASSET_TAGS = (); }; };
+		A0C284CE1BC4579B008B8C35 /* opencv2.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = A0C284CD1BC4579B008B8C35 /* opencv2.framework */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		7E28AF5C1BC38A6B00F122D0 /* Settings.bundle */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.plug-in"; path = Settings.bundle; sourceTree = "<group>"; };
+		A02EFF7C1BBC41740026DC98 /* click.wav */ = {isa = PBXFileReference; lastKnownFileType = audio.wav; name = click.wav; path = Sounds/click.wav; sourceTree = SOURCE_ROOT; };
+		A06736771BC575360008B818 /* NavCogMapView */ = {isa = PBXFileReference; lastKnownFileType = folder; path = NavCogMapView; sourceTree = SOURCE_ROOT; };
+		A06736791BC576130008B818 /* NavNotificationSpeaker.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavNotificationSpeaker.h; path = NavCog/NavNotificationSpeaker/NavNotificationSpeaker.h; sourceTree = SOURCE_ROOT; };
+		A067367A1BC576130008B818 /* NavNotificationSpeaker.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavNotificationSpeaker.m; path = NavCog/NavNotificationSpeaker/NavNotificationSpeaker.m; sourceTree = SOURCE_ROOT; };
+		A067367C1BC5763A0008B818 /* NavSoundEffects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavSoundEffects.h; path = NavCog/NavSoundEffects/NavSoundEffects.h; sourceTree = SOURCE_ROOT; };
+		A067367D1BC5763A0008B818 /* NavSoundEffects.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavSoundEffects.m; path = NavCog/NavSoundEffects/NavSoundEffects.m; sourceTree = SOURCE_ROOT; };
+		A067367F1BC5764E0008B818 /* NavMachine.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavMachine.h; path = NavCog/Model/StateMachine/NavMachine.h; sourceTree = SOURCE_ROOT; };
+		A06736801BC5764E0008B818 /* NavState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavState.h; path = NavCog/Model/StateMachine/NavState.h; sourceTree = SOURCE_ROOT; };
+		A06736811BC5764E0008B818 /* NavMachine.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavMachine.m; path = NavCog/Model/StateMachine/NavMachine.m; sourceTree = SOURCE_ROOT; };
+		A06736821BC5764E0008B818 /* NavState.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavState.m; path = NavCog/Model/StateMachine/NavState.m; sourceTree = SOURCE_ROOT; };
+		A06736851BC576820008B818 /* KDTreeLocalization.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = KDTreeLocalization.h; path = NavCog/Model/Localization/KDTreeLocalization.h; sourceTree = SOURCE_ROOT; };
+		A06736861BC576820008B818 /* KDTreeLocalization.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; name = KDTreeLocalization.mm; path = NavCog/Model/Localization/KDTreeLocalization.mm; sourceTree = SOURCE_ROOT; };
+		A06736881BC576960008B818 /* NavEdge.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavEdge.h; path = NavCog/Model/TopoMap/NavEdge.h; sourceTree = SOURCE_ROOT; };
+		A06736891BC576960008B818 /* NavLayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavLayer.h; path = NavCog/Model/TopoMap/NavLayer.h; sourceTree = SOURCE_ROOT; };
+		A067368A1BC576960008B818 /* NavMapManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavMapManager.h; path = NavCog/Model/TopoMap/NavMapManager.h; sourceTree = SOURCE_ROOT; };
+		A067368B1BC576960008B818 /* NavMinHeap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavMinHeap.h; path = NavCog/Model/TopoMap/NavMinHeap.h; sourceTree = SOURCE_ROOT; };
+		A067368C1BC576960008B818 /* NavNeighbor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavNeighbor.h; path = NavCog/Model/TopoMap/NavNeighbor.h; sourceTree = SOURCE_ROOT; };
+		A067368D1BC576960008B818 /* NavNode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavNode.h; path = NavCog/Model/TopoMap/NavNode.h; sourceTree = SOURCE_ROOT; };
+		A067368E1BC576960008B818 /* TopoMap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = TopoMap.h; path = NavCog/Model/TopoMap/TopoMap.h; sourceTree = SOURCE_ROOT; };
+		A067368F1BC576960008B818 /* NavEdge.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavEdge.m; path = NavCog/Model/TopoMap/NavEdge.m; sourceTree = SOURCE_ROOT; };
+		A06736901BC576960008B818 /* NavLayer.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavLayer.m; path = NavCog/Model/TopoMap/NavLayer.m; sourceTree = SOURCE_ROOT; };
+		A06736911BC576960008B818 /* NavMapManager.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavMapManager.m; path = NavCog/Model/TopoMap/NavMapManager.m; sourceTree = SOURCE_ROOT; };
+		A06736921BC576960008B818 /* NavMinHeap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavMinHeap.m; path = NavCog/Model/TopoMap/NavMinHeap.m; sourceTree = SOURCE_ROOT; };
+		A06736931BC576960008B818 /* NavNeighbor.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavNeighbor.m; path = NavCog/Model/TopoMap/NavNeighbor.m; sourceTree = SOURCE_ROOT; };
+		A06736941BC576960008B818 /* NavNode.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavNode.m; path = NavCog/Model/TopoMap/NavNode.m; sourceTree = SOURCE_ROOT; };
+		A06736951BC576960008B818 /* TopoMap.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = TopoMap.m; path = NavCog/Model/TopoMap/TopoMap.m; sourceTree = SOURCE_ROOT; };
+		A067369D1BC576B80008B818 /* AppDelegate.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = AppDelegate.h; path = NavCog/AppDelegate.h; sourceTree = SOURCE_ROOT; };
+		A067369E1BC576B80008B818 /* AppDelegate.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = AppDelegate.m; path = NavCog/AppDelegate.m; sourceTree = SOURCE_ROOT; };
+		A06736A01BC576CF0008B818 /* NavCogChooseMapViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavCogChooseMapViewController.h; path = NavCog/ViewControllers/NavCogChooseMapViewController.h; sourceTree = SOURCE_ROOT; };
+		A06736A11BC576CF0008B818 /* NavCogDataSamplingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavCogDataSamplingViewController.h; path = NavCog/ViewControllers/NavCogDataSamplingViewController.h; sourceTree = SOURCE_ROOT; };
+		A06736A21BC576CF0008B818 /* NavCogFuncViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavCogFuncViewController.h; path = NavCog/ViewControllers/NavCogFuncViewController.h; sourceTree = SOURCE_ROOT; };
+		A06736A31BC576CF0008B818 /* NavCogMainViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavCogMainViewController.h; path = NavCog/ViewControllers/NavCogMainViewController.h; sourceTree = SOURCE_ROOT; };
+		A06736A41BC576CF0008B818 /* NavDownloadingViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavDownloadingViewController.h; path = NavCog/ViewControllers/NavDownloadingViewController.h; sourceTree = SOURCE_ROOT; };
+		A06736A51BC576CF0008B818 /* NavCogChooseMapViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NavCogChooseMapViewController.xib; path = NavCog/ViewControllers/NavCogChooseMapViewController.xib; sourceTree = SOURCE_ROOT; };
+		A06736A61BC576CF0008B818 /* NavCogDataSamplingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NavCogDataSamplingViewController.xib; path = NavCog/ViewControllers/NavCogDataSamplingViewController.xib; sourceTree = SOURCE_ROOT; };
+		A06736A71BC576CF0008B818 /* NavCogMainViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NavCogMainViewController.xib; path = NavCog/ViewControllers/NavCogMainViewController.xib; sourceTree = SOURCE_ROOT; };
+		A06736A81BC576CF0008B818 /* NavDownloadingViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NavDownloadingViewController.xib; path = NavCog/ViewControllers/NavDownloadingViewController.xib; sourceTree = SOURCE_ROOT; };
+		A06736A91BC576CF0008B818 /* NavCogChooseMapViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogChooseMapViewController.m; path = NavCog/ViewControllers/NavCogChooseMapViewController.m; sourceTree = SOURCE_ROOT; };
+		A06736AA1BC576CF0008B818 /* NavCogDataSamplingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogDataSamplingViewController.m; path = NavCog/ViewControllers/NavCogDataSamplingViewController.m; sourceTree = SOURCE_ROOT; };
+		A06736AB1BC576CF0008B818 /* NavCogFuncViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogFuncViewController.m; path = NavCog/ViewControllers/NavCogFuncViewController.m; sourceTree = SOURCE_ROOT; };
+		A06736AC1BC576CF0008B818 /* NavCogMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogMainViewController.m; path = NavCog/ViewControllers/NavCogMainViewController.m; sourceTree = SOURCE_ROOT; };
+		A06736AD1BC576CF0008B818 /* NavDownloadingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavDownloadingViewController.m; path = NavCog/ViewControllers/NavDownloadingViewController.m; sourceTree = SOURCE_ROOT; };
+		A06736B71BC577050008B818 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NavCog/Images.xcassets; sourceTree = SOURCE_ROOT; };
+		A06736BA1BC577240008B818 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = NavCog/Base.lproj/LaunchScreen.xib; sourceTree = SOURCE_ROOT; };
+		A06736BC1BC577340008B818 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = NavCog/main.m; sourceTree = SOURCE_ROOT; };
+		A06736BD1BC577340008B818 /* Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; name = Info.plist; path = NavCog/Info.plist; sourceTree = SOURCE_ROOT; };
+		A083F7721BC5B2BE001A1A1B /* NavCogHelpPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavCogHelpPageViewController.h; path = NavCog/ViewControllers/NavCogHelpPageViewController.h; sourceTree = SOURCE_ROOT; };
+		A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogHelpPageViewController.m; path = NavCog/ViewControllers/NavCogHelpPageViewController.m; sourceTree = SOURCE_ROOT; };
+		A083F7741BC5B2BE001A1A1B /* NavCogHelpPageViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NavCogHelpPageViewController.xib; path = NavCog/ViewControllers/NavCogHelpPageViewController.xib; sourceTree = SOURCE_ROOT; };
+		A0C284CD1BC4579B008B8C35 /* opencv2.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; path = opencv2.framework; sourceTree = "<group>"; };
+		A0E9843C1B73A6DC00DB2040 /* NavCog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavCog.app; sourceTree = BUILT_PRODUCTS_DIR; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A0E984391B73A6DC00DB2040 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A0C284CE1BC4579B008B8C35 /* opencv2.framework in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A0147B111BBF0222004BF457 /* NavNotificationSpeaker */ = {
+			isa = PBXGroup;
+			children = (
+				A06736791BC576130008B818 /* NavNotificationSpeaker.h */,
+				A067367A1BC576130008B818 /* NavNotificationSpeaker.m */,
+			);
+			name = NavNotificationSpeaker;
+			sourceTree = "<group>";
+		};
+		A068B8D91BC34DFD003D1C08 /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				A06736A31BC576CF0008B818 /* NavCogMainViewController.h */,
+				A06736AC1BC576CF0008B818 /* NavCogMainViewController.m */,
+				A06736A71BC576CF0008B818 /* NavCogMainViewController.xib */,
+				A06736A21BC576CF0008B818 /* NavCogFuncViewController.h */,
+				A06736AB1BC576CF0008B818 /* NavCogFuncViewController.m */,
+				A06736A01BC576CF0008B818 /* NavCogChooseMapViewController.h */,
+				A06736A91BC576CF0008B818 /* NavCogChooseMapViewController.m */,
+				A06736A51BC576CF0008B818 /* NavCogChooseMapViewController.xib */,
+				A06736A41BC576CF0008B818 /* NavDownloadingViewController.h */,
+				A06736AD1BC576CF0008B818 /* NavDownloadingViewController.m */,
+				A06736A81BC576CF0008B818 /* NavDownloadingViewController.xib */,
+				A06736A11BC576CF0008B818 /* NavCogDataSamplingViewController.h */,
+				A06736AA1BC576CF0008B818 /* NavCogDataSamplingViewController.m */,
+				A06736A61BC576CF0008B818 /* NavCogDataSamplingViewController.xib */,
+				A083F7721BC5B2BE001A1A1B /* NavCogHelpPageViewController.h */,
+				A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */,
+				A083F7741BC5B2BE001A1A1B /* NavCogHelpPageViewController.xib */,
+			);
+			name = ViewControllers;
+			sourceTree = "<group>";
+		};
+		A0E984331B73A6DC00DB2040 = {
+			isa = PBXGroup;
+			children = (
+				A0C284CD1BC4579B008B8C35 /* opencv2.framework */,
+				7E28AF5C1BC38A6B00F122D0 /* Settings.bundle */,
+				A0E9843E1B73A6DC00DB2040 /* NavCog */,
+				A0E9843D1B73A6DC00DB2040 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A0E9843D1B73A6DC00DB2040 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A0E9843C1B73A6DC00DB2040 /* NavCog.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A0E9843E1B73A6DC00DB2040 /* NavCog */ = {
+			isa = PBXGroup;
+			children = (
+				A06736771BC575360008B818 /* NavCogMapView */,
+				A0147B111BBF0222004BF457 /* NavNotificationSpeaker */,
+				A0ED88E41B87ABEC00E5769C /* NavSoundEffects */,
+				A0E9849B1B73D51500DB2040 /* Model */,
+				A068B8D91BC34DFD003D1C08 /* ViewControllers */,
+				A0E9843F1B73A6DC00DB2040 /* Supporting Files */,
+			);
+			name = NavCog;
+			path = NavCog1D;
+			sourceTree = "<group>";
+		};
+		A0E9843F1B73A6DC00DB2040 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				A067369D1BC576B80008B818 /* AppDelegate.h */,
+				A067369E1BC576B80008B818 /* AppDelegate.m */,
+				A06736BC1BC577340008B818 /* main.m */,
+				A06736BD1BC577340008B818 /* Info.plist */,
+				A06736B91BC577240008B818 /* LaunchScreen.xib */,
+				A06736B71BC577050008B818 /* Images.xcassets */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
+		A0E9849B1B73D51500DB2040 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				A0E984AF1B73DD5800DB2040 /* StateMachine */,
+				A0E984AE1B73DD4900DB2040 /* Localization */,
+				A0E984AD1B73DD3600DB2040 /* TopoMap */,
+			);
+			name = Model;
+			sourceTree = "<group>";
+		};
+		A0E984AD1B73DD3600DB2040 /* TopoMap */ = {
+			isa = PBXGroup;
+			children = (
+				A06736881BC576960008B818 /* NavEdge.h */,
+				A067368F1BC576960008B818 /* NavEdge.m */,
+				A06736891BC576960008B818 /* NavLayer.h */,
+				A06736901BC576960008B818 /* NavLayer.m */,
+				A067368A1BC576960008B818 /* NavMapManager.h */,
+				A06736911BC576960008B818 /* NavMapManager.m */,
+				A067368B1BC576960008B818 /* NavMinHeap.h */,
+				A06736921BC576960008B818 /* NavMinHeap.m */,
+				A067368C1BC576960008B818 /* NavNeighbor.h */,
+				A06736931BC576960008B818 /* NavNeighbor.m */,
+				A067368D1BC576960008B818 /* NavNode.h */,
+				A06736941BC576960008B818 /* NavNode.m */,
+				A067368E1BC576960008B818 /* TopoMap.h */,
+				A06736951BC576960008B818 /* TopoMap.m */,
+			);
+			name = TopoMap;
+			sourceTree = "<group>";
+		};
+		A0E984AE1B73DD4900DB2040 /* Localization */ = {
+			isa = PBXGroup;
+			children = (
+				A06736851BC576820008B818 /* KDTreeLocalization.h */,
+				A06736861BC576820008B818 /* KDTreeLocalization.mm */,
+			);
+			name = Localization;
+			sourceTree = "<group>";
+		};
+		A0E984AF1B73DD5800DB2040 /* StateMachine */ = {
+			isa = PBXGroup;
+			children = (
+				A06736801BC5764E0008B818 /* NavState.h */,
+				A06736821BC5764E0008B818 /* NavState.m */,
+				A067367F1BC5764E0008B818 /* NavMachine.h */,
+				A06736811BC5764E0008B818 /* NavMachine.m */,
+			);
+			name = StateMachine;
+			sourceTree = "<group>";
+		};
+		A0ED88E41B87ABEC00E5769C /* NavSoundEffects */ = {
+			isa = PBXGroup;
+			children = (
+				A067367C1BC5763A0008B818 /* NavSoundEffects.h */,
+				A067367D1BC5763A0008B818 /* NavSoundEffects.m */,
+				A02EFF7C1BBC41740026DC98 /* click.wav */,
+			);
+			name = NavSoundEffects;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A0E9843B1B73A6DC00DB2040 /* NavCog */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A0E9845F1B73A6DC00DB2040 /* Build configuration list for PBXNativeTarget "NavCog" */;
+			buildPhases = (
+				E00EF4D13469092BB999DC43 /* Check Pods Manifest.lock */,
+				A0E984381B73A6DC00DB2040 /* Sources */,
+				A0E984391B73A6DC00DB2040 /* Frameworks */,
+				A0E9843A1B73A6DC00DB2040 /* Resources */,
+				69D720DE72B7EAEC868E0215 /* Embed Pods Frameworks */,
+				66F87E3213063BF039AEBD60 /* Copy Pods Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = NavCog;
+			productName = NavCog1D;
+			productReference = A0E9843C1B73A6DC00DB2040 /* NavCog.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A0E984341B73A6DC00DB2040 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0700;
+				ORGANIZATIONNAME = "Chengxiong Ruan";
+				TargetAttributes = {
+					A0E9843B1B73A6DC00DB2040 = {
+						CreatedOnToolsVersion = 6.4;
+					};
+				};
+			};
+			buildConfigurationList = A0E984371B73A6DC00DB2040 /* Build configuration list for PBXProject "NavCog" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A0E984331B73A6DC00DB2040;
+			productRefGroup = A0E9843D1B73A6DC00DB2040 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A0E9843B1B73A6DC00DB2040 /* NavCog */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A0E9843A1B73A6DC00DB2040 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A02EFF811BBC41740026DC98 /* click.wav in Resources */,
+				7E28AF5D1BC38A6B00F122D0 /* Settings.bundle in Resources */,
+				A06736AE1BC576CF0008B818 /* NavCogChooseMapViewController.xib in Resources */,
+				A06736B81BC577050008B818 /* Images.xcassets in Resources */,
+				A083F7761BC5B2BE001A1A1B /* NavCogHelpPageViewController.xib in Resources */,
+				A06736B01BC576CF0008B818 /* NavCogMainViewController.xib in Resources */,
+				A06736AF1BC576CF0008B818 /* NavCogDataSamplingViewController.xib in Resources */,
+				A06736BB1BC577240008B818 /* LaunchScreen.xib in Resources */,
+				A06736781BC575360008B818 /* NavCogMapView in Resources */,
+				A06736B11BC576CF0008B818 /* NavDownloadingViewController.xib in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		66F87E3213063BF039AEBD60 /* Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "";
+			showEnvVarsInLog = 0;
+		};
+		69D720DE72B7EAEC868E0215 /* Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Embed Pods Frameworks";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "
+";
+			showEnvVarsInLog = 0;
+		};
+		E00EF4D13469092BB999DC43 /* Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "Check Pods Manifest.lock";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A0E984381B73A6DC00DB2040 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A067369F1BC576B80008B818 /* AppDelegate.m in Sources */,
+				A067367B1BC576130008B818 /* NavNotificationSpeaker.m in Sources */,
+				A06736871BC576820008B818 /* KDTreeLocalization.mm in Sources */,
+				A067369A1BC576960008B818 /* NavNeighbor.m in Sources */,
+				A06736B21BC576CF0008B818 /* NavCogChooseMapViewController.m in Sources */,
+				A06736B41BC576CF0008B818 /* NavCogFuncViewController.m in Sources */,
+				A067369B1BC576960008B818 /* NavNode.m in Sources */,
+				A06736981BC576960008B818 /* NavMapManager.m in Sources */,
+				A083F7751BC5B2BE001A1A1B /* NavCogHelpPageViewController.m in Sources */,
+				A06736BE1BC577340008B818 /* main.m in Sources */,
+				A06736971BC576960008B818 /* NavLayer.m in Sources */,
+				A067369C1BC576960008B818 /* TopoMap.m in Sources */,
+				A06736B51BC576CF0008B818 /* NavCogMainViewController.m in Sources */,
+				A06736841BC5764E0008B818 /* NavState.m in Sources */,
+				A06736B31BC576CF0008B818 /* NavCogDataSamplingViewController.m in Sources */,
+				A06736B61BC576CF0008B818 /* NavDownloadingViewController.m in Sources */,
+				A06736831BC5764E0008B818 /* NavMachine.m in Sources */,
+				A067367E1BC5763A0008B818 /* NavSoundEffects.m in Sources */,
+				A06736961BC576960008B818 /* NavEdge.m in Sources */,
+				A06736991BC576960008B818 /* NavMinHeap.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		A06736B91BC577240008B818 /* LaunchScreen.xib */ = {
+			isa = PBXVariantGroup;
+			children = (
+				A06736BA1BC577240008B818 /* Base */,
+			);
+			name = LaunchScreen.xib;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
+
+/* Begin XCBuildConfiguration section */
+		A0E9845D1B73A6DC00DB2040 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		A0E9845E1B73A6DC00DB2040 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_BITCODE = NO;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A0E984601B73A6DC00DB2040 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SOURCE_ROOT)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = NavCog/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "CMU.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = NavCog;
+			};
+			name = Debug;
+		};
+		A0E984611B73A6DC00DB2040 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				FRAMEWORK_SEARCH_PATHS = (
+					"$(inherited)",
+					"$(SOURCE_ROOT)",
+					"$(PROJECT_DIR)",
+				);
+				INFOPLIST_FILE = NavCog/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.4;
+				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				PRODUCT_BUNDLE_IDENTIFIER = "CMU.$(PRODUCT_NAME:rfc1034identifier)";
+				PRODUCT_NAME = NavCog;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A0E984371B73A6DC00DB2040 /* Build configuration list for PBXProject "NavCog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0E9845D1B73A6DC00DB2040 /* Debug */,
+				A0E9845E1B73A6DC00DB2040 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A0E9845F1B73A6DC00DB2040 /* Build configuration list for PBXNativeTarget "NavCog" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A0E984601B73A6DC00DB2040 /* Debug */,
+				A0E984611B73A6DC00DB2040 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A0E984341B73A6DC00DB2040 /* Project object */;
+}
