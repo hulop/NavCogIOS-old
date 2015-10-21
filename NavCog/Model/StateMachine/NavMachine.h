@@ -24,19 +24,20 @@
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
 #import "NavState.h"
+#import "TopoMap.h"
 
 @protocol NavMachineDelegate;
 
 @interface NavMachine : NSObject <CLLocationManagerDelegate>
 
-- (void)initializeWithPathNodes:(NSArray *)pathNodes;
-- (void)startNavigationUsingBeaconsWithUUID:(NSString *)uuidstr andMajorID:(CLBeaconMajorValue)majorID withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled;
+- (void)startNavigationOnTopoMap:(TopoMap *)topoMap fromNodeWithName:(NSString *)fromNodeName toNodeWithName:(NSString *)toNodeName usingBeaconsWithUUID:(NSString *)uuidstr andMajorID:(CLBeaconMajorValue)majorID withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled;
 - (void)initializeOrientation;
 - (void)stopNavigation;
 - (void)repeatInstruction;
 - (void)announceSurroundInfo;
 - (void)announceAccessibilityInfo;
 - (void)triggerNextState;
+- (NSArray *)getPathNodes;
 
 @property (strong, nonatomic) id <NavMachineDelegate> delegate;
 
@@ -46,5 +47,6 @@
 @protocol NavMachineDelegate <NSObject>
 
 - (void)navigationFinished;
+- (void)navigationReadyToGo;
 
 @end

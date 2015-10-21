@@ -22,6 +22,7 @@
 
 #import "NavEdge.h"
 #import "NavNode.h"
+#import "TopoMap.h"
 #import <AVFoundation/AVFoundation.h>
 
 @interface NavEdge ()
@@ -65,6 +66,50 @@
 
 - (struct NavPoint)getCurrentPositionInEdgeUsingBeacons:(NSArray *)beacons {
     return [_localization localizeWithBeacons:beacons];
+}
+
+- (void)setLocalizationWithInstance:(KDTreeLocalization *)localization {
+    _localization = localization;
+}
+
+- (NavNode *)checkValidEndNodeAtLocation:(NavLocation *)location {
+    float y1 = [_node1 getYInEdgeWithID:_edgeID];
+    float y2 = [_node2 getYInEdgeWithID:_edgeID];
+    float start = y1 < y2 ? y1 : y2;
+    float end = y1 < y2 ? y2 : y1;
+    if (location.yInEdge < start) {
+        return y1 < y2 ? _node1 : _node2;
+    }
+    if (location.yInEdge > end) {
+        return y1 < y2 ? _node2 : _node1;
+    }
+    if (ABS(location.yInEdge - y1) < 5) {
+        return _node1;
+    }
+    if (ABS(location.yInEdge - y2) < 5) {
+        return _node1;
+    }
+    return nil;
+}
+
+- (NavEdge *)clone {
+    NavEdge *edge = [[NavEdge alloc] init];
+    edge.type = _type;
+    edge.edgeID = _edgeID;
+    edge.len = _len;
+    edge.ori1 = _ori1;
+    edge.ori2 = _ori2;
+    edge.minKnnDist = _minKnnDist;
+    edge.maxKnnDist = _maxKnnDist;
+    edge.node1 = _node1;
+    edge.node2 = _node2;
+    edge.nodeID1 = _nodeID1;
+    edge.nodeID2 = _nodeID2;
+    edge.info1 = _info1;
+    edge.info2 = _info2;
+    edge.parentLayer = _parentLayer;
+    [edge setLocalizationWithInstance:_localization];
+    return edge;
 }
 
 @end

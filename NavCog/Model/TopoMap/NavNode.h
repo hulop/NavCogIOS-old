@@ -36,7 +36,7 @@ enum NodeType {NODE_TYPE_NORMAL, NODE_TYPE_DOOR_TRANSIT, NODE_TYPE_STAIR_TRANSIT
 @property (strong, nonatomic) NSString *nodeID;
 @property (nonatomic) float transitKnnDistThres; // knn distance threhold to check transition
 @property (nonatomic) float transitPosThres; // localization distance threshold to check transition
-@property (strong, nonatomic) NSDictionary *infoFromEdges;
+@property (strong, nonatomic) NSMutableDictionary *infoFromEdges;
 @property (strong, nonatomic) NSDictionary *transitInfo;
 @property (nonatomic) NSString *layerZIndex;
 @property (nonatomic) NSString *buildingName;

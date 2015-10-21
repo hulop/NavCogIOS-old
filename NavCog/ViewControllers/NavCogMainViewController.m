@@ -32,7 +32,8 @@
 @property (strong, nonatomic) TopoMap *topoMap;
 @property (strong, nonatomic) NSString *mapDataString;
 @property (strong, nonatomic) NavMachine *navMachine;
-@property (strong, nonatomic) NSMutableArray *allLocationName;
+@property (strong, nonatomic) NSMutableArray *allFromLocationName;
+@property (strong, nonatomic) NSMutableArray *allToLocationName;
 @property (strong, nonatomic) NSString *fromNodeName;
 @property (strong, nonatomic) NSString *toNodeName;
 @property (strong, nonatomic) UIButton *startNavButton;
@@ -57,7 +58,8 @@
     _navMachine = [[NavMachine alloc] init];
     _navMachine.delegate = self;
     _isWebViewLoaded = false;
-    _allLocationName = [[NSMutableArray alloc] init];
+    _allFromLocationName = [[NSMutableArray alloc] init];
+    _allToLocationName = [[NSMutableArray alloc] init];
     _fromNodeName = nil;
     _toNodeName = nil;
     _isSpeechEnabled = true;
@@ -180,14 +182,61 @@
     if (_fromNodeName == nil || _toNodeName == nil ||[_fromNodeName isEqualToString:_toNodeName]) {
         return;
     }
+    
+    [_navMachine startNavigationOnTopoMap:_topoMap fromNodeWithName:_fromNodeName toNodeWithName:_toNodeName usingBeaconsWithUUID:[_topoMap getUUIDString] andMajorID:[_topoMap getMajorIDString].intValue withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
+}
+
+// picker delegate's methods
+- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
+    return 1;
+}
+
+- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
+    if (pickerView == _fromPicker) {
+        return [_allFromLocationName count];
+    }  else {
+        return [_allToLocationName count];
+    }
+}
+
+- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
+    if (pickerView == _fromPicker) {
+        return [_allFromLocationName objectAtIndex:row];
+    } else {
+        return [_allToLocationName objectAtIndex:row];
+    }
+}
+
+- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
+    if ([_allFromLocationName count] == 0 || [_allToLocationName count] == 0) {
+        return;
+    }
+    if (pickerView == _fromPicker) {
+        _fromNodeName = [_allFromLocationName objectAtIndex:row];
+    } else if (pickerView == _toPicker) {
+        _toNodeName = [_allToLocationName objectAtIndex:row];
+    }
+}
+
+// State Machine delegate's methods
+- (void)navigationFinished {
+    [_navFuncViewCtrl.view removeFromSuperview];
+    [_navFuncViewCtrl runCmdWithString:@"stopNavigation()"];
+}
+
+- (void)navigationReadyToGo {
     [self.view addSubview:_navFuncViewCtrl.view];
     if (_isWebViewLoaded) {
-        _pathNodes = [_topoMap findShortestPathFromNodeWithName:_fromNodeName toNodeWithName:_toNodeName];
-        [_navMachine initializeWithPathNodes:_pathNodes];
-        [_navMachine startNavigationUsingBeaconsWithUUID:[_topoMap getUUIDString] andMajorID:[_topoMap getMajorIDString].intValue withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
+        _pathNodes = [_navMachine getPathNodes];
+        NavNode *startNode = [_pathNodes lastObject];
         NSMutableString *cmd = [[NSMutableString alloc] init];
+        [cmd appendString:@"setStartNode("];
+        [cmd appendFormat:@"%f,", startNode.lat];
+        [cmd appendFormat:@"%f)", startNode.lng];
+        [_navFuncViewCtrl runCmdWithString:cmd];
+        cmd = [[NSMutableString alloc] init];
         [cmd appendString:@"startNavigation(["];
-        for (int i = (int)[_pathNodes count] - 1; i >= 0; i--) {
+        for (int i = (int)[_pathNodes count] - 2; i >= 0; i--) {
             [cmd appendFormat:@"'%@'", ((NavNode *)[_pathNodes objectAtIndex:i]).nodeID];
             if (i > 0) {
                 [cmd appendString:@","];
@@ -196,37 +245,6 @@
         [cmd appendString:@"])"];
         [_navFuncViewCtrl runCmdWithString:cmd];
     }
-}
-
-// picker delegate's methods
-- (NSInteger)numberOfComponentsInPickerView:(UIPickerView *)pickerView {
-    return 1;
-}
-
-
-- (NSInteger)pickerView:(UIPickerView *)pickerView numberOfRowsInComponent:(NSInteger)component {
-    return [_allLocationName count];
-}
-
-- (NSString *)pickerView:(UIPickerView *)pickerView titleForRow:(NSInteger)row forComponent:(NSInteger)component {
-    return [_allLocationName objectAtIndex:row];
-}
-
-- (void)pickerView:(UIPickerView *)pickerView didSelectRow:(NSInteger)row inComponent:(NSInteger)component {
-    if ([_allLocationName count] == 0) {
-        return;
-    }
-    if (pickerView == _fromPicker) {
-        _fromNodeName = [_allLocationName objectAtIndex:row];
-    } else if (pickerView == _toPicker) {
-        _toNodeName = [_allLocationName objectAtIndex:row];
-    }
-}
-
-// State Machine delegate's methods
-- (void)navigationFinished {
-    [_navFuncViewCtrl.view removeFromSuperview];
-    [_navFuncViewCtrl runCmdWithString:@"stopNavigation()"];
 }
 
 // Function View delegate's methods
@@ -252,12 +270,16 @@
     _isWebViewLoaded = true;
     NSString *setDataCMD = [NSString stringWithFormat:@"setMapData(%@)", _mapDataString];
     [_navFuncViewCtrl runCmdWithString:setDataCMD];
-    _pathNodes = [_topoMap findShortestPathFromNodeWithName:_fromNodeName toNodeWithName:_toNodeName];
-    [_navMachine initializeWithPathNodes:_pathNodes];
-    [_navMachine startNavigationUsingBeaconsWithUUID:[_topoMap getUUIDString] andMajorID:[_topoMap getMajorIDString].intValue withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
+    _pathNodes = [_navMachine getPathNodes];
+    NavNode *startNode = [_pathNodes lastObject];
     NSMutableString *cmd = [[NSMutableString alloc] init];
+    [cmd appendString:@"setStartNode("];
+    [cmd appendFormat:@"%f,", startNode.lat];
+    [cmd appendFormat:@"%f)", startNode.lng];
+    [_navFuncViewCtrl runCmdWithString:cmd];
+    cmd = [[NSMutableString alloc] init];
     [cmd appendString:@"startNavigation(["];
-    for (int i = (int)[_pathNodes count] - 1; i >= 0; i--) {
+    for (int i = (int)[_pathNodes count] - 2; i >= 0; i--) {
         [cmd appendFormat:@"'%@'", ((NavNode *)[_pathNodes objectAtIndex:i]).nodeID];
         if (i > 0) {
             [cmd appendString:@","];
@@ -269,7 +291,6 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
-    // Dispose of any resources that can be recreated.
 }
 
 // go to map list table view
@@ -304,13 +325,16 @@
 - (void)topoMapLoaded:(TopoMap *)topoMap withMapDataString:(NSString *)dataStr{
     _topoMap = topoMap;
     NSArray *locations = [_topoMap getAllLocationNamesOnMap];
-    [_allLocationName removeAllObjects];
+    [_allFromLocationName removeAllObjects];
+    [_allToLocationName removeAllObjects];
     for (NSString *name in locations) {
-        [_allLocationName addObject:name];
+        [_allFromLocationName addObject:name];
+        [_allToLocationName addObject:name];
     }
-    if ([_allLocationName count] > 0) {
-        _fromNodeName = [_allLocationName objectAtIndex:0];
-        _toNodeName = [_allLocationName objectAtIndex:0];
+    if ([_allFromLocationName count] > 0 && [_allToLocationName count] > 0) {
+        _fromNodeName = [_allFromLocationName objectAtIndex:0];
+        _toNodeName = [_allToLocationName objectAtIndex:0];
+        [_allFromLocationName addObject:[NSString stringWithFormat:@"Current Location"]];
     } else {
         _fromNodeName = nil;
         _toNodeName = nil;

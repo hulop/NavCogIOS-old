@@ -33,6 +33,7 @@
     self = [super init];
     if (self) {
         _neighbors = [[NSMutableArray alloc] init];
+        _infoFromEdges = [[NSMutableDictionary alloc] init];
     }
     return self;
 }

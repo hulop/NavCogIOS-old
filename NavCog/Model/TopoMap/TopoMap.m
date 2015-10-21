@@ -35,6 +35,9 @@
 @property (strong, nonatomic) NSMutableDictionary *nodeNameLayerIDDict;
 @property (strong, nonatomic) NSString *uuidString;
 @property (strong, nonatomic) NSString *majoridString;
+@property (strong, nonatomic) NavNode *tmpNode;
+@property (strong, nonatomic) NavLayer *tmpNodeParentLayer;
+@property (strong, nonatomic) NavEdge *tmpNodeParentEdge;
 
 @end
 
@@ -54,6 +57,7 @@
         _layers = [[NSMutableDictionary alloc] init];
         _nodeNameNodeIDDict = [[NSMutableDictionary alloc] init];
         _nodeNameLayerIDDict = [[NSMutableDictionary alloc] init];
+        _tmpNode = nil;
     }
     return self;
 }
@@ -82,7 +86,7 @@
             node.layerZIndex = zIndex;
             node.lat = ((NSNumber *)[nodeJson objectForKey:@"lat"]).floatValue;
             node.lng = ((NSNumber *)[nodeJson objectForKey:@"lng"]).floatValue;
-            node.infoFromEdges = [nodeJson objectForKey:@"infoFromEdges"];
+            [node.infoFromEdges addEntriesFromDictionary:[nodeJson objectForKey:@"infoFromEdges"]];
             node.transitInfo = [nodeJson objectForKey:@"transitInfo"];
             node.transitKnnDistThres = ((NSNumber *)[nodeJson objectForKey:@"knnDistThres"]).floatValue;
             node.transitPosThres = ((NSNumber *)[nodeJson objectForKey:@"posDistThres"]).floatValue;
@@ -108,9 +112,6 @@
             edge.node1 = [layer.nodes objectForKey:edge.nodeID1];
             edge.nodeID2 = [edgeJson objectForKey:@"node2"];
             edge.node2 = [layer.nodes objectForKey:edge.nodeID2];
-            if ([edge.edgeID isEqualToString:@"16"]) {
-                NSLog(@"hello");
-            }
             [edge setLocalizationWithDataString:[edgeJson objectForKey:@"dataFile"]];
             edge.info1 = [edgeJson objectForKey:@"infoFromNode1"];
             edge.info2 = [edgeJson objectForKey:@"infoFromNode2"];
@@ -139,6 +140,121 @@
     return [[NSString alloc] initWithData:jsonData encoding:NSUTF8StringEncoding];
 }
 
+- (NSArray *)findShortestPathFromCurrentLocation:(NavLocation *)curLocation toNodeWithName:(NSString *)toNodeName{
+    NavEdge *curEdge = [self getEdgeFromLayer:curLocation.layerID withEdgeID:curLocation.edgeID];
+    NavLayer *curLayer = [_layers objectForKey:curLocation.layerID];
+    
+    // if your current location reach one of the ends of current edge
+    // then just do the same, not touching the topo map
+    if ([curEdge checkValidEndNodeAtLocation:curLocation] != nil) {
+        NavNode *node = [curEdge checkValidEndNodeAtLocation:curLocation];
+        return [self findShortestPathFromNode:node toNodeWithName:toNodeName];
+    } else {
+        // use a tmp node to split the edge into two
+        NavNode *tmpNode = [[NavNode alloc] init];
+        _tmpNode = tmpNode;
+        _tmpNodeParentLayer = curLayer;
+        _tmpNodeParentEdge = curEdge;
+        tmpNode.nodeID = @"tmp_node";
+        tmpNode.type = NODE_TYPE_NORMAL;
+        tmpNode.layerZIndex = curLocation.layerID;
+        tmpNode.buildingName = curEdge.node1.buildingName;
+        tmpNode.floor = curEdge.node1.floor;
+        
+        float slat = curEdge.node1.lat;
+        float slng = curEdge.node1.lng;
+        float tlat = curEdge.node2.lat;
+        float tlng = curEdge.node2.lng;
+        float sy = [curEdge.node1 getYInEdgeWithID:curEdge.edgeID];
+        float ty = [curEdge.node2 getYInEdgeWithID:curEdge.edgeID];
+        float ratio = (curLocation.yInEdge - sy) / (ty - sy);
+        ratio = ratio < 0 ? 0 : ratio;
+        ratio = ratio > 1 ? 1 : ratio;
+        tmpNode.lat = slat + ratio * (tlat - slat);
+        tmpNode.lng = slng + ratio * (tlng - slng);
+        tmpNode.parentLayer = curLayer;
+        
+        // the dynamic topo map looks lik this
+        //          tmp edge 1              tmp edge 2
+        // (node1)--------------(tmp node)--------------(node2)
+        //      \_________________________________________/
+        //                   current edge
+        // new two edges
+        NavEdge *tmpEdge1 = [curEdge clone];
+        tmpEdge1.edgeID = @"tmp_edge_1";
+        tmpEdge1.node2 = tmpNode;
+        tmpEdge1.nodeID2 = tmpNode.nodeID;
+        tmpEdge1.len = curLocation.yInEdge - sy;
+        NavEdge *tmpEdge2 = [curEdge clone];
+        tmpEdge2.edgeID = @"tmp_edge_2";
+        tmpEdge2.node1 = tmpNode;
+        tmpEdge2.nodeID1 = tmpNode.nodeID;
+        tmpEdge2.len = ty - curLocation.yInEdge;
+        
+        // add info from edges to tmp node
+        NSDictionary *infoDict = [self getNodeInfoDictFromEdgeWithID:tmpEdge1.edgeID andXInEdge:curLocation.xInEdge andYInEdge:curLocation.yInEdge];
+        [tmpNode.infoFromEdges setObject:infoDict forKey:tmpEdge1.edgeID];
+        infoDict = [self getNodeInfoDictFromEdgeWithID:tmpEdge2.edgeID andXInEdge:curLocation.xInEdge andYInEdge:curLocation.yInEdge];
+        [tmpNode.infoFromEdges setObject:infoDict forKey:tmpEdge2.edgeID];
+        
+        // add neighbor information
+        NavNeighbor *nb = [[NavNeighbor alloc] init];
+        nb.edge = tmpEdge1;
+        nb.node = curEdge.node1;
+        [tmpNode.neighbors addObject:nb];
+        nb = [[NavNeighbor alloc] init];
+        nb.edge = tmpEdge2;
+        nb.node = curEdge.node2;
+        [tmpNode.neighbors addObject:nb];
+        
+        // add neighbor information to node1 and node2 of curEdge
+        nb = [[NavNeighbor alloc] init];
+        nb.edge = tmpEdge1;
+        nb.node = tmpNode;
+        [curEdge.node1.neighbors addObject:nb];
+        nb = [[NavNeighbor alloc] init];
+        nb.edge = tmpEdge2;
+        nb.node = tmpNode;
+        
+        // add info from tmp edges for node1 and node2
+        infoDict = [self getNodeInfoDictFromEdgeWithID:tmpEdge1.edgeID andXInEdge:[curEdge.node1 getXInEdgeWithID:curEdge.edgeID] andYInEdge:[curEdge.node1 getYInEdgeWithID:curEdge.edgeID]];
+        [curEdge.node1.infoFromEdges setObject:infoDict forKey:tmpEdge1.edgeID];
+        infoDict = [self getNodeInfoDictFromEdgeWithID:tmpEdge2.edgeID andXInEdge:[curEdge.node2 getXInEdgeWithID:curEdge.edgeID] andYInEdge:[curEdge.node2 getYInEdgeWithID:curEdge.edgeID]];
+        [curEdge.node2.infoFromEdges setObject:infoDict forKey:tmpEdge2.edgeID];
+        
+        [curLayer.nodes setObject:tmpNode forKey:tmpNode.nodeID];
+        [curLayer.edges setObject:tmpEdge1 forKey:tmpEdge1.edgeID];
+        [curLayer.edges setObject:tmpEdge2 forKey:tmpEdge2.edgeID];
+        return [self findShortestPathFromNode:tmpNode toNodeWithName:toNodeName];
+    }
+}
+
+- (void)cleanTmpNodeAndEdges {
+    [_tmpNodeParentLayer.nodes removeObjectForKey:@"tmp_node"];
+    [_tmpNodeParentLayer.edges removeObjectForKey:@"tmp_edge_1"];
+    [_tmpNodeParentLayer.edges removeObjectForKey:@"tmp_edge_2"];
+    [_tmpNodeParentEdge.node1.infoFromEdges removeObjectForKey:@"tmp_edge_1"];
+    [_tmpNodeParentEdge.node2.infoFromEdges removeObjectForKey:@"tmp_edge_2"];
+    for (NavNeighbor *nb in _tmpNodeParentEdge.node1.neighbors) {
+        if ([nb.node.nodeID isEqualToString:@"tmp_node"]) {
+            [_tmpNodeParentEdge.node1.neighbors removeLastObject];
+        }
+    }
+    for (NavNeighbor *nb in _tmpNodeParentEdge.node2.neighbors) {
+        if ([nb.node.nodeID isEqualToString:@"tmp_node"]) {
+            [_tmpNodeParentEdge.node2.neighbors removeLastObject];
+        }
+    }
+}
+
+- (NSDictionary *)getNodeInfoDictFromEdgeWithID:(NSString *)edgeID andXInEdge:(float)x andYInEdge:(float)y {
+    NSMutableDictionary *dict = [[NSMutableDictionary alloc] init];
+    [dict setObject:edgeID forKey:@"edgeID"];
+    [dict setObject:[NSNumber numberWithFloat:x] forKey:@"x"];
+    [dict setObject:[NSNumber numberWithFloat:y] forKey:@"y"];
+    return dict;
+}
+
 // return all POI node names
 - (NSArray *)getAllLocationNamesOnMap {
     NSMutableArray *allNames = [[NSMutableArray alloc] init];
@@ -150,6 +266,88 @@
         }
     }
     return allNames;
+}
+
+// search a shortest path
+- (NSArray *)findShortestPathFromNode:(NavNode *)startNode toNodeWithName:(NSString *)toName {
+    // get start node and end node of the path
+    NavNode *endNode = [self getNodeWithID:[_nodeNameNodeIDDict objectForKey:toName] fromLayerWithID:[_nodeNameLayerIDDict objectForKey:toName]];
+    if (startNode == nil || endNode == nil) {
+        return nil;
+    }
+    
+    // visited nodes and nodes have been reachable from start node
+    NSMutableSet *visitedNodes = [[NSMutableSet alloc] init];
+    NSMutableSet *reachableNodes = [[NSMutableSet alloc] init];
+    
+    // initialize the Min-Heap, maximum size is number of nodes
+    NavMinHeap *heap = [[NavMinHeap alloc] init];
+    [heap initHeapWithSize:(int)[[_nodeNameNodeIDDict allKeys] count]];
+    
+    // initial the search from start node, start the search from start node's neighbors
+    startNode.distFromStartNode = 0;
+    startNode.preNodeInPath = nil;
+    [reachableNodes addObject:startNode];
+    [heap offer:startNode];
+    
+    // search for end node, O((N+E)*log(N)), N is total number of nodes, E is total number of edges
+    while ([heap getSize] > 0) {
+        NavNode *node = [heap poll];
+        [visitedNodes addObject:node];
+        [reachableNodes removeObject:node];
+        for (NavNeighbor *neighbor in node.neighbors) {
+            NavNode *nbNode = neighbor.node;
+            if ([visitedNodes containsObject:nbNode]) {
+                continue;
+            }
+            if ([reachableNodes containsObject:nbNode]) { // if the node has been reached
+                int newDist = node.distFromStartNode + neighbor.edge.len;
+                if (newDist < nbNode.distFromStartNode) { // sift up the node if its distance is less than before
+                    nbNode.preNodeInPath = node;
+                    nbNode.preEdgeInPath = neighbor.edge;
+                    [heap siftAndUpdateNode:nbNode withNewDist:newDist]; // nbNode.distFromStartNode will be updated to newDist
+                }
+            } else {
+                nbNode.distFromStartNode = node.distFromStartNode + neighbor.edge.len;
+                nbNode.preNodeInPath = node;
+                nbNode.preEdgeInPath = neighbor.edge;
+                if ([nbNode.name isEqualToString:endNode.name]) {
+                    return [self traceBackForPathFromNode:nbNode];
+                }
+                [heap offer:nbNode];
+                [reachableNodes addObject:nbNode];
+            }
+        }
+        
+        for (NSString *layerID in node.transitInfo) {
+            NSDictionary *transitJson = [node.transitInfo objectForKey:layerID];
+            Boolean transitEnabled = ((NSNumber *)[transitJson objectForKey:@"enabled"]).boolValue;
+            if (transitEnabled) {
+                NavNode *nbNode = [self getNodeWithID:[transitJson objectForKey:@"node"] fromLayerWithID:layerID];
+                if (![visitedNodes containsObject:nbNode]) {
+                    if ([reachableNodes containsObject:nbNode]) { // if the node has been reached
+                        int newDist = node.distFromStartNode;
+                        if (newDist < nbNode.distFromStartNode) { // sift up the node if its distance is less than before
+                            nbNode.preNodeInPath = node;
+                            nbNode.preEdgeInPath = nil;
+                            [heap siftAndUpdateNode:nbNode withNewDist:newDist]; // nbNode.distFromStartNode will be updated to newDist
+                        }
+                    } else {
+                        nbNode.distFromStartNode = node.distFromStartNode;
+                        nbNode.preNodeInPath = node;
+                        nbNode.preEdgeInPath = nil;
+                        if ([nbNode.name isEqualToString:endNode.name]) {
+                            return [self traceBackForPathFromNode:nbNode];
+                        }
+                        [heap offer:nbNode];
+                        [reachableNodes addObject:nbNode];
+                    }
+                }
+            }
+        }
+    }
+    
+    return nil;
 }
 
 // search a shortest path
@@ -265,7 +463,6 @@
 - (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons {
     NavLocation *location = [[NavLocation alloc] init];
     float minKnnDist = 1;
-    
     for (NSString *layerID in _layers) {
         NavLayer *layer = [_layers objectForKey:layerID];
         for (NSString *edgeID in layer.edges) {
@@ -279,11 +476,25 @@
                 minKnnDist = dist;
                 location.layerID = layerID;
                 location.edgeID = edgeID;
+                location.xInEdge = pos.x;
+                location.yInEdge = pos.y;
             }
         }
+    }
+    if (location.edgeID == NULL) {
+        location.edgeID = nil;
     }
     return location;
 }
 
+- (NavNode *)getNodeFromLayer:(NSString *)layerID withNodeID:(NSString *)nodeID {
+    NavLayer *layer = [_layers objectForKey:layerID];
+    return [layer.nodes objectForKey:nodeID];
+}
+
+- (NavEdge *)getEdgeFromLayer:(NSString *)layerID withEdgeID:(NSString *)edgeID {
+    NavLayer *layer = [_layers objectForKey:layerID];
+    return [layer.edges objectForKey:edgeID];
+}
 
 @end

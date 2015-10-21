@@ -35,11 +35,15 @@
 
 @interface TopoMap : NSObject
 
+- (NavNode *)getNodeFromLayer:(NSString *)layerID withNodeID:(NSString *)nodeID;
+- (NavEdge *)getEdgeFromLayer:(NSString *)layerID withEdgeID:(NSString *)edgeID;
 - (NSString *)getUUIDString;
 - (NSString *)getMajorIDString;
 - (NSString *)initializaWithFile:(NSString *)filePath;
 - (NSArray *)findShortestPathFromNodeWithName:(NSString *)fromName toNodeWithName:(NSString *)toName;
 - (NSArray *)getAllLocationNamesOnMap;
 - (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons;
+- (NSArray *)findShortestPathFromCurrentLocation:(NavLocation *)curLocation toNodeWithName:(NSString *)toNodeName;
+- (void)cleanTmpNodeAndEdges;
 
 @end

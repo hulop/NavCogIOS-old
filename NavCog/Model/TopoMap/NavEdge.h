@@ -29,6 +29,7 @@
 
 @class NavNode;
 @class NavLayer;
+@class NavLocation;
 
 enum EdgeType {EDGE_NORMAL, EDGE_NON_NAVIGATIONAL};
 
@@ -51,10 +52,12 @@ enum EdgeType {EDGE_NORMAL, EDGE_NON_NAVIGATIONAL};
 
 - (void)initLocalization;
 - (void)setLocalizationWithDataString:(NSString *)dataStr;
-
+- (void)setLocalizationWithInstance:(KDTreeLocalization *)localization;
 - (float)getOriFromNode:(NavNode *)node;
 - (NSString *)getInfoFromNode:(NavNode *)node;
 - (struct NavPoint)getCurrentPositionInEdgeUsingBeacons:(NSArray *)beacons;
+- (NavNode *)checkValidEndNodeAtLocation:(NavLocation *)location;
+- (NavEdge *)clone;
 
 @end
 

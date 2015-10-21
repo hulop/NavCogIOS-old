@@ -26,6 +26,7 @@ var _layers = null;
 var _map = null;
 var _regionOverlays = [];
 var _data = null;
+var _startNode = null;
 
 function loaded() {
 	_map = getNewGoogleMap();
@@ -36,8 +37,13 @@ function setMapData(newData) {
     _layers = _data.layers;
 }
 
+function setStartNode(lat, lng) {
+    _startNode = newNodeWithLatLng(lat, lng);
+}
+
 function startNavigation(pathNodeIds) {
 	var layerID = getLayerIDForNodeWitID(pathNodeIds[0]);
+    addALineToLayerFromStartNode(layerID, pathNodeIds[0]);
 	for (var i = 1; i < pathNodeIds.length; i++) {
 		var curLayerId = getLayerIDForNodeWitID(pathNodeIds[i]);
 		if (curLayerId != layerID) {
@@ -122,6 +128,17 @@ function addALineToLayer(layerID, nodeID1, nodeID2) {
 	layer.edgeLines.push(newLine);
 }
 
+function addALineToLayerFromStartNode(layerID, nodeID) {
+    var layer = _layers[layerID];
+    if (!layer.edgeLines) {
+        layer.edgeLines = [];
+    };
+    var node1 = _startNode;
+    var node2 = layer.nodes[nodeID];
+    var newLine = newLineBetweenNodes(node1, node2);
+    layer.edgeLines.push(newLine);
+}
+
 function getLayerIDForNodeWitID(nodeID) {
 	for (var layerID in _layers) {
 		if (_layers[layerID].nodes[nodeID]) {
@@ -161,6 +178,13 @@ function newLineBetweenNodes(node1, node2) {
 		strokeOpacity: 1.0
 	});
 	return edgeLine;
+}
+
+function newNodeWithLatLng(lat, lng) {
+    return {
+        lat: lat,
+        lng: lng
+    }
 }
 
 function renderRegion(region) {

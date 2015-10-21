@@ -37,6 +37,11 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (nonatomic) Boolean speechEnabled;
 @property (nonatomic) Boolean clickEnabled;
+@property (nonatomic) Boolean isStartFromCurrentLocation;
+@property (nonatomic) Boolean isNavigationStarted;
+@property (strong, nonatomic) NSString *destNodeName;
+@property (strong, atomic) NSArray *pathNodes;
+@property (strong, nonatomic) TopoMap *topoMap;
 
 @end
 
@@ -292,13 +297,28 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     return [_dateFormatter stringFromDate:[NSDate date]];
 }
 
-- (void)startNavigationUsingBeaconsWithUUID:(NSString *)uuidstr andMajorID:(CLBeaconMajorValue)majorID withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled  withFastSpeechOn:(Boolean)fastSpeechEnabled {
+- (void)startNavigationOnTopoMap:(TopoMap *)topoMap fromNodeWithName:(NSString *)fromNodeName toNodeWithName:(NSString *)toNodeName usingBeaconsWithUUID:(NSString *)uuidstr andMajorID:(CLBeaconMajorValue)majorID withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled {
     // set speech rate of notification speaker
     [NavNotificationSpeaker setFastSpeechOnAndOff:fastSpeechEnabled];
     
     // set UI type (speech and click sound)
     _speechEnabled = speechEnabled;
     _clickEnabled = clickEnabled;
+    
+    // search a path
+    _topoMap = topoMap;
+    _pathNodes = nil;
+    if (![fromNodeName isEqualToString:@"Current Location"]) {
+        _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
+        [self initializeWithPathNodes:_pathNodes];
+        _isStartFromCurrentLocation = false;
+        _isNavigationStarted = true;
+        [_delegate navigationReadyToGo];
+    } else {
+        _destNodeName = toNodeName;
+        _isStartFromCurrentLocation = true;
+        _isNavigationStarted = false;
+    }
     
     // start navigation
     _beaconManager = [[CLLocationManager alloc] init];
@@ -315,6 +335,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 - (void)stopNavigation {
     [self stopAudio];
     [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+    [_topoMap cleanTmpNodeAndEdges];
     _navState = NAV_STATE_IDLE;
     _initialState = nil;
     _currentState = nil;
@@ -346,32 +367,56 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     } else {
         [_delegate navigationFinished];
         [NavNotificationSpeaker speakWithCustomizedSpeed:@"You Arrived!"];
+        [_topoMap cleanTmpNodeAndEdges];
     }
 }
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region {
-    if (_navState == NAV_STATE_WALKING) {
-        if ([beacons count] > 0) {
-            if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
-                _currentState = _currentState.nextState;
-                if (_currentState == nil) {
-                    [_delegate navigationFinished];
-                    [NavNotificationSpeaker speakWithCustomizedSpeed:@"You Arrived!"];
-                    [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
-                } else if (_currentState.type == STATE_TYPE_WALKING) {
-                    if (ABS(_curOri - _currentState.ori) > 15) {
-                        _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
-                        [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
-                        _navState = NAV_STATE_TURNING;
-                    } else {
+    // if we start navigation from current location
+    // and the navigation does not start yet
+    if (_isStartFromCurrentLocation && !_isNavigationStarted) {
+        NavLocation *curLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
+        if (curLocation.edgeID == nil) {
+            return;
+        }
+        _pathNodes = [_topoMap findShortestPathFromCurrentLocation:curLocation toNodeWithName:_destNodeName];
+        [self initializeWithPathNodes:_pathNodes];
+        _isNavigationStarted = true;
+        [_delegate navigationReadyToGo];
+        NSLog(@"***********************************************");
+        NSLog(@"layer : %@", curLocation.layerID);
+        NSLog(@"edge : %@", curLocation.edgeID);
+        NSLog(@"x : %f", curLocation.xInEdge);
+        NSLog(@"y : %f", curLocation.yInEdge);
+    } else {
+        if (_navState == NAV_STATE_WALKING) {
+            if ([beacons count] > 0) {
+                if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
+                    _currentState = _currentState.nextState;
+                    if (_currentState == nil) {
+                        [_delegate navigationFinished];
+                        [NavNotificationSpeaker speakWithCustomizedSpeed:@"You Arrived!"];
+                        [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+                        [_topoMap cleanTmpNodeAndEdges];
+                    } else if (_currentState.type == STATE_TYPE_WALKING) {
+                        if (ABS(_curOri - _currentState.ori) > 15) {
+                            _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
+                            [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
+                            _navState = NAV_STATE_TURNING;
+                        } else {
+                            _navState = NAV_STATE_WALKING;
+                        }
+                    } else if (_currentState.type == STATE_TYPE_TRANSITION) {
                         _navState = NAV_STATE_WALKING;
                     }
-                } else if (_currentState.type == STATE_TYPE_TRANSITION) {
-                    _navState = NAV_STATE_WALKING;
                 }
             }
         }
     }
+}
+
+- (NSArray *)getPathNodes {
+    return _pathNodes;
 }
 
 - (void)stopAudio {
