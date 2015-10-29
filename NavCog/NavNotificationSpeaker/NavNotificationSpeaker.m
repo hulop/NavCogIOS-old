@@ -31,6 +31,7 @@
 @property (nonatomic) Boolean beFast;
 @property (nonatomic) float fastRatio;
 @property (nonatomic) float slowRatio;
+@property (nonatomic) AVSpeechSynthesisVoice *voice;
 
 @end
 
@@ -44,8 +45,27 @@
         instance.beFast = true;
         instance.fastRatio = IS_IOS_9 ? 1.7 : 4;
         instance.slowRatio = IS_IOS_9 ? 1.9 : 8;
+        instance.voice = self.getVoice;
     }
     return instance;
+}
+
++ (AVSpeechSynthesisVoice*)getVoice {
+    // From http://stackoverflow.com/a/23826135/427299
+    NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
+    NSString *voiceLangCode = [AVSpeechSynthesisVoice currentLanguageCode];
+    if (![voiceLangCode hasPrefix:language]) {
+        // the default voice can't speak the language the text is localized to;
+        // switch to a compatible voice:
+        NSArray *speechVoices = [AVSpeechSynthesisVoice speechVoices];
+        for (AVSpeechSynthesisVoice *speechVoice in speechVoices) {
+            if ([speechVoice.language hasPrefix:language]) {
+                voiceLangCode = speechVoice.language;
+                break;
+            }
+        }
+    }
+    return [AVSpeechSynthesisVoice voiceWithLanguage:voiceLangCode];
 }
 
 + (void)setFastSpeechOnAndOff:(Boolean)isFast {
@@ -97,7 +117,7 @@
     }
     AVSpeechUtterance *avUtterance = [[AVSpeechUtterance alloc] initWithString:str];
     [avUtterance setRate:AVSpeechUtteranceMaximumSpeechRate / _fastRatio];
-    [avUtterance setVoice:[AVSpeechSynthesisVoice voiceWithLanguage:@"en-US"]];
+    [avUtterance setVoice:_voice];
     [avUtterance setVolume:1.0];
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
@@ -106,7 +126,7 @@
 - (void)selfSpeak:(NSString *)str {
     AVSpeechUtterance *avUtterance = [[AVSpeechUtterance alloc] initWithString:str];
     [avUtterance setRate:AVSpeechUtteranceMaximumSpeechRate / _fastRatio];
-    [avUtterance setVoice:[AVSpeechSynthesisVoice voiceWithLanguage:@"en-US"]];
+    [avUtterance setVoice:_voice];
     [avUtterance setVolume:1.0];
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
@@ -118,7 +138,7 @@
     }
     AVSpeechUtterance *avUtterance = [[AVSpeechUtterance alloc] initWithString:str];
     [avUtterance setRate:AVSpeechUtteranceMaximumSpeechRate / _slowRatio];
-    [avUtterance setVoice:[AVSpeechSynthesisVoice voiceWithLanguage:@"en-US"]];
+    [avUtterance setVoice:_voice];
     [avUtterance setVolume:1.0];
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
@@ -127,7 +147,7 @@
 - (void)selfSpeakSlowly:(NSString *)str {
     AVSpeechUtterance *avUtterance = [[AVSpeechUtterance alloc] initWithString:str];
     [avUtterance setRate:AVSpeechUtteranceMaximumSpeechRate / _slowRatio];
-    [avUtterance setVoice:[AVSpeechSynthesisVoice voiceWithLanguage:@"en-US"]];
+    [avUtterance setVoice:_voice];
     [avUtterance setVolume:1.0];
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
