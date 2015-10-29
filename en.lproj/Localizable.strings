@@ -1,0 +1,142 @@
+/* Alert that an accessibility notification is available */
+"accessNotif" = "Accessibily Notification!";
+
+/* HTML Label for accessibility instruction button in view */
+"accessibilityInstructionButton" = "Accessbility
+Instruction";
+
+/* Simple and used to join two nodes. */
+"and" = "and ";
+
+/* Used to join two instructions */
+"andFormat" = "%@ and %@";
+
+/* Spoken when approaching specific nodes */
+"approaching" = "approaching";
+
+/* Format string to tell the user they are approaching a turn */
+"approachingToTurnFormat" = "Approaching to %@";
+
+/* Spoken when you arrive at a destination */
+"arrived" = "You Arrived!";
+
+/* Format string describes the floor you are currently on */
+"currentlyOnFormat" = ".. you are currently on %@";
+
+/* Destination alert */
+"destination" = "That's your destination.. ";
+
+/* Format string for destination alert */
+"destinationFormat" = "%@.. That's your destination.. ";
+
+/* Label shown when map list is downloading */
+"downloadingMapList" = "Downloading Map List";
+
+/* Spoken when entering a location */
+"enteringFormat" = ".. Entering %@..";
+
+/* A unit of distance in feet */
+"feet" = "feet";
+
+/* Use to express a distance in feet */
+"feetFormat" = "%d feet";
+
+/* Use to express a distance in feet with a pause */
+"feetPauseFormat" = "feetPauseFormat";
+
+/* format string describing the number of feet left to a named location */
+"feetToNameFormat" = "%d feet to %@..";
+
+/* (No Commment) */
+"feetWithPauseFormat" = "%d feet..";
+
+/* Format string for a floor that takes an ordinal number */
+"floorFormat" = "the %@ floor.. ";
+
+/* Label for the source location picker */
+"fromLabel" = "From:";
+
+/* Short command telling the user to go downstairs */
+"goDownstairs" = "Go downstairs..";
+
+/* Command telling the user to go downstairs using the elevator */
+"goDownstairsElevator" = "Go downstairs by elevator";
+
+/* Command telling the user to go down the stairs using the stair case */
+"goDownstairsStairCase" = "Go downstairs using the stair case.. ";
+
+/* Short command telling the user to go upstairs */
+"goUpstairs" = "Go upstairs..";
+
+/* Command telling the user to go upstairs using the elevator */
+"goUpstairsElevator" = "Go upstairs by elevator";
+
+/* Command telling the user to go up the stairs using the stair case */
+"goUpstairsStairCase" = "Go upstairs using the stair case.. ";
+
+/* Button to initialize orientation */
+"initOrientationButton" = "Initialize Orientation";
+
+/* Instruction to keep straight */
+"keepStraight" = "keep straight.. ";
+
+/* Indicator text shown while a map is loading */
+"loadingMap" = "Loading Map...";
+
+/* Format string for map downloading progress indicator */
+"mapProgressFormat" = "%.0f%% loaded";
+
+/* Spoken when no information is available */
+"noInformation" = "No information available";
+
+/* HTML Label for previous instruction button in view */
+"previousInstructionButton" = "Previous
+Instruction";
+
+/* Indication text shown while a map is being processed */
+"processingMap" = "Processing Map...";
+
+/* Instruction to turn slightly left */
+"slightLeft" = "slight left.. ";
+
+/* Instruction to turn slightly right */
+"slightRight" = "slight right.. ";
+
+/* Button to start navigation */
+"startNavigationButton" = "Start Navigation";
+
+/* HTML Label for stop navigation button in view */
+"stopNavigationButton" = "Stop
+Navigation";
+
+/* HTML Label for surrounding information button in view */
+"surroundingInformationButton" = "Surrounding
+Information";
+
+/* Command telling the user take the elevator downstairs */
+"takeDownstairsElevator" = "Take the elevator to downstairs.. ";
+
+/* Format string for taking the elevator */
+"takeElevatorFormat" = ".. Take the elevator to %@";
+
+/* Format string for taking the stairs */
+"takeStairsFormat" = ".. Take stairs to %@";
+
+/* Command telling the user take the elevator upstairs */
+"takeUpstairsElevator" = "Take the elevator to upstairs.. ";
+
+/* Label for the destination location picker */
+"toLabel" = "To:";
+
+/* Instruction to turn left */
+"turnLeft" = "turn left.. ";
+
+/* Format string to turn left in degrees */
+"turnLeftDegreeFormat" = "turn left for %d degrees.. ";
+
+/* Instruction to turn right */
+"turnRight" = "turn right.. ";
+
+/* Format string to turn right in degrees */
+"turnRightDegreeFormat" = "turn right for %d degrees.. ";
+

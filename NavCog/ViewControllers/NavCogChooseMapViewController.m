@@ -79,7 +79,7 @@
 
 - (IBAction)updateMapList:(id)sender {
     [self.view addSubview:_downloadingView.view];
-    _downloadingView.label.text = @"Downloading Map List";
+    _downloadingView.label.text = NSLocalizedString(@"downloadingMapList", @"Label shown when map list is downloading");
     _downloadingView.progress.hidden = YES;
     [NavMapManager updateMapList];
 }
@@ -110,7 +110,7 @@
     UITableViewCell *cell = [tableView cellForRowAtIndexPath:indexPath];
     NSString *mapName = cell.textLabel.text;
     [self.view addSubview:_downloadingView.view];
-    _downloadingView.label.text = @"Loading Map...";
+    _downloadingView.label.text = NSLocalizedString(@"loadingMap", @"Indicator text shown while a map is loading");
     _downloadingView.progress.hidden = YES;
     _downloadingView.progress.progress = 0;
     [NavMapManager loadTopoMapWithName:mapName withProgressHandler:^(long long current, long long max) {
@@ -120,9 +120,9 @@
             _downloadingView.progress.hidden = NO;
             
             if (_downloadingView.progress.progress < 1.0) {
-                _downloadingView.label.text = [NSString stringWithFormat:@"%.0f%% loaded", _downloadingView.progress.progress*100];
+                _downloadingView.label.text = [NSString stringWithFormat:NSLocalizedString(@"mapProgressFormat", @"Format string for map downloading progress indicator"), _downloadingView.progress.progress*100];
             } else {
-                _downloadingView.label.text = @"Processing Map...";
+                _downloadingView.label.text = NSLocalizedString(@"processingMap", @"Indication text shown while a map is being processed");
             }
         });
     }];

@@ -87,7 +87,7 @@
     initalizeOriButton.backgroundColor = [UIColor clearColor];
     initalizeOriButton.layer.borderWidth = 2.0;
     initalizeOriButton.layer.borderColor = [UIColor blackColor].CGColor;
-    [initalizeOriButton setTitle:@"Initialize Orientation" forState:UIControlStateNormal];
+    [initalizeOriButton setTitle:NSLocalizedString(@"initOrientationButton", @"Button to initialize orientation") forState:UIControlStateNormal];
     [initalizeOriButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [initalizeOriButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
     [self.view addSubview:initalizeOriButton];
@@ -100,7 +100,7 @@
     _startNavButton.backgroundColor = [UIColor clearColor];
     _startNavButton.layer.borderWidth = 2.0;
     _startNavButton.layer.borderColor = [UIColor blackColor].CGColor;
-    [_startNavButton setTitle:@"Start Navigation" forState:UIControlStateNormal];
+    [_startNavButton setTitle:NSLocalizedString(@"startNavigationButton", @"Button to start navigation") forState:UIControlStateNormal];
     [_startNavButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [_startNavButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
     _startNavButton.enabled = false;
@@ -132,14 +132,14 @@
     par = 0.9;
     float lh = 32;
     UILabel *fromLabel = [[UILabel alloc] initWithFrame:CGRectMake((sw - pw) / 2, bb + bm, pw, lh)];
-    fromLabel.text = @"From:";
+    fromLabel.text = NSLocalizedString(@"fromLabel", @"Label for the source location picker");
     fromLabel.textAlignment = NSTextAlignmentCenter;
     fromLabel.transform = CGAffineTransformMakeScale(par, par);
     fromLabel.backgroundColor = [UIColor lightGrayColor];
     fromLabel.layer.borderWidth = 1;
     [self.view addSubview:fromLabel];
     UILabel *toLabel = [[UILabel alloc] initWithFrame:CGRectMake((sw - pw) / 2, bb + ph + 2 * bm, pw, lh)];
-    toLabel.text = @"To:";
+    toLabel.text = NSLocalizedString(@"toLabel", @"Label for the destination location picker");
     toLabel.textAlignment = NSTextAlignmentCenter;
     toLabel.transform = CGAffineTransformMakeScale(par, par);
     toLabel.backgroundColor = [UIColor lightGrayColor];

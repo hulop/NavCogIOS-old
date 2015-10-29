@@ -117,18 +117,19 @@
     float dist = ABS(pos.y - _ty); // use this if you use 1d, x has no affects
     if (dist < 50 && _isTricky && !_didTrickyNotification) {
         _didTrickyNotification = true;
-        [NavNotificationSpeaker speakImmediatelyAndSlowly:@"Accessibily Notification!"];
+        [NavNotificationSpeaker speakImmediatelyAndSlowly:NSLocalizedString(@"accessNotif", @"Alert that an accessibility notification is available")];
     }
     float threshold = 5;
     if (_type == STATE_TYPE_WALKING) {
+        NSString *distFormat = NSLocalizedString(@"feetFormat", @"Use to express a distance in feet");
         // if you're walking, check distance to target node
         if (dist < _preAnnounceDist) {
             if (dist > 40.0) { // announce every 30 feet
                 if (dist <= 30 * _longDistAnnounceCount + threshold) {
                     if (isSpeechEnabled) {
-                        [self speakInstructionImmediately:[NSString stringWithFormat:@"%d feet", _longDistAnnounceCount * 30]];
+                        [self speakInstructionImmediately:[NSString stringWithFormat:distFormat, _longDistAnnounceCount * 30]];
                     } else {
-                        _previousInstruction = [NSString stringWithFormat:@"%d feet", _longDistAnnounceCount * 30];
+                        _previousInstruction = [NSString stringWithFormat:distFormat, _longDistAnnounceCount * 30];
                     }
                     _preAnnounceDist = _longDistAnnounceCount * 30;
                     _longDistAnnounceCount --;
@@ -136,9 +137,9 @@
                 }
             } else if (!_did40feet && dist <= 40 + threshold) {
                 if (isSpeechEnabled) {
-                    [self speakInstructionImmediately:[NSString stringWithFormat:@"40 feet"]];
+                    [self speakInstructionImmediately:[NSString stringWithFormat:distFormat, 40]];
                 } else {
-                    _previousInstruction = [NSString stringWithFormat:@"40 feet"];
+                    _previousInstruction = [NSString stringWithFormat:distFormat, 40];
                 }
                 _preAnnounceDist = 40;
                 _did40feet = true;
@@ -156,10 +157,11 @@
                         _previousInstruction = _approachingInfo;
                     }
                 } else {
+                    NSString *approaching = NSLocalizedString(@"approaching", @"Spoken when approaching specific nodes");
                     if (isSpeechEnabled) {
-                        [self speakInstructionImmediately:@"approaching"];
+                        [self speakInstructionImmediately:approaching];
                     } else {
-                        _previousInstruction = @"approaching";
+                        _previousInstruction = approaching;
                     }
                 }
                 _didApproaching = true;
@@ -208,8 +210,8 @@
 
 - (void)repeatPreviousInstruction {
     if (_previousInstruction != nil) {
-        if ([_previousInstruction containsString:@"feet"] && ([_previousInstruction length] == 8 || [_previousInstruction length] == 7)) {
-            [self speakInstructionImmediately:[NSString stringWithFormat:@"%@ and %@", _previousInstruction, _nextActionInfo]];
+        if ([_previousInstruction containsString:NSLocalizedString(@"feet", @"A unit of distance in feet")] && ([_previousInstruction length] == 8 || [_previousInstruction length] == 7)) {
+            [self speakInstructionImmediately:[NSString stringWithFormat:NSLocalizedString(@"andFormat", @"Used to join two instructions"), _previousInstruction, _nextActionInfo]];
         } else {
             [self speakInstructionImmediately:_previousInstruction];
         }
@@ -218,7 +220,7 @@
 
 - (void)announceSurroundInfo {
     if ([_surroundInfo isEqualToString:@""]) {
-        [NavNotificationSpeaker speakImmediatelyAndSlowly:@"No information available"];
+        [NavNotificationSpeaker speakImmediatelyAndSlowly:NSLocalizedString(@"noInformation", @"Spoken when no information is available")];
     } else {
         [NavNotificationSpeaker speakImmediatelyAndSlowly:_surroundInfo];
     }
