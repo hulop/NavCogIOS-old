@@ -42,6 +42,11 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		233BF0C91BE3EC5E00D4BF31 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/NavCogHelpPageViewController.strings; sourceTree = "<group>"; };
+		233BF0CA1BE3EC5E00D4BF31 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/NavCogMainViewController.strings; sourceTree = "<group>"; };
+		233BF0CB1BE3EC5E00D4BF31 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/NavCogChooseMapViewController.strings; sourceTree = "<group>"; };
+		233BF0CD1BE3EC5F00D4BF31 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/NavCogDataSamplingViewController.strings; sourceTree = "<group>"; };
+		233BF0CE1BE3EC5F00D4BF31 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/Localizable.strings; sourceTree = "<group>"; };
 		2365BC751BE17ECC007F14C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/NavCogMainViewController.xib; sourceTree = "<group>"; };
 		2365BC7A1BE1802D007F14C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/NavCogChooseMapViewController.xib; sourceTree = "<group>"; };
 		2365BC7D1BE18079007F14C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/NavCogDataSamplingViewController.xib; sourceTree = "<group>"; };
@@ -307,6 +312,7 @@
 				TargetAttributes = {
 					A0E9843B1B73A6DC00DB2040 = {
 						CreatedOnToolsVersion = 6.4;
+						DevelopmentTeam = 9VUC3R8D65;
 					};
 				};
 			};
@@ -433,6 +439,7 @@
 			children = (
 				2365BC751BE17ECC007F14C3 /* Base */,
 				23E77D451BE1A89E00625020 /* en */,
+				233BF0CA1BE3EC5E00D4BF31 /* ja */,
 			);
 			name = NavCogMainViewController.xib;
 			path = NavCog/ViewControllers;
@@ -443,6 +450,7 @@
 			children = (
 				2365BC7A1BE1802D007F14C3 /* Base */,
 				23E77D441BE1A89E00625020 /* en */,
+				233BF0CB1BE3EC5E00D4BF31 /* ja */,
 			);
 			name = NavCogChooseMapViewController.xib;
 			path = NavCog/ViewControllers;
@@ -453,6 +461,7 @@
 			children = (
 				2365BC7D1BE18079007F14C3 /* Base */,
 				23E77D431BE1A89E00625020 /* en */,
+				233BF0CD1BE3EC5F00D4BF31 /* ja */,
 			);
 			name = NavCogDataSamplingViewController.xib;
 			path = NavCog/ViewControllers;
@@ -463,6 +472,7 @@
 			children = (
 				2365BC801BE1808C007F14C3 /* Base */,
 				23E77D461BE1A89E00625020 /* en */,
+				233BF0C91BE3EC5E00D4BF31 /* ja */,
 			);
 			name = NavCogHelpPageViewController.xib;
 			path = NavCog/ViewControllers;
@@ -481,6 +491,7 @@
 			isa = PBXVariantGroup;
 			children = (
 				23E77D501BE1ADB600625020 /* en */,
+				233BF0CE1BE3EC5F00D4BF31 /* ja */,
 			);
 			name = Localizable.strings;
 			sourceTree = "<group>";
@@ -584,6 +595,7 @@
 			baseConfigurationReference = 7218BF5DC24270857B84DDB7 /* Pods-NavCog.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SOURCE_ROOT)",
@@ -602,6 +614,7 @@
 			baseConfigurationReference = AADC4813EC20E1F583DD9974 /* Pods-NavCog.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				CODE_SIGN_IDENTITY = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SOURCE_ROOT)",

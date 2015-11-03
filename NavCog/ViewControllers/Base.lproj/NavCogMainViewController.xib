@@ -19,8 +19,8 @@
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="9OQ-c4-lMg">
                     <rect key="frame" x="0.0" y="461" width="600" height="139"/>
                     <subviews>
-                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="x3C-Iw-WW1">
-                            <rect key="frame" x="164" y="-9" width="273" height="160"/>
+                        <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="x3C-Iw-WW1">
+                            <rect key="frame" x="155" y="-9" width="297" height="160"/>
                             <subviews>
                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" fixedFrame="YES" text="Speech:" textAlignment="right" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="ZuU-l0-l4h">
                                     <rect key="frame" x="11" y="25" width="71" height="21"/>
@@ -70,7 +70,7 @@
                                     </connections>
                                 </segmentedControl>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FR2-U3-EB5">
-                                    <rect key="frame" x="52" y="111" width="109" height="31"/>
+                                    <rect key="frame" x="69" y="111" width="109" height="31"/>
                                     <animations/>
                                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                     <state key="normal" title="Choose Map">
@@ -89,7 +89,7 @@
                                     </connections>
                                 </switch>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="P9j-yz-NDt">
-                                    <rect key="frame" x="168" y="111" width="105" height="31"/>
+                                    <rect key="frame" x="186" y="111" width="105" height="31"/>
                                     <animations/>
                                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                     <state key="normal" title="Get Data">
@@ -100,7 +100,7 @@
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vgl-0E-SXC">
-                                    <rect key="frame" x="0.0" y="111" width="44" height="31"/>
+                                    <rect key="frame" x="7" y="111" width="54" height="31"/>
                                     <animations/>
                                     <color key="backgroundColor" white="0.66666666666666663" alpha="1" colorSpace="calibratedWhite"/>
                                     <state key="normal" title="Help">

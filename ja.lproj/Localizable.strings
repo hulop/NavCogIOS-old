@@ -1,0 +1,141 @@
+/* Alert that an accessibility notification is available */
+"accessNotif" = "アクセシビリティ通知";
+
+/* HTML Label for accessibility instruction button in view */
+"accessibilityInstructionButton" = "アクセシビリティ
+指示";
+
+/* Simple and used to join two nodes. */
+"and" = "..";
+
+/* Used to join two instructions */
+"andFormat" = "%@ 、 %@";
+
+/* Spoken when approaching specific nodes */
+"approaching" = "そろそろです";
+
+/* Format string to tell the user they are approaching a turn */
+"approachingToTurnFormat" = "そろそろ%@";
+
+/* Spoken when you arrive at a destination */
+"arrived" = "到着しました";
+
+/* Format string describes the floor you are currently on */
+"currentlyOnFormat" = ".. 現在は%@にいます";
+
+/* Destination alert */
+"destination" = "そこが目的地です.. ";
+
+/* Format string for destination alert */
+"destinationFormat" = "%@.. ここが目的地です.. ";
+
+/* Label shown when map list is downloading */
+"downloadingMapList" = "地図リストを読込中";
+
+/* Spoken when entering a location */
+"enteringFormat" = ".. %@に入りました..";
+
+/* A unit of distance in feet */
+"feet" = "フィート";
+
+/* Use to express a distance in feet */
+"feetFormat" = "%d フィート";
+
+/* Use to express a distance in feet with a pause */
+"feetPauseFormat" = "%d フィート..";
+
+/* format string describing the number of feet left to a named location */
+"feetToNameFormat" = "%2$@まで%1$dフィート..";
+
+/* (No Commment) */
+"feetWithPauseFormat" = "%d フィート..";
+
+/* Format string for a floor that takes an ordinal number */
+"floorFormat" = "%@階.. ";
+
+/* Label for the source location picker */
+"fromLabel" = "出発地:";
+
+/* Short command telling the user to go downstairs */
+"goDownstairs" = "下の階に行きます..";
+
+/* Command telling the user to go downstairs using the elevator */
+"goDownstairsElevator" = "エレベータで下の階に行きます";
+
+/* Command telling the user to go down the stairs using the stair case */
+"goDownstairsStairCase" = "階段で下の階に行きます.. ";
+
+/* Short command telling the user to go upstairs */
+"goUpstairs" = "上の階に行きます..";
+
+/* Command telling the user to go upstairs using the elevator */
+"goUpstairsElevator" = "エレベータで上の階に行きます";
+
+/* Command telling the user to go up the stairs using the stair case */
+"goUpstairsStairCase" = "階段を使って上の階に行きます.. ";
+
+/* Button to initialize orientation */
+"initOrientationButton" = "方角の調整";
+
+/* Instruction to keep straight */
+"keepStraight" = "直進します.. ";
+
+/* Indicator text shown while a map is loading */
+"loadingMap" = "地図を読込中...";
+
+/* Format string for map downloading progress indicator */
+"mapProgressFormat" = "%.0f%% 完了";
+
+/* Spoken when no information is available */
+"noInformation" = "情報がありません";
+
+/* HTML Label for previous instruction button in view */
+"previousInstructionButton" = "前回の
+指示";
+
+/* Indication text shown while a map is being processed */
+"processingMap" = "地図を処理中...";
+
+/* Instruction to turn slightly left */
+"slightLeft" = "少し左です.. ";
+
+/* Instruction to turn slightly right */
+"slightRight" = "少し右です.. ";
+
+/* Button to start navigation */
+"startNavigationButton" = "ナビ開始";
+
+/* HTML Label for stop navigation button in view */
+"stopNavigationButton" = "ナビ
+終了";
+
+/* HTML Label for surrounding information button in view */
+"surroundingInformationButton" = "周辺情報";
+
+/* Command telling the user take the elevator downstairs */
+"takeDownstairsElevator" = "エレベータに乗って下の階に行きます.. ";
+
+/* Format string for taking the elevator */
+"takeElevatorFormat" = ".. エレベータに乗って%@に行きます";
+
+/* Format string for taking the stairs */
+"takeStairsFormat" = ".. 階段で%@に行きます";
+
+/* Command telling the user take the elevator upstairs */
+"takeUpstairsElevator" = "エレベータに乗って上の階に行きます.. ";
+
+/* Label for the destination location picker */
+"toLabel" = "目的地:";
+
+/* Instruction to turn left */
+"turnLeft" = "左に曲がります.. ";
+
+/* Format string to turn left in degrees */
+"turnLeftDegreeFormat" = "左に%d度曲がります.. ";
+
+/* Instruction to turn right */
+"turnRight" = "右に曲がります.. ";
+
+/* Format string to turn right in degrees */
+"turnRightDegreeFormat" = "右に%d度曲がります.. ";
+
