@@ -21,7 +21,7 @@
  *******************************************************************************/
 
 #import "NavMapManager.h"
-#define NAVCOG_ROOT @"https://navcog.mybluemix.net/"
+#define NAVCOG_ROOT @"https://navcog.mybluemix.net"
 
 @interface NavMapManager ()
 
