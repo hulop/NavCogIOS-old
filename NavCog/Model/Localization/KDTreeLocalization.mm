@@ -117,8 +117,8 @@ using namespace std;
             _featMap.at<float>(i, j) = -100.0;
         }
         for (int j = 0; j < validBeaconNum; j++) {
-            int minorID, rssi, indx;
-            fscanf(fp, "65535,%d,%d,", &minorID, &rssi);
+            int majorID, minorID, rssi, indx;
+            fscanf(fp, "%d,%d,%d,", &majorID, &minorID, &rssi);
             indx = _beaconIndexMap[minorID];
             _featMap.at<float>(i, indx) = rssi;
         }
