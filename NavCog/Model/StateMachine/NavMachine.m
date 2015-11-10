@@ -308,7 +308,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
-    if (![fromNodeName isEqualToString:@"Current Location"]) {
+    if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
         _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
         [self initializeWithPathNodes:_pathNodes];
         _isStartFromCurrentLocation = false;

@@ -23,6 +23,9 @@ Instruction";
 /* Format string describes the floor you are currently on */
 "currentlyOnFormat" = ".. you are currently on %@";
 
+/* Current Location */
+"currentLocation" = "Current Location";
+
 /* Destination alert */
 "destination" = "That's your destination.. ";
 
@@ -42,7 +45,7 @@ Instruction";
 "feetFormat" = "%d feet";
 
 /* Use to express a distance in feet with a pause */
-"feetPauseFormat" = "feetPauseFormat";
+"feetPauseFormat" = "%d feet ..";
 
 /* format string describing the number of feet left to a named location */
 "feetToNameFormat" = "%d feet to %@..";

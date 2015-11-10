@@ -334,7 +334,7 @@
     if ([_allFromLocationName count] > 0 && [_allToLocationName count] > 0) {
         _fromNodeName = [_allFromLocationName objectAtIndex:0];
         _toNodeName = [_allToLocationName objectAtIndex:0];
-        [_allFromLocationName addObject:[NSString stringWithFormat:@"Current Location"]];
+        [_allFromLocationName addObject:NSLocalizedString(@"currentLocation", @"Current Location")];
     } else {
         _fromNodeName = nil;
         _toNodeName = nil;
