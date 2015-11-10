@@ -226,13 +226,22 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         state = state.nextState;
     }
 }
-                                                                
+
 - (NSString *)getFloorString:(int)floor {
-    TTTOrdinalNumberFormatter *ordinalNumberFormatter = [[TTTOrdinalNumberFormatter alloc] init];
-    [ordinalNumberFormatter setLocale:[NSLocale currentLocale]];
-    [ordinalNumberFormatter setGrammaticalGender:TTTOrdinalNumberFormatterMaleGender];
-    NSNumber *number = [NSNumber numberWithInteger:floor];
-    return [NSString stringWithFormat:NSLocalizedString(@"floorFormat", @"Format string for a floor that takes an ordinal number"), [ordinalNumberFormatter stringFromNumber:number]];
+    NSString *ordinalNumber;
+
+    // TODO(cgleason): find way to remove special case for floor numbering in Japanese
+    NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
+    if([@"ja" compare:language] == NSOrderedSame) {
+        ordinalNumber = [NSString stringWithFormat:@"%d", floor];
+    } else {
+        TTTOrdinalNumberFormatter*ordinalNumberFormatter = [[TTTOrdinalNumberFormatter alloc] init];
+        [ordinalNumberFormatter setLocale:[NSLocale currentLocale]];
+        [ordinalNumberFormatter setGrammaticalGender:TTTOrdinalNumberFormatterMaleGender];
+        NSNumber *number = [NSNumber numberWithInteger:floor];
+        ordinalNumber = [ordinalNumberFormatter stringFromNumber:number];
+    }
+    return [NSString stringWithFormat:NSLocalizedString(@"floorFormat", @"Format string for a floor that takes an ordinal number"), ordinalNumber];
 }
 
 - (NSString *)getTurnStringFromOri:(float)curOri toOri:(float)nextOri {
