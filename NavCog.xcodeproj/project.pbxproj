@@ -11,33 +11,33 @@
 		2365BC791BE1802D007F14C3 /* NavCogChooseMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2365BC7B1BE1802D007F14C3 /* NavCogChooseMapViewController.xib */; };
 		2365BC7C1BE18079007F14C3 /* NavCogDataSamplingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2365BC7E1BE18079007F14C3 /* NavCogDataSamplingViewController.xib */; };
 		2365BC7F1BE1808C007F14C3 /* NavCogHelpPageViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2365BC811BE1808C007F14C3 /* NavCogHelpPageViewController.xib */; };
+		23B433E91BF17CC700EAD413 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = 23B433E81BF17CC700EAD413 /* LaunchScreen.xib */; };
 		23E77D4F1BE1ADB600625020 /* Localizable.strings in Resources */ = {isa = PBXBuildFile; fileRef = 23E77D511BE1ADB600625020 /* Localizable.strings */; };
-		7E28AF5D1BC38A6B00F122D0 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7E28AF5C1BC38A6B00F122D0 /* Settings.bundle */; settings = {ASSET_TAGS = (); }; };
-		A02EFF811BBC41740026DC98 /* click.wav in Resources */ = {isa = PBXBuildFile; fileRef = A02EFF7C1BBC41740026DC98 /* click.wav */; settings = {ASSET_TAGS = (); }; };
-		A06736781BC575360008B818 /* NavCogMapView in Resources */ = {isa = PBXBuildFile; fileRef = A06736771BC575360008B818 /* NavCogMapView */; settings = {ASSET_TAGS = (); }; };
-		A067367B1BC576130008B818 /* NavNotificationSpeaker.m in Sources */ = {isa = PBXBuildFile; fileRef = A067367A1BC576130008B818 /* NavNotificationSpeaker.m */; settings = {ASSET_TAGS = (); }; };
-		A067367E1BC5763A0008B818 /* NavSoundEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = A067367D1BC5763A0008B818 /* NavSoundEffects.m */; settings = {ASSET_TAGS = (); }; };
-		A06736831BC5764E0008B818 /* NavMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736811BC5764E0008B818 /* NavMachine.m */; settings = {ASSET_TAGS = (); }; };
-		A06736841BC5764E0008B818 /* NavState.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736821BC5764E0008B818 /* NavState.m */; settings = {ASSET_TAGS = (); }; };
-		A06736871BC576820008B818 /* KDTreeLocalization.mm in Sources */ = {isa = PBXBuildFile; fileRef = A06736861BC576820008B818 /* KDTreeLocalization.mm */; settings = {ASSET_TAGS = (); }; };
-		A06736961BC576960008B818 /* NavEdge.m in Sources */ = {isa = PBXBuildFile; fileRef = A067368F1BC576960008B818 /* NavEdge.m */; settings = {ASSET_TAGS = (); }; };
-		A06736971BC576960008B818 /* NavLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736901BC576960008B818 /* NavLayer.m */; settings = {ASSET_TAGS = (); }; };
-		A06736981BC576960008B818 /* NavMapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736911BC576960008B818 /* NavMapManager.m */; settings = {ASSET_TAGS = (); }; };
-		A06736991BC576960008B818 /* NavMinHeap.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736921BC576960008B818 /* NavMinHeap.m */; settings = {ASSET_TAGS = (); }; };
-		A067369A1BC576960008B818 /* NavNeighbor.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736931BC576960008B818 /* NavNeighbor.m */; settings = {ASSET_TAGS = (); }; };
-		A067369B1BC576960008B818 /* NavNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736941BC576960008B818 /* NavNode.m */; settings = {ASSET_TAGS = (); }; };
-		A067369C1BC576960008B818 /* TopoMap.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736951BC576960008B818 /* TopoMap.m */; settings = {ASSET_TAGS = (); }; };
-		A067369F1BC576B80008B818 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A067369E1BC576B80008B818 /* AppDelegate.m */; settings = {ASSET_TAGS = (); }; };
-		A06736B11BC576CF0008B818 /* NavDownloadingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A06736A81BC576CF0008B818 /* NavDownloadingViewController.xib */; settings = {ASSET_TAGS = (); }; };
-		A06736B21BC576CF0008B818 /* NavCogChooseMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736A91BC576CF0008B818 /* NavCogChooseMapViewController.m */; settings = {ASSET_TAGS = (); }; };
-		A06736B31BC576CF0008B818 /* NavCogDataSamplingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AA1BC576CF0008B818 /* NavCogDataSamplingViewController.m */; settings = {ASSET_TAGS = (); }; };
-		A06736B41BC576CF0008B818 /* NavCogFuncViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AB1BC576CF0008B818 /* NavCogFuncViewController.m */; settings = {ASSET_TAGS = (); }; };
-		A06736B51BC576CF0008B818 /* NavCogMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AC1BC576CF0008B818 /* NavCogMainViewController.m */; settings = {ASSET_TAGS = (); }; };
-		A06736B61BC576CF0008B818 /* NavDownloadingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AD1BC576CF0008B818 /* NavDownloadingViewController.m */; settings = {ASSET_TAGS = (); }; };
-		A06736B81BC577050008B818 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A06736B71BC577050008B818 /* Images.xcassets */; settings = {ASSET_TAGS = (); }; };
-		A06736BB1BC577240008B818 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = A06736B91BC577240008B818 /* LaunchScreen.xib */; settings = {ASSET_TAGS = (); }; };
-		A06736BE1BC577340008B818 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736BC1BC577340008B818 /* main.m */; settings = {ASSET_TAGS = (); }; };
-		A083F7751BC5B2BE001A1A1B /* NavCogHelpPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */; settings = {ASSET_TAGS = (); }; };
+		7E28AF5D1BC38A6B00F122D0 /* Settings.bundle in Resources */ = {isa = PBXBuildFile; fileRef = 7E28AF5C1BC38A6B00F122D0 /* Settings.bundle */; };
+		A02EFF811BBC41740026DC98 /* click.wav in Resources */ = {isa = PBXBuildFile; fileRef = A02EFF7C1BBC41740026DC98 /* click.wav */; };
+		A06736781BC575360008B818 /* NavCogMapView in Resources */ = {isa = PBXBuildFile; fileRef = A06736771BC575360008B818 /* NavCogMapView */; };
+		A067367B1BC576130008B818 /* NavNotificationSpeaker.m in Sources */ = {isa = PBXBuildFile; fileRef = A067367A1BC576130008B818 /* NavNotificationSpeaker.m */; };
+		A067367E1BC5763A0008B818 /* NavSoundEffects.m in Sources */ = {isa = PBXBuildFile; fileRef = A067367D1BC5763A0008B818 /* NavSoundEffects.m */; };
+		A06736831BC5764E0008B818 /* NavMachine.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736811BC5764E0008B818 /* NavMachine.m */; };
+		A06736841BC5764E0008B818 /* NavState.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736821BC5764E0008B818 /* NavState.m */; };
+		A06736871BC576820008B818 /* KDTreeLocalization.mm in Sources */ = {isa = PBXBuildFile; fileRef = A06736861BC576820008B818 /* KDTreeLocalization.mm */; };
+		A06736961BC576960008B818 /* NavEdge.m in Sources */ = {isa = PBXBuildFile; fileRef = A067368F1BC576960008B818 /* NavEdge.m */; };
+		A06736971BC576960008B818 /* NavLayer.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736901BC576960008B818 /* NavLayer.m */; };
+		A06736981BC576960008B818 /* NavMapManager.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736911BC576960008B818 /* NavMapManager.m */; };
+		A06736991BC576960008B818 /* NavMinHeap.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736921BC576960008B818 /* NavMinHeap.m */; };
+		A067369A1BC576960008B818 /* NavNeighbor.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736931BC576960008B818 /* NavNeighbor.m */; };
+		A067369B1BC576960008B818 /* NavNode.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736941BC576960008B818 /* NavNode.m */; };
+		A067369C1BC576960008B818 /* TopoMap.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736951BC576960008B818 /* TopoMap.m */; };
+		A067369F1BC576B80008B818 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = A067369E1BC576B80008B818 /* AppDelegate.m */; };
+		A06736B11BC576CF0008B818 /* NavDownloadingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = A06736A81BC576CF0008B818 /* NavDownloadingViewController.xib */; };
+		A06736B21BC576CF0008B818 /* NavCogChooseMapViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736A91BC576CF0008B818 /* NavCogChooseMapViewController.m */; };
+		A06736B31BC576CF0008B818 /* NavCogDataSamplingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AA1BC576CF0008B818 /* NavCogDataSamplingViewController.m */; };
+		A06736B41BC576CF0008B818 /* NavCogFuncViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AB1BC576CF0008B818 /* NavCogFuncViewController.m */; };
+		A06736B51BC576CF0008B818 /* NavCogMainViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AC1BC576CF0008B818 /* NavCogMainViewController.m */; };
+		A06736B61BC576CF0008B818 /* NavDownloadingViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736AD1BC576CF0008B818 /* NavDownloadingViewController.m */; };
+		A06736B81BC577050008B818 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A06736B71BC577050008B818 /* Images.xcassets */; };
+		A06736BE1BC577340008B818 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736BC1BC577340008B818 /* main.m */; };
+		A083F7751BC5B2BE001A1A1B /* NavCogHelpPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */; };
 		B9594B048A7EF7BE0E0DD7F8 /* libPods-NavCog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8FBC95C14E3EBB386797B7 /* libPods-NavCog.a */; };
 /* End PBXBuildFile section */
 
@@ -52,6 +52,7 @@
 		2365BC7D1BE18079007F14C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/NavCogDataSamplingViewController.xib; sourceTree = "<group>"; };
 		2365BC801BE1808C007F14C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = Base.lproj/NavCogHelpPageViewController.xib; sourceTree = "<group>"; };
 		2365BC821BE180B5007F14C3 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; name = Base; path = Base.lproj/Info.plist; sourceTree = "<group>"; };
+		23B433E81BF17CC700EAD413 /* LaunchScreen.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; path = LaunchScreen.xib; sourceTree = SOURCE_ROOT; };
 		23E77D431BE1A89E00625020 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/NavCogDataSamplingViewController.strings; sourceTree = "<group>"; };
 		23E77D441BE1A89E00625020 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/NavCogChooseMapViewController.strings; sourceTree = "<group>"; };
 		23E77D451BE1A89E00625020 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/NavCogMainViewController.strings; sourceTree = "<group>"; };
@@ -99,7 +100,6 @@
 		A06736AC1BC576CF0008B818 /* NavCogMainViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogMainViewController.m; path = NavCog/ViewControllers/NavCogMainViewController.m; sourceTree = SOURCE_ROOT; };
 		A06736AD1BC576CF0008B818 /* NavDownloadingViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavDownloadingViewController.m; path = NavCog/ViewControllers/NavDownloadingViewController.m; sourceTree = SOURCE_ROOT; };
 		A06736B71BC577050008B818 /* Images.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; name = Images.xcassets; path = NavCog/Images.xcassets; sourceTree = SOURCE_ROOT; };
-		A06736BA1BC577240008B818 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.xib; name = Base; path = NavCog/Base.lproj/LaunchScreen.xib; sourceTree = SOURCE_ROOT; };
 		A06736BC1BC577340008B818 /* main.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = main.m; path = NavCog/main.m; sourceTree = SOURCE_ROOT; };
 		A083F7721BC5B2BE001A1A1B /* NavCogHelpPageViewController.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavCogHelpPageViewController.h; path = NavCog/ViewControllers/NavCogHelpPageViewController.h; sourceTree = SOURCE_ROOT; };
 		A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogHelpPageViewController.m; path = NavCog/ViewControllers/NavCogHelpPageViewController.m; sourceTree = SOURCE_ROOT; };
@@ -211,7 +211,7 @@
 				A067369E1BC576B80008B818 /* AppDelegate.m */,
 				A06736BC1BC577340008B818 /* main.m */,
 				2365BC831BE180B5007F14C3 /* Info.plist */,
-				A06736B91BC577240008B818 /* LaunchScreen.xib */,
+				23B433E81BF17CC700EAD413 /* LaunchScreen.xib */,
 				A06736B71BC577050008B818 /* Images.xcassets */,
 			);
 			name = "Supporting Files";
@@ -347,8 +347,8 @@
 				2365BC7F1BE1808C007F14C3 /* NavCogHelpPageViewController.xib in Resources */,
 				2365BC741BE17ECC007F14C3 /* NavCogMainViewController.xib in Resources */,
 				2365BC7C1BE18079007F14C3 /* NavCogDataSamplingViewController.xib in Resources */,
-				A06736BB1BC577240008B818 /* LaunchScreen.xib in Resources */,
 				A06736781BC575360008B818 /* NavCogMapView in Resources */,
+				23B433E91BF17CC700EAD413 /* LaunchScreen.xib in Resources */,
 				A06736B11BC576CF0008B818 /* NavDownloadingViewController.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -494,14 +494,6 @@
 				233BF0CE1BE3EC5F00D4BF31 /* ja */,
 			);
 			name = Localizable.strings;
-			sourceTree = "<group>";
-		};
-		A06736B91BC577240008B818 /* LaunchScreen.xib */ = {
-			isa = PBXVariantGroup;
-			children = (
-				A06736BA1BC577240008B818 /* Base */,
-			);
-			name = LaunchScreen.xib;
 			sourceTree = "<group>";
 		};
 /* End PBXVariantGroup section */
