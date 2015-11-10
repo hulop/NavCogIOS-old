@@ -23,6 +23,9 @@
 /* Format string describes the floor you are currently on */
 "currentlyOnFormat" = "。。 現在は%@にいます";
 
+/* Current Location */
+"currentLocation" = "現在地";
+
 /* Destination alert */
 "destination" = "そこが目的地です。。 ";
 
