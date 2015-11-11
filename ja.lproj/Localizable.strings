@@ -44,6 +44,9 @@
 /* Use to express a distance in feet */
 "feetFormat" = "%d フィート";
 
+/* Use to express a distance in feet with a pause */
+"feetPauseFormat" = "%d フィート。。";
+
 /* format string describing the number of feet left to a named location */
 "feetToNameFormat" = "%2$@まで%1$dフィート。。";
 
@@ -94,7 +97,7 @@
 指示";
 
 /* Indication text shown while a map is being processed */
-"processingMap" = "地図を処理中。。.";
+"processingMap" = "地図を処理中...";
 
 /* Instruction to turn slightly left */
 "slightLeft" = "少し左。。 ";
