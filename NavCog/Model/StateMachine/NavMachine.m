@@ -22,6 +22,7 @@
 
 #import "NavMachine.h"
 #import "NavNotificationSpeaker.h"
+#import "NavLog.h"
 
 enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 
@@ -292,11 +293,16 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         _curOri = - dm.attitude.yaw / M_PI * 180;
+        [NavLog logMotion:dm withFrame:_motionManager.attitudeReferenceFrame];
+        [self logState];
 
         if (_navState == NAV_STATE_TURNING) {
-            if (ABS(_curOri - _currentState.ori) <= 10) {
+//            if (ABS(_curOri - _currentState.ori) <= 10) {
+            float diff = ABS(_curOri - _currentState.ori);
+            if (diff <= 10 || diff >= 350) {
                 [NavSoundEffects playSuccessSound];
                 _navState = NAV_STATE_WALKING;
+                [self logState];
             }
         }
     }];
@@ -307,6 +313,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 }
 
 - (void)startNavigationOnTopoMap:(TopoMap *)topoMap fromNodeWithName:(NSString *)fromNodeName toNodeWithName:(NSString *)toNodeName usingBeaconsWithUUID:(NSString *)uuidstr andMajorID:(CLBeaconMajorValue)majorID withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled {
+    [NavLog startLog];
+    [NavLog logArray:@[fromNodeName,toNodeName] withType:@"Route"];
     // set speech rate of notification speaker
     [NavNotificationSpeaker setFastSpeechOnAndOff:fastSpeechEnabled];
     
@@ -398,6 +406,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         NSLog(@"x : %f", curLocation.xInEdge);
         NSLog(@"y : %f", curLocation.yInEdge);
     } else {
+        [NavLog logBeacons:beacons];
+        [self logState];
         if (_navState == NAV_STATE_WALKING) {
             if ([beacons count] > 0) {
                 if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
@@ -408,7 +418,9 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                         [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
                         [_topoMap cleanTmpNodeAndEdges];
                     } else if (_currentState.type == STATE_TYPE_WALKING) {
-                        if (ABS(_curOri - _currentState.ori) > 15) {
+//                        if (ABS(_curOri - _currentState.ori) > 15) {
+                        float diff = ABS(_curOri - _currentState.ori);
+                        if (diff > 15 && diff < 345) {
                             _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
                             [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
                             _navState = NAV_STATE_TURNING;
@@ -418,6 +430,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                     } else if (_currentState.type == STATE_TYPE_TRANSITION) {
                         _navState = NAV_STATE_WALKING;
                     }
+                    [self logState];
                 }
             }
         }
@@ -432,6 +445,39 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     if (_currentState != nil) {
         [_currentState stopAudios];
     }
+}
+
+- (void)logState {
+    NSMutableArray *data = [[NSMutableArray alloc] init];
+    [data addObject:[NSNumber numberWithFloat:_curOri]];
+    if(_currentState != nil) {
+        [data addObject:[NSNumber numberWithFloat:_currentState.ori]];
+        [data addObject:[NSNumber numberWithFloat:_currentState.sx]];
+        [data addObject:[NSNumber numberWithFloat:_currentState.sy]];
+        [data addObject:[NSNumber numberWithFloat:_currentState.tx]];
+        [data addObject:[NSNumber numberWithFloat:_currentState.ty]];
+        switch (_currentState.type) {
+            case STATE_TYPE_WALKING:
+                [data addObject:@"STATE_TYPE_WALKING"];
+                break;
+            case STATE_TYPE_TRANSITION:
+                [data addObject:@"STATE_TYPE_TRANSITION"];
+                break;
+        }
+    }
+    NSString *type = @"Navigation";
+    switch (_navState) {
+        case NAV_STATE_WALKING:
+            type = @"Walking";
+            break;
+        case NAV_STATE_TURNING:
+            type = @"Turning";;
+            break;
+        case NAV_STATE_IDLE:
+            type = @"Idle";
+            break;
+    }
+    [NavLog logArray:data withType:type];
 }
 
 @end

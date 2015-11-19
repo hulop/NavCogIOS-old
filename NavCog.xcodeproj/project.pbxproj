@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		161D69711BFC68B0004A2E73 /* NavLog.m in Sources */ = {isa = PBXBuildFile; fileRef = 161D69701BFC68B0004A2E73 /* NavLog.m */; };
 		2365BC741BE17ECC007F14C3 /* NavCogMainViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2365BC761BE17ECC007F14C3 /* NavCogMainViewController.xib */; };
 		2365BC791BE1802D007F14C3 /* NavCogChooseMapViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2365BC7B1BE1802D007F14C3 /* NavCogChooseMapViewController.xib */; };
 		2365BC7C1BE18079007F14C3 /* NavCogDataSamplingViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = 2365BC7E1BE18079007F14C3 /* NavCogDataSamplingViewController.xib */; };
@@ -42,6 +43,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		161D696F1BFC68B0004A2E73 /* NavLog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = NavLog.h; path = NavCog/NavLogging/NavLog.h; sourceTree = SOURCE_ROOT; };
+		161D69701BFC68B0004A2E73 /* NavLog.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavLog.m; path = NavCog/NavLogging/NavLog.m; sourceTree = SOURCE_ROOT; };
 		233BF0C91BE3EC5E00D4BF31 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/NavCogHelpPageViewController.strings; sourceTree = "<group>"; };
 		233BF0CA1BE3EC5E00D4BF31 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/NavCogMainViewController.strings; sourceTree = "<group>"; };
 		233BF0CB1BE3EC5E00D4BF31 /* ja */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = ja; path = ja.lproj/NavCogChooseMapViewController.strings; sourceTree = "<group>"; };
@@ -128,6 +131,15 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		161D696C1BFC680D004A2E73 /* NavLogging */ = {
+			isa = PBXGroup;
+			children = (
+				161D696F1BFC68B0004A2E73 /* NavLog.h */,
+				161D69701BFC68B0004A2E73 /* NavLog.m */,
+			);
+			name = NavLogging;
+			sourceTree = "<group>";
+		};
 		5277D92867DE724429303702 /* Pods */ = {
 			isa = PBXGroup;
 			children = (
@@ -193,6 +205,7 @@
 		A0E9843E1B73A6DC00DB2040 /* NavCog */ = {
 			isa = PBXGroup;
 			children = (
+				161D696C1BFC680D004A2E73 /* NavLogging */,
 				A06736771BC575360008B818 /* NavCogMapView */,
 				A0147B111BBF0222004BF457 /* NavNotificationSpeaker */,
 				A0ED88E41B87ABEC00E5769C /* NavSoundEffects */,
@@ -418,6 +431,7 @@
 				A06736981BC576960008B818 /* NavMapManager.m in Sources */,
 				A083F7751BC5B2BE001A1A1B /* NavCogHelpPageViewController.m in Sources */,
 				A06736BE1BC577340008B818 /* main.m in Sources */,
+				161D69711BFC68B0004A2E73 /* NavLog.m in Sources */,
 				A06736971BC576960008B818 /* NavLayer.m in Sources */,
 				A067369C1BC576960008B818 /* TopoMap.m in Sources */,
 				A06736B51BC576CF0008B818 /* NavCogMainViewController.m in Sources */,
@@ -588,6 +602,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SOURCE_ROOT)",
@@ -598,6 +613,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "CMU.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = NavCog;
+				PROVISIONING_PROFILE = "";
 			};
 			name = Debug;
 		};
@@ -607,6 +623,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
+				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
 					"$(SOURCE_ROOT)",
@@ -617,6 +634,7 @@
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = "CMU.$(PRODUCT_NAME:rfc1034identifier)";
 				PRODUCT_NAME = NavCog;
+				PROVISIONING_PROFILE = "";
 			};
 			name = Release;
 		};

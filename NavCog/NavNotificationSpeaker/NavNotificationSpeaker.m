@@ -121,6 +121,7 @@
     [avUtterance setVolume:1.0];
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
+    NSLog(@"SpeakImmediately : %@", str);
 }
 
 - (void)selfSpeak:(NSString *)str {
@@ -130,6 +131,7 @@
     [avUtterance setVolume:1.0];
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
+    NSLog(@"Speak : %@", str);
 }
 
 - (void)selfSpeakImmediatelyAndSlowly:(NSString *)str {
@@ -142,6 +144,7 @@
     [avUtterance setVolume:1.0];
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
+    NSLog(@"SpeakImmediatelyAndSlowly : %@", str);
 }
 
 - (void)selfSpeakSlowly:(NSString *)str {
@@ -151,6 +154,7 @@
     [avUtterance setVolume:1.0];
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
+    NSLog(@"SpeakSlowly : %@", str);
 }
 
 @end

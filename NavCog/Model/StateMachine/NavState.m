@@ -26,6 +26,7 @@
 #import "NavCogFuncViewController.h"
 #import "NavCogMainViewController.h"
 #import "NavNotificationSpeaker.h"
+#import "NavLog.h"
 
 @interface NavState ()
 
@@ -111,6 +112,15 @@
         pos = [_targetEdge getCurrentPositionInEdgeUsingBeacons:beacons];
     }
     
+    NSMutableArray *data = [[NSMutableArray alloc] init];
+    [data addObject:[NSNumber numberWithFloat:pos.x]];
+    [data addObject:[NSNumber numberWithFloat:pos.y]];
+    [data addObject:[NSNumber numberWithFloat:pos.knndist]];
+    NavEdge *edge = _type == STATE_TYPE_WALKING ? _walkingEdge : _targetEdge;
+    [data addObject:edge.edgeID];
+    [data addObject:[NSNumber numberWithFloat:edge.len]];
+    [data addObject:[NSNumber numberWithFloat:ABS(pos.y - _ty)]];
+    [NavLog logArray:data withType:@"CurrentPosition"];
     
     
     //float dist = sqrtf((pos.x - _tx) * (pos.x - _tx) + (pos.y - _ty) * (pos.y - _ty)); // use this if you use 2d

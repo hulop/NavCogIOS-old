@@ -22,6 +22,7 @@
 
 #import "NavMinHeap.h"
 #import "TopoMap.h"
+#import "NavLog.h"
 #import <CoreFoundation/CoreFoundation.h>
 
 @implementation NavLocation
@@ -230,6 +231,7 @@
 }
 
 - (void)cleanTmpNodeAndEdges {
+    [NavLog stopLog];
     [_tmpNodeParentLayer.nodes removeObjectForKey:@"tmp_node"];
     [_tmpNodeParentLayer.edges removeObjectForKey:@"tmp_edge_1"];
     [_tmpNodeParentLayer.edges removeObjectForKey:@"tmp_edge_2"];
