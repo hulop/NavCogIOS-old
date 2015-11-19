@@ -23,8 +23,10 @@
 #import <Foundation/Foundation.h>
 #import <CoreLocation/CoreLocation.h>
 #import <CoreMotion/CoreMotion.h>
+#import <UIKit/UIKit.h>
 #import "NavState.h"
 #import "TopoMap.h"
+#import "TTTOrdinalNumberFormatter.h"
 
 @protocol NavMachineDelegate;
 

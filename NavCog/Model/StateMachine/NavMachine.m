@@ -96,14 +96,12 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                 case NODE_TYPE_DOOR_TRANSIT:
                     break;
                 case NODE_TYPE_STAIR_TRANSIT:
-                    [startInfo appendString:@".. Take stairs to "];
-                    [startInfo appendString:[self getFloorString:node2.floor]];
-                    [startInfo appendFormat:@".. you are currently on %@", [self getFloorString:node1.floor]];
+                    [startInfo appendFormat:NSLocalizedString(@"takeStairsFormat", @"Format string for taking the stairs"), [self getFloorString:node2.floor]];
+                    [startInfo appendFormat:NSLocalizedString(@"currentlyOnFormat", @"Format string describes the floor you are currently on"), [self getFloorString:node1.floor]];
                     break;
                 case NODE_TYPE_ELEVATOR_TRANSIT:
-                    [startInfo appendString:@".. Take the elevator to "];
-                    [startInfo appendString:[self getFloorString:node2.floor]];
-                    [startInfo appendFormat:@".. you are currently on %@", [self getFloorString:node1.floor]];
+                    [startInfo appendFormat:NSLocalizedString(@"takeElevatorFormat", @"Format string for taking the elevator"), [self getFloorString:node2.floor]];
+                    [startInfo appendFormat:NSLocalizedString(@"currentlyOnFormat", @"Format string describes the floor you are currently on"), [self getFloorString:node1.floor]];
                     break;
                 default:
                     break;
@@ -116,9 +114,9 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             newState.isTricky = [node2 isTrickyComingFromEdgeWithID:node2.preEdgeInPath.edgeID];
             newState.trickyInfo = newState.isTricky ? [node2 getTrickyInfoComingFromEdgeWithID:node2.preEdgeInPath.edgeID] : nil;
             if (![node2.name isEqualToString:@""]) {
-                [startInfo appendFormat:@"%d feet to %@..", node2.preEdgeInPath.len, node2.name];
+                [startInfo appendFormat:NSLocalizedString(@"feetToNameFormat", @"format string describing the number of feet left to a named location"), node2.preEdgeInPath.len, node2.name];
             } else {
-                [startInfo appendFormat:@"%d feet..", node2.preEdgeInPath.len];
+                [startInfo appendFormat:NSLocalizedString(@"feetPauseFormat", @"Use to express a distance in feet with a pause"), node2.preEdgeInPath.len];
             }
             
             float curOri = [node2.preEdgeInPath getOriFromNode:node1];
@@ -129,7 +127,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             newState.ty = [node2 getYInEdgeWithID:node2.preEdgeInPath.edgeID];
             if (i >= 2) {
                 NavNode *node3 = [pathNodes objectAtIndex:i - 2];
-                [startInfo appendString:@"and "];
+                [startInfo appendString:NSLocalizedString(@"and", "Simple and used to join two nodes.")];
                 if ([node2 transitEnabledToNode:node3]) { // next state is a transition
                     switch (node2.type) {
                         case NODE_TYPE_DOOR_TRANSIT:
@@ -139,20 +137,20 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                             break;
                         case NODE_TYPE_STAIR_TRANSIT:
                             if (node2.floor < node3.floor) {
-                                newState.nextActionInfo = @"Go upstairs..";
-                                [startInfo appendString:@"Go upstairs using the stair case.. "];
+                                newState.nextActionInfo = NSLocalizedString(@"goUpstairs", @"Short command telling the user to go upstairs");
+                                [startInfo appendString:NSLocalizedString(@"goUpstairsStairCase", @"Command telling the user to go up the stairs using the stair case")];
                             } else {
-                                newState.nextActionInfo = @"Go downstairs..";
-                                [startInfo appendString:@"Go downstairs using the stair case.. "];
+                                newState.nextActionInfo = NSLocalizedString(@"goDownstairs", @"Short command telling the user to go downstairs");
+                                [startInfo appendString:NSLocalizedString(@"goDownstairsStairCase", @"Command telling the user to go down the stairs using the stair case")];
                             }
                             break;
                         case NODE_TYPE_ELEVATOR_TRANSIT:
                             if (node2.floor < node3.floor) {
-                                newState.nextActionInfo = @"Go upstairs by elevator";
-                                [startInfo appendString:@"Take the elevator to upstairs.. "];
+                                newState.nextActionInfo =NSLocalizedString(@"goUpstairsElevator", @"Command telling the user to go upstairs using the elevator");
+                                [startInfo appendString:NSLocalizedString(@"takeUpstairsElevator", @"Command telling the user take the elevator upstairs")];
                             } else {
-                                newState.nextActionInfo = @"Go downstairs by elevator";
-                                [startInfo appendString:@"Take the elevator to downstairs.. "];
+                                newState.nextActionInfo = NSLocalizedString(@"goDownstairsElevator", @"Command telling the user to go downstairs using the elevator");
+                                [startInfo appendString:NSLocalizedString(@"takeDownstairsElevator", @"Command telling the user take the elevator downstairs")];
                             }
                             break;
                         default:
@@ -166,19 +164,19 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                     }
                     newState.nextActionInfo = [self getTurnStringFromOri:curOri toOri:nextOri];
                     if (curOri != nextOri) {
-                        newState.approachingInfo = [NSString stringWithFormat:@"Approaching to %@", [self getTurnStringFromOri:curOri toOri:nextOri]];
+                        newState.approachingInfo = [NSString stringWithFormat:NSLocalizedString(@"approachingToTurnFormat", @"Format string to tell the user they are approaching a turn"), [self getTurnStringFromOri:curOri toOri:nextOri]];
                     }
                 }
             } else {
-                newState.nextActionInfo = [NSString stringWithFormat:@"%@.. That's your destination.. ", [node2 getInfoComingFromEdgeWithID:node2.preEdgeInPath.edgeID]];
+                newState.nextActionInfo = [NSString stringWithFormat:NSLocalizedString(@"destinationFormat", @"Format string for destination alert"), [node2 getInfoComingFromEdgeWithID:node2.preEdgeInPath.edgeID]];
                 newState.arrivedInfo = [node2 getDestInfoComingFromEdgeWithID:node2.preEdgeInPath.edgeID];
                 [startInfo appendString:[node2 getInfoComingFromEdgeWithID:node2.preEdgeInPath.edgeID]];
-                [startInfo appendString:@"That's your destination.. "];
+                [startInfo appendString:NSLocalizedString(@"destination", @"Destination alert")];
             }
         }
         
         if (![node1.buildingName isEqualToString:node2.buildingName]) {
-            [startInfo appendString:[NSString stringWithFormat:@".. Entering %@..", node2.buildingName]];
+            [startInfo appendString:[NSString stringWithFormat:NSLocalizedString(@"enteringFormat", @"Spoken when entering a location"), node2.buildingName]];
         }
         
         newState.stateStartInfo = startInfo;
@@ -230,34 +228,43 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 }
 
 - (NSString *)getFloorString:(int)floor {
-    if (floor % 10 == 1) {
-        return [NSString stringWithFormat:@"the %dst floor.. ", floor];
-    } else if (floor % 10 == 2) {
-        return [NSString stringWithFormat:@"the %dnd floor.. ", floor];
-    } else if (floor % 10 == 3) {
-        return [NSString stringWithFormat:@"the %drd floor.. ", floor];
+    NSString *ordinalNumber;
+
+    // TODO(cgleason): find way to remove special case for floor numbering in Japanese
+    NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
+    if([@"ja" compare:language] == NSOrderedSame) {
+        ordinalNumber = [NSString stringWithFormat:@"%d", floor];
     } else {
-        return [NSString stringWithFormat:@"the %dth floor.. ", floor];
+        TTTOrdinalNumberFormatter*ordinalNumberFormatter = [[TTTOrdinalNumberFormatter alloc] init];
+        [ordinalNumberFormatter setLocale:[NSLocale currentLocale]];
+        [ordinalNumberFormatter setGrammaticalGender:TTTOrdinalNumberFormatterMaleGender];
+        NSNumber *number = [NSNumber numberWithInteger:floor];
+        ordinalNumber = [ordinalNumberFormatter stringFromNumber:number];
     }
+    return [NSString stringWithFormat:NSLocalizedString(@"floorFormat", @"Format string for a floor that takes an ordinal number"), ordinalNumber];
 }
 
 - (NSString *)getTurnStringFromOri:(float)curOri toOri:(float)nextOri {
     if (curOri == nextOri || ABS(curOri - nextOri) == 180) {
-        return @"keep straight.. ";
+        return NSLocalizedString(@"keepStraight", @"Instruction to keep straight");
     }
     
     float diff = ABS(curOri - nextOri);
+    NSString *slightLeft = NSLocalizedString(@"slightLeft", @"Instruction to turn slightly left");
+    NSString *slightRight = NSLocalizedString(@"slightRight", @"Instruction to turn slightly right");
+    NSString *turnLeft = NSLocalizedString(@"turnLeft", @"Instruction to turn left");
+    NSString *turnRight = NSLocalizedString(@"turnRight", @"Instruction to turn right");
     if (diff < 180) {
         if (diff < 45) {
-            return nextOri < curOri ? @"slight left.. " : @"slight right.. ";
+            return nextOri < curOri ? slightLeft : slightRight;
         } else {
-            return nextOri < curOri ? @"turn left.. " : @"turn right.. ";
+            return nextOri < curOri ? turnLeft : turnRight;
         }
     } else {
         if (diff > 315) {
-            return nextOri < curOri ? @"slight right.. " : @"slight left.. ";
+            return nextOri < curOri ? slightRight : slightLeft;
         } else {
-            return nextOri < curOri ? @"turn right.. " : @"turn left.. ";
+            return nextOri < curOri ? turnRight : turnLeft;
         }
     }
     
@@ -266,14 +273,16 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 
 - (NSString *)getTurnStringWithDegreeFromOri:(float)curOri toOri:(float)nextOri {
     if (curOri == nextOri || ABS(curOri - nextOri) == 180) {
-        return @"keep straight.. ";
+        return NSLocalizedString(@"keepStraight", @"Instruction to keep straight");
     }
     
     int diff = ABS(curOri - nextOri);
+    NSString *leftFormat = NSLocalizedString(@"turnLeftDegreeFormat", @"Format string to turn left in degrees");
+    NSString *rightFormat = NSLocalizedString(@"turnRightDegreeFormat", @"Format string to turn right in degrees");
     if (diff < 180) {
-        return nextOri < curOri ? [NSString stringWithFormat:@"turn left for %d degree.. ", diff] : [NSString stringWithFormat:@"turn right for %d degree.. ", diff ];
+        return nextOri < curOri ? [NSString stringWithFormat:leftFormat, diff] : [NSString stringWithFormat:rightFormat, diff ];
     } else {
-        return nextOri < curOri ? [NSString stringWithFormat:@"turn right for %d degree.. ", diff ] : [NSString stringWithFormat:@"turn left for %d degree.. ", diff] ;
+        return nextOri < curOri ? [NSString stringWithFormat:rightFormat, diff ] : [NSString stringWithFormat:leftFormat, diff] ;
     }
     
     return @"";
@@ -308,7 +317,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
-    if (![fromNodeName isEqualToString:@"Current Location"]) {
+    if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
         _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
         [self initializeWithPathNodes:_pathNodes];
         _isStartFromCurrentLocation = false;
@@ -366,7 +375,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         [_beaconManager startRangingBeaconsInRegion:_beaconRegion];
     } else {
         [_delegate navigationFinished];
-        [NavNotificationSpeaker speakWithCustomizedSpeed:@"You Arrived!"];
+        [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];
         [_topoMap cleanTmpNodeAndEdges];
     }
 }
@@ -395,7 +404,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                     _currentState = _currentState.nextState;
                     if (_currentState == nil) {
                         [_delegate navigationFinished];
-                        [NavNotificationSpeaker speakWithCustomizedSpeed:@"You Arrived!"];
+                        [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];
                         [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
                         [_topoMap cleanTmpNodeAndEdges];
                     } else if (_currentState.type == STATE_TYPE_WALKING) {

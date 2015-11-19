@@ -81,7 +81,7 @@
     preButton.layer.borderColor = [UIColor blackColor].CGColor;
     preButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     preButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [preButton setTitle:@"Previous\nInstruction" forState:UIControlStateNormal];
+    [preButton setTitle:NSLocalizedString(@"previousInstructionButton", @"HTML Label for previous instruction button in view")forState:UIControlStateNormal];
     [preButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [preButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
     [self.view addSubview:preButton];
@@ -97,7 +97,7 @@
     accessButton.layer.borderColor = [UIColor blackColor].CGColor;
     accessButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     accessButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [accessButton setTitle:@"Accessbility\nInstruction" forState:UIControlStateNormal];
+    [accessButton setTitle:NSLocalizedString(@"accessibilityInstructionButton", @"HTML Label for accessibility instruction button in view") forState:UIControlStateNormal];
     [accessButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [accessButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
     [self.view addSubview:accessButton];
@@ -113,7 +113,7 @@
     surroundButton.layer.borderColor = [UIColor blackColor].CGColor;
     surroundButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     surroundButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [surroundButton setTitle:@"Surrounding\nInformation" forState:UIControlStateNormal];
+    [surroundButton setTitle:NSLocalizedString(@"surroundingInformationButton", @"HTML Label for surrounding information button in view") forState:UIControlStateNormal];
     [surroundButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [surroundButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
     [self.view addSubview:surroundButton];
@@ -129,7 +129,7 @@
     stopButton.layer.borderColor = [UIColor blackColor].CGColor;
     stopButton.titleLabel.lineBreakMode = NSLineBreakByWordWrapping;
     stopButton.titleLabel.textAlignment = NSTextAlignmentCenter;
-    [stopButton setTitle:@"Stop\nNavigation" forState:UIControlStateNormal];
+    [stopButton setTitle:NSLocalizedString(@"stopNavigationButton", @"HTML Label for stop navigation button in view") forState:UIControlStateNormal];
     [stopButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [stopButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
     [self.view addSubview:stopButton];
