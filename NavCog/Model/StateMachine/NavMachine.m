@@ -389,6 +389,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 }
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region {
+    [NavLog logBeacons:beacons];
     // if we start navigation from current location
     // and the navigation does not start yet
     if (_isStartFromCurrentLocation && !_isNavigationStarted) {
@@ -406,7 +407,6 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         NSLog(@"x : %f", curLocation.xInEdge);
         NSLog(@"y : %f", curLocation.yInEdge);
     } else {
-        [NavLog logBeacons:beacons];
         [self logState];
         if (_navState == NAV_STATE_WALKING) {
             if ([beacons count] > 0) {
