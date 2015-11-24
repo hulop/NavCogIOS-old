@@ -472,15 +472,24 @@
             [edge initLocalization];
             struct NavPoint pos = [edge getCurrentPositionInEdgeUsingBeacons:beacons];
             float dist = (pos.knndist - edge.minKnnDist) / (edge.maxKnnDist - edge.minKnnDist);
-            dist = dist < 0 ? 0 : dist;
-            dist = dist > 1 ? 1 : dist;
+            NSMutableArray *data = [[NSMutableArray alloc] init];
+            [data addObject:[NSNumber numberWithFloat:dist]];
+            [data addObject:layerID];
+            [data addObject:edgeID];
+            [data addObject:[NSNumber numberWithFloat:pos.x]];
+            [data addObject:[NSNumber numberWithFloat:pos.y]];
+            [data addObject:[NSNumber numberWithFloat:pos.knndist]];
+//            dist = dist < 0 ? 0 : dist;
+//            dist = dist > 1 ? 1 : dist;
             if (dist < minKnnDist) {
                 minKnnDist = dist;
                 location.layerID = layerID;
                 location.edgeID = edgeID;
                 location.xInEdge = pos.x;
                 location.yInEdge = pos.y;
+                [data addObject:@"OK"];
             }
+            [NavLog logArray:data withType:@"SearchingCurrentLocation"];
         }
     }
     if (location.edgeID == NULL) {

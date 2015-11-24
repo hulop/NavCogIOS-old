@@ -38,6 +38,7 @@
     _rootView = [[NavCogMainViewController alloc] init];
     [self.window setRootViewController:_rootView];
     [self.window makeKeyAndVisible];
+    NSSetUncaughtExceptionHandler(&uncaughtExceptionHandler);
     return YES;
 }
 
@@ -61,6 +62,13 @@
 
 - (void)applicationWillTerminate:(UIApplication *)application {
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
+}
+
+void uncaughtExceptionHandler(NSException *exception)
+{
+    NSLog(@"%@", exception.name);
+    NSLog(@"%@", exception.reason);
+    NSLog(@"%@", exception.callStackSymbols);
 }
 
 @end
