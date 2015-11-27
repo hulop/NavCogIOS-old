@@ -35,7 +35,7 @@
     // Do any additional setup after loading the view from its nib.
     self.view.frame = [UIScreen mainScreen].bounds;
     self.view.bounds = [UIScreen mainScreen].bounds;
-    NSURL *pageURL = [NSURL URLWithString:@"https://navcog.mybluemix.net/help/index.html"];
+    NSURL *pageURL = [NSURL URLWithString:NSLocalizedString(@"helpPageURL",@"URL of help page")];
     [_webView loadRequest:[[NSURLRequest alloc] initWithURL:pageURL]];
 }
 

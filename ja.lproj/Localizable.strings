@@ -154,3 +154,5 @@
 /* Format string to turn right in degrees */
 "turnRightDegreeFormat" = "右に%d度曲がる。。 ";
 
+/* URL of help page */
+"helpPageURL" = "https://navcog.mybluemix.net/help/ja/index.html";

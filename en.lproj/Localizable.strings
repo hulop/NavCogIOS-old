@@ -155,3 +155,5 @@ Information";
 /* Format string to turn right in degrees */
 "turnRightDegreeFormat" = "turn right for %d degrees.. ";
 
+/* URL of help page */
+"helpPageURL" = "https://navcog.mybluemix.net/help/index.html";
