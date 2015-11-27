@@ -129,12 +129,11 @@
 }
 
 - (void)mapListUpdated:(NSArray *)mapList withError:(NSError *)error {
-    if (error != nil) {
-        return;
-    }
     [_mapNameList removeAllObjects];
-    for (NSString *mapName in mapList) {
-        [_mapNameList addObject:mapName];
+    if (mapList) {
+        for (NSString *mapName in mapList) {
+            [_mapNameList addObject:mapName];
+        }
     }
     
     // need to update from main queue
