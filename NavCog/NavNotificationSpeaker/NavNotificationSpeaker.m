@@ -22,6 +22,8 @@
 
 #import "NavNotificationSpeaker.h"
 #import <AVFoundation/AVFoundation.h>
+@import UIKit;
+
 
 #define IS_IOS_9 ([[NSProcessInfo processInfo] operatingSystemVersion].majorVersion == 9)
 
@@ -112,6 +114,9 @@
 }
 
 - (void)selfSpeakImmediately:(NSString *)str {
+    if ([self speakViceover:str]) {
+        return;
+    }
     if (_avSpeaker.speaking) {
         [_avSpeaker stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     }
@@ -125,6 +130,9 @@
 }
 
 - (void)selfSpeak:(NSString *)str {
+    if ([self speakViceover:str]) {
+        return;
+    }
     AVSpeechUtterance *avUtterance = [[AVSpeechUtterance alloc] initWithString:str];
     [avUtterance setRate:AVSpeechUtteranceMaximumSpeechRate / _fastRatio];
     [avUtterance setVoice:_voice];
@@ -135,6 +143,9 @@
 }
 
 - (void)selfSpeakImmediatelyAndSlowly:(NSString *)str {
+    if ([self speakViceover:str]) {
+        return;
+    }
     if (_avSpeaker.speaking) {
         [_avSpeaker stopSpeakingAtBoundary:AVSpeechBoundaryImmediate];
     }
@@ -148,6 +159,9 @@
 }
 
 - (void)selfSpeakSlowly:(NSString *)str {
+    if ([self speakViceover:str]) {
+        return;
+    }
     AVSpeechUtterance *avUtterance = [[AVSpeechUtterance alloc] initWithString:str];
     [avUtterance setRate:AVSpeechUtteranceMaximumSpeechRate / _slowRatio];
     [avUtterance setVoice:_voice];
@@ -155,6 +169,15 @@
     [avUtterance setPitchMultiplier:1.0];
     [_avSpeaker speakUtterance:avUtterance];
     NSLog(@"SpeakSlowly : %@", str);
+}
+
+- (BOOL)speakViceover:(NSString *)str {
+    if ([str length] == 0 || !UIAccessibilityIsVoiceOverRunning()) {
+        return NO;
+    }
+    UIAccessibilityPostNotification(UIAccessibilityAnnouncementNotification, str);
+    NSLog(@"SpeakVoiceover : %@", str);
+    return YES;
 }
 
 @end
