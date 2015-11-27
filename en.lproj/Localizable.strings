@@ -53,6 +53,18 @@ Instruction";
 /* (No Commment) */
 "feetWithPauseFormat" = "%d feet..";
 
+/* A unit of distance in meter */
+"meter" = "meter";
+
+/* Use to express a distance in meter */
+"meterFormat" = "%d meter";
+
+/* Use to express a distance in meter with a pause */
+"meterPauseFormat" = "%d meter ..";
+
+/* format string describing the number of meter left to a named location */
+"meterToNameFormat" = "%d meter to %@..";
+
 /* Format string for a floor that takes an ordinal number */
 "floorFormat" = "the %@ floor.. ";
 

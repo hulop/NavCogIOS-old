@@ -114,10 +114,11 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             newState.surroundInfo = [node2.preEdgeInPath getInfoFromNode:node1];
             newState.isTricky = [node2 isTrickyComingFromEdgeWithID:node2.preEdgeInPath.edgeID];
             newState.trickyInfo = newState.isTricky ? [node2 getTrickyInfoComingFromEdgeWithID:node2.preEdgeInPath.edgeID] : nil;
+            int edgeLen = [newState isMeter] ? [newState toMeter:node2.preEdgeInPath.len]:node2.preEdgeInPath.len;
             if (![node2.name isEqualToString:@""]) {
-                [startInfo appendFormat:NSLocalizedString(@"feetToNameFormat", @"format string describing the number of feet left to a named location"), node2.preEdgeInPath.len, node2.name];
+                [startInfo appendFormat:NSLocalizedString([newState isMeter]?@"meterToNameFormat":@"feetToNameFormat", @"format string describing the number of feet left to a named location"), edgeLen, node2.name];
             } else {
-                [startInfo appendFormat:NSLocalizedString(@"feetPauseFormat", @"Use to express a distance in feet with a pause"), node2.preEdgeInPath.len];
+                [startInfo appendFormat:NSLocalizedString([newState isMeter]?@"meterPauseFormat":@"feetPauseFormat", @"Use to express a distance in feet with a pause"), edgeLen];
             }
             
             float curOri = [node2.preEdgeInPath getOriFromNode:node1];

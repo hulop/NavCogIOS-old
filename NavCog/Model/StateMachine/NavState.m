@@ -43,6 +43,14 @@
 
 @implementation NavState
 
+- (BOOL)isMeter {
+    return [[NSUserDefaults standardUserDefaults] boolForKey:@"meter_preference"];
+}
+
+- (int)toMeter:(int) feet {
+    return (int)(((float)feet * 0.3048) + 0.5f);
+}
+
 - (instancetype)init
 {
     self = [super init];
@@ -131,25 +139,27 @@
     }
     float threshold = 5;
     if (_type == STATE_TYPE_WALKING) {
-        NSString *distFormat = NSLocalizedString(@"feetFormat", @"Use to express a distance in feet");
+        NSString *distFormat = NSLocalizedString([self isMeter]?@"meterFormat":@"feetFormat", @"Use to express a distance in feet");
         // if you're walking, check distance to target node
         if (dist < _preAnnounceDist) {
             if (dist > 40.0) { // announce every 30 feet
                 if (dist <= 30 * _longDistAnnounceCount + threshold) {
+                    NSString *ann = [NSString stringWithFormat:distFormat,[self isMeter]?[self toMeter:_longDistAnnounceCount * 30]:_longDistAnnounceCount * 30];
                     if (isSpeechEnabled) {
-                        [self speakInstructionImmediately:[NSString stringWithFormat:distFormat, _longDistAnnounceCount * 30]];
+                        [self speakInstructionImmediately:ann];
                     } else {
-                        _previousInstruction = [NSString stringWithFormat:distFormat, _longDistAnnounceCount * 30];
+                        _previousInstruction = ann;
                     }
                     _preAnnounceDist = _longDistAnnounceCount * 30;
                     _longDistAnnounceCount --;
                     return false;
                 }
             } else if (!_did40feet && dist <= 40 + threshold) {
+                NSString *ann = [NSString stringWithFormat:distFormat,[self isMeter]?[self toMeter:40]:40];
                 if (isSpeechEnabled) {
-                    [self speakInstructionImmediately:[NSString stringWithFormat:distFormat, 40]];
+                    [self speakInstructionImmediately:ann];
                 } else {
-                    _previousInstruction = [NSString stringWithFormat:distFormat, 40];
+                    _previousInstruction = ann;
                 }
                 _preAnnounceDist = 40;
                 _did40feet = true;
@@ -220,7 +230,7 @@
 
 - (void)repeatPreviousInstruction {
     if (_previousInstruction != nil) {
-        if ([_previousInstruction containsString:NSLocalizedString(@"feet", @"A unit of distance in feet")] && ([_previousInstruction length] == 8 || [_previousInstruction length] == 7)) {
+        if ([_previousInstruction containsString:NSLocalizedString([self isMeter]?@"meter":@"feet", @"A unit of distance in feet")] && ([_previousInstruction length] == 8 || [_previousInstruction length] == 7)) {
             [self speakInstructionImmediately:[NSString stringWithFormat:NSLocalizedString(@"andFormat", @"Used to join two instructions"), _previousInstruction, _nextActionInfo]];
         } else {
             [self speakInstructionImmediately:_previousInstruction];

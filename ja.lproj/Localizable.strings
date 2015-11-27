@@ -53,6 +53,18 @@
 /* (No Commment) */
 "feetWithPauseFormat" = "%d フィート。。";
 
+/* A unit of distance in meter */
+"meter" = "メートル";
+
+/* Use to express a distance in meter */
+"meterFormat" = "%d メートル";
+
+/* Use to express a distance in meter with a pause */
+"meterPauseFormat" = "%d メートル。。";
+
+/* format string describing the number of meter left to a named location */
+"meterToNameFormat" = "%2$@まで%1$dメートル。。";
+
 /* Format string for a floor that takes an ordinal number */
 "floorFormat" = "%@階。。 ";
 

@@ -59,4 +59,7 @@ enum StateType {STATE_TYPE_WALKING, STATE_TYPE_TRANSITION};
 - (void)announceSurroundInfo;
 - (void)announceAccessibilityInfo;
 
+- (BOOL)isMeter;
+- (int)toMeter:(int) feet;
+
 @end
