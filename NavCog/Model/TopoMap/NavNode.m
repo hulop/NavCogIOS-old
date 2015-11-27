@@ -81,12 +81,12 @@
 
 - (NSString *)getInfoComingFromEdgeWithID:(NSString *)edgeID {
     NSDictionary *infoFromEdgeJson = [_infoFromEdges objectForKey:edgeID];
-    return infoFromEdgeJson == nil ? nil : [infoFromEdgeJson objectForKey:@"info"];
+    return infoFromEdgeJson == nil ? @"" : [infoFromEdgeJson objectForKey:@"info"];
 }
 
 - (NSString *)getDestInfoComingFromEdgeWithID:(NSString *)edgeID {
     NSDictionary *infoFromEdgeJson = [_infoFromEdges objectForKey:edgeID];
-    return infoFromEdgeJson == nil ? nil : [infoFromEdgeJson objectForKey:@"destInfo"];
+    return infoFromEdgeJson == nil ? @"" : [infoFromEdgeJson objectForKey:@"destInfo"];
 }
 
 - (Boolean)isTrickyComingFromEdgeWithID:(NSString *)edgeID {
