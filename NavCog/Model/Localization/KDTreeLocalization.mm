@@ -48,6 +48,7 @@ using namespace std;
 @property (nonatomic) int beaconNum;
 @property (nonatomic) Boolean bStart;
 @property (nonatomic) struct NavPoint prePoint;
+@property (nonatomic) NSDate* preDate;
 
 @end
 
@@ -174,6 +175,17 @@ using namespace std;
 }
 
 - (struct NavPoint)localizeWithBeacons:(NSArray *)beacons {
+    float jump = JUMPING_BOUND, smooth = SMOOTHING_WEIGHT;
+    NSDate* now = [NSDate date];
+    if (_bStart && _preDate) {
+        double weight = [now timeIntervalSinceDate:_preDate] / 1.0;
+        jump = jump * weight;
+        smooth = MIN(smooth * weight, 1.0);
+        if (weight > 2) {
+            NSLog(@"weight=%f, jump=%f, smooth=%f", weight, jump, smooth);
+        }
+    }
+    _preDate = now;
     for (int i = 0; i < _beaconNum; i++) {
         _featVec[i] = -100;
     }
@@ -191,7 +203,7 @@ using namespace std;
     
     if (_bStart) {
         for (int i = 0; i < _beaconNum; i++) {
-            _featVec[i] = _featVec[i] * SMOOTHING_WEIGHT + _preFeatVec[i] * (1 - SMOOTHING_WEIGHT);
+            _featVec[i] = _featVec[i] * smooth + _preFeatVec[i] * (1 - smooth);
         }
     }
     
@@ -214,20 +226,20 @@ using namespace std;
     }
     
     if (_bStart) {
-        if (result.x - _prePoint.x > JUMPING_BOUND) {
-            result.x = _prePoint.x + JUMPING_BOUND;
-        } else if (result.x - _prePoint.x < -JUMPING_BOUND) {
-            result.x = _prePoint.x - JUMPING_BOUND;
+        if (result.x - _prePoint.x > jump) {
+            result.x = _prePoint.x + jump;
+        } else if (result.x - _prePoint.x < -jump) {
+            result.x = _prePoint.x - jump;
         }
         
-        if (result.y - _prePoint.y > JUMPING_BOUND) {
-            result.y = _prePoint.y + JUMPING_BOUND;
-        } else if (result.y - _prePoint.y < -JUMPING_BOUND) {
-            result.y = _prePoint.y - JUMPING_BOUND;
+        if (result.y - _prePoint.y > jump) {
+            result.y = _prePoint.y + jump;
+        } else if (result.y - _prePoint.y < -jump) {
+            result.y = _prePoint.y - jump;
         }
         
-        result.x = result.x * SMOOTHING_WEIGHT + _prePoint.x * (1 - SMOOTHING_WEIGHT);
-        result.y = result.y * SMOOTHING_WEIGHT + _prePoint.y * (1 - SMOOTHING_WEIGHT);
+        result.x = result.x * smooth + _prePoint.x * (1 - smooth);
+        result.y = result.y * smooth + _prePoint.y * (1 - smooth);
         
         _prePoint.x = result.x;
         _prePoint.y = result.y;

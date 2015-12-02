@@ -56,6 +56,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         _currentState = nil;
         _motionManager = [[CMMotionManager alloc] init];
         _motionManager.deviceMotionUpdateInterval = 0.1;
+        _motionManager.accelerometerUpdateInterval = 0.01;
         _navState = NAV_STATE_IDLE;
         _dateFormatter = [[NSDateFormatter alloc] init];
         [_dateFormatter setDateFormat:@"yyyy-MM-dd-HH-mm-ss"];
@@ -307,6 +308,10 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             }
         }
     }];
+    [_motionManager stopAccelerometerUpdates];
+    [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
+        [NavLog logAcc:acc];
+    }];
 }
 
 - (NSString *)getTimeStamp {
@@ -409,6 +414,9 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         NSLog(@"y : %f", curLocation.yInEdge);
     } else {
         [self logState];
+        if ([NavLog isLogging] == YES) {
+            [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
+        }
         if (_navState == NAV_STATE_WALKING) {
             if ([beacons count] > 0) {
                 if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
