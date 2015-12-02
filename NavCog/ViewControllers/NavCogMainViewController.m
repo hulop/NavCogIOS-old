@@ -37,7 +37,6 @@
 @property (strong, nonatomic) NSString *fromNodeName;
 @property (strong, nonatomic) NSString *toNodeName;
 @property (strong, nonatomic) UIButton *startNavButton;
-@property (strong, nonatomic) UIButton *startLogReplayButton;
 @property (strong, nonatomic) NSArray *pathNodes;
 @property (nonatomic) Boolean isWebViewLoaded;
 @property (nonatomic) Boolean isSpeechEnabled;
@@ -75,7 +74,7 @@
     float bt = 20; // button top
     float bm = 5; // button margin
     float bh = 50; // button height
-    float bw = (sw - 4 * bm) / 3;
+    float bw = (sw - 3 * bm) / 2;
     float bb = bt + bh;
     float ot = sh - 150;
     
@@ -106,20 +105,6 @@
     [_startNavButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
     _startNavButton.enabled = false;
     [self.view addSubview:_startNavButton];
-
-    _startLogReplayButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [_startLogReplayButton addTarget:self action:@selector(startReplay) forControlEvents:UIControlEventTouchUpInside];
-    _startLogReplayButton.frame = CGRectMake(2 * bw + 3 * bm + 1, bt, bw, bh);
-    _startLogReplayButton.bounds = CGRectMake(0, 0, bw, bh);
-    _startLogReplayButton.layer.cornerRadius = 3;
-    _startLogReplayButton.backgroundColor = [UIColor clearColor];
-    _startLogReplayButton.layer.borderWidth = 2.0;
-    _startLogReplayButton.layer.borderColor = [UIColor blackColor].CGColor;
-    [_startLogReplayButton setTitle:NSLocalizedString(@"startReplayButton", @"Button to start log replay") forState:UIControlStateNormal];
-    [_startLogReplayButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [_startLogReplayButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
-    _startLogReplayButton.enabled = true;
-    [self.view addSubview:_startLogReplayButton];
     
     // pikcers
     float ph = (ot - bb - 2 * bm) / 2;
@@ -191,7 +176,6 @@
 - (void)initializeOrientation {
     [_navMachine initializeOrientation];
     _startNavButton.enabled = true;
-    _startLogReplayButton.enabled = false;
 }
 
 - (void)startNavigation {
@@ -200,13 +184,6 @@
     }
     
     [_navMachine startNavigationOnTopoMap:_topoMap fromNodeWithName:_fromNodeName toNodeWithName:_toNodeName usingBeaconsWithUUID:[_topoMap getUUIDString] andMajorID:[_topoMap getMajorIDString].intValue withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
-}
-
-- (void)startReplay {
-    
-    NSString* logFilePath = [[_navMachine loadLogList] objectAtIndex:0];
-    
-    [_navMachine simulateNavigationOnTopoMap:_topoMap usingLogFileWithPath:logFilePath usingBeaconsWithUUID:[_topoMap getUUIDString] withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
 }
 
 // picker delegate's methods
