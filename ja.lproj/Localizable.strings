@@ -120,6 +120,9 @@
 /* Button to start navigation */
 "startNavigationButton" = "ナビ開始";
 
+/* Button to start log replay */
+"startReplayButton" = "Start Log Replay";
+
 /* HTML Label for stop navigation button in view */
 "stopNavigationButton" = "ナビ
 終了";

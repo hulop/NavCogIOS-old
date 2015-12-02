@@ -205,8 +205,8 @@
 		A0E9843E1B73A6DC00DB2040 /* NavCog */ = {
 			isa = PBXGroup;
 			children = (
-				161D696C1BFC680D004A2E73 /* NavLogging */,
 				A06736771BC575360008B818 /* NavCogMapView */,
+				161D696C1BFC680D004A2E73 /* NavLogging */,
 				A0147B111BBF0222004BF457 /* NavNotificationSpeaker */,
 				A0ED88E41B87ABEC00E5769C /* NavSoundEffects */,
 				A0E9849B1B73D51500DB2040 /* Model */,
