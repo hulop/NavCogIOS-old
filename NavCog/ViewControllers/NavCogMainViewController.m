@@ -298,7 +298,8 @@
 
 //start simulation
 - (IBAction)startSimulation:(id)sender {
-    
+    _startNavButton.enabled = false;
+
     [_navMachine simulateNavigationOnTopoMap:_topoMap usingLogFileWithPath: [[_navMachine loadLogList] objectAtIndex:0] usingBeaconsWithUUID:[_topoMap getUUIDString] withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
 }
 
