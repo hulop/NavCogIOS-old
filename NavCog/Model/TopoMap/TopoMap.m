@@ -465,6 +465,7 @@
 - (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons {
     NavLocation *location = [[NavLocation alloc] init];
     float minKnnDist = 1;
+    float lastKnnDist = 0;
     for (NSString *layerID in _layers) {
         NavLayer *layer = [_layers objectForKey:layerID];
         for (NSString *edgeID in layer.edges) {
@@ -483,6 +484,7 @@
 //            dist = dist > 1 ? 1 : dist;
             if (dist < minKnnDist) {
                 minKnnDist = dist;
+                lastKnnDist = pos.knndist;
                 location.layerID = layerID;
                 location.edgeID = edgeID;
                 location.xInEdge = pos.x;
@@ -494,6 +496,16 @@
     }
     if (location.edgeID == NULL) {
         location.edgeID = nil;
+        NSLog(@"NoCurrentLocation");
+    } else {
+        NSMutableArray *data = [[NSMutableArray alloc] init];
+        [data addObject:[NSNumber numberWithFloat:minKnnDist]];
+        [data addObject:location.layerID];
+        [data addObject:location.edgeID];
+        [data addObject:[NSNumber numberWithFloat:location.xInEdge]];
+        [data addObject:[NSNumber numberWithFloat:location.yInEdge]];
+        [data addObject:[NSNumber numberWithFloat:lastKnnDist]];
+        [NavLog logArray:data withType:@"FoundCurrentLocation"];
     }
     return location;
 }

@@ -121,13 +121,13 @@
     }
     
     NSMutableArray *data = [[NSMutableArray alloc] init];
+    NavEdge *edge = _type == STATE_TYPE_WALKING ? _walkingEdge : _targetEdge;
+    [data addObject:[NSNumber numberWithFloat:ABS(pos.y - _ty)]];
+    [data addObject:[NSNumber numberWithFloat:edge.len]];
+    [data addObject:edge.edgeID];
     [data addObject:[NSNumber numberWithFloat:pos.x]];
     [data addObject:[NSNumber numberWithFloat:pos.y]];
     [data addObject:[NSNumber numberWithFloat:pos.knndist]];
-    NavEdge *edge = _type == STATE_TYPE_WALKING ? _walkingEdge : _targetEdge;
-    [data addObject:edge.edgeID];
-    [data addObject:[NSNumber numberWithFloat:edge.len]];
-    [data addObject:[NSNumber numberWithFloat:ABS(pos.y - _ty)]];
     [NavLog logArray:data withType:@"CurrentPosition"];
     
     

@@ -28,8 +28,10 @@
 
 + (void)startLog;
 + (void)stopLog;
++ (BOOL)isLogging;
 + (void)logBeacons:(NSArray *)beacons;
 + (void)logMotion:(CMDeviceMotion*) data withFrame:(CMAttitudeReferenceFrame) frame;
++ (void)logAcc:(CMAccelerometerData *) data;
 + (void)logArray:(NSArray*) data withType:(NSString*) type;
 
 @end

@@ -33,6 +33,12 @@ static int stderrSave = 0;
     if (stderrSave != 0) {
         return;
     }
+    NSDictionary* env = [[NSProcessInfo processInfo] environment];
+    if ([[env valueForKey:@"log2file"] isEqual:@"false"]) {
+        NSLog(@"Start log to console");
+        stderrSave = -1;
+        return;
+    }
     static NSDateFormatter *formatter;
     if (!formatter) {
         formatter = [[NSDateFormatter alloc] init];
@@ -43,6 +49,7 @@ static int stderrSave = 0;
     NSString *dir = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *path = [dir stringByAppendingPathComponent:fileName];
     NSLog(@"Start log to %@", path);
+    
     stderrSave = dup(STDERR_FILENO);
     freopen([path UTF8String],"a+",stderr);
 }
@@ -51,11 +58,17 @@ static int stderrSave = 0;
     if(stderrSave == 0) {
         return;
     }
-    fflush(stderr);
-    dup2(stderrSave, STDERR_FILENO);
-    close(stderrSave);
+    if (stderrSave > 0) {
+        fflush(stderr);
+        dup2(stderrSave, STDERR_FILENO);
+        close(stderrSave);
+    }
     stderrSave = 0;
     NSLog(@"Stop log");
+}
+
++(BOOL)isLogging {
+    return stderrSave != 0;
 }
 
 +(void)logBeacons:(NSArray *)beacons{
@@ -76,6 +89,13 @@ static int stderrSave = 0;
         return;
     }
     NSLog(@"Motion,%f,%f,%f",data.attitude.pitch,data.attitude.roll,data.attitude.yaw);
+}
+
++(void)logAcc:(CMAccelerometerData *) data {
+    if(stderrSave == 0) {
+        return;
+    }
+    NSLog(@"Acc,%f,%f,%f",data.acceleration.x,data.acceleration.y,data.acceleration.z);
 }
 
 +(void)logArray:(NSArray *)data withType:(NSString *)type {
