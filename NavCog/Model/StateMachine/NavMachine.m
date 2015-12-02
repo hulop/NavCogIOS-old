@@ -36,6 +36,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 @property (nonatomic) enum NavigationState navState;
 @property (nonatomic) float curOri;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
+@property (nonatomic) Boolean logReplay;
 @property (nonatomic) Boolean speechEnabled;
 @property (nonatomic) Boolean clickEnabled;
 @property (nonatomic) Boolean isStartFromCurrentLocation;
@@ -115,11 +116,10 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             newState.surroundInfo = [node2.preEdgeInPath getInfoFromNode:node1];
             newState.isTricky = [node2 isTrickyComingFromEdgeWithID:node2.preEdgeInPath.edgeID];
             newState.trickyInfo = newState.isTricky ? [node2 getTrickyInfoComingFromEdgeWithID:node2.preEdgeInPath.edgeID] : nil;
-            int edgeLen = [newState isMeter] ? [newState toMeter:node2.preEdgeInPath.len]:node2.preEdgeInPath.len;
             if (![node2.name isEqualToString:@""]) {
-                [startInfo appendFormat:NSLocalizedString([newState isMeter]?@"meterToNameFormat":@"feetToNameFormat", @"format string describing the number of feet left to a named location"), edgeLen, node2.name];
+                [startInfo appendFormat:NSLocalizedString(@"feetToNameFormat", @"format string describing the number of feet left to a named location"), node2.preEdgeInPath.len, node2.name];
             } else {
-                [startInfo appendFormat:NSLocalizedString([newState isMeter]?@"meterPauseFormat":@"feetPauseFormat", @"Use to express a distance in feet with a pause"), edgeLen];
+                [startInfo appendFormat:NSLocalizedString(@"feetPauseFormat", @"Use to express a distance in feet with a pause"), node2.preEdgeInPath.len];
             }
             
             float curOri = [node2.preEdgeInPath getOriFromNode:node1];
@@ -232,7 +232,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 
 - (NSString *)getFloorString:(int)floor {
     NSString *ordinalNumber;
-
+    
     // TODO(cgleason): find way to remove special case for floor numbering in Japanese
     NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
     if([@"ja" compare:language] == NSOrderedSame) {
@@ -294,24 +294,37 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 - (void)initializeOrientation {
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
-        _curOri = - dm.attitude.yaw / M_PI * 180;
-        [NavLog logMotion:dm withFrame:_motionManager.attitudeReferenceFrame];
-        [self logState];
-
-        if (_navState == NAV_STATE_TURNING) {
-//            if (ABS(_curOri - _currentState.ori) <= 10) {
-            float diff = ABS(_curOri - _currentState.ori);
-            if (diff <= 10 || diff >= 350) {
-                [NavSoundEffects playSuccessSound];
-                _navState = NAV_STATE_WALKING;
-                [self logState];
-            }
-        }
+        NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
+        
+        [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
+        [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.roll] forKey:@"roll"];
+        [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
+        
+        [self triggerMotionWithData:motionData];
     }];
+}
+
+- (void)triggerMotionWithData: (NSMutableDictionary*) data {
+    
+    NSNumber* yaw = [data objectForKey:@"yaw"];
+    
+    _curOri = - [yaw doubleValue] / M_PI * 180;
+    [NavLog logMotion:data];
+    [self logState];
+
+    if (_navState == NAV_STATE_TURNING) {
+        //if (ABS(_curOri - _currentState.ori) <= 10) {
+        float diff = ABS(_curOri - _currentState.ori);
+        if (diff <= 10 || diff >= 350) {
+            [NavSoundEffects playSuccessSound];
+            _navState = NAV_STATE_WALKING;
+            [self logState];
+        }
     [_motionManager stopAccelerometerUpdates];
     [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
         [NavLog logAcc:acc];
     }];
+    }
 }
 
 - (NSString *)getTimeStamp {
@@ -319,6 +332,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 }
 
 - (void)startNavigationOnTopoMap:(TopoMap *)topoMap fromNodeWithName:(NSString *)fromNodeName toNodeWithName:(NSString *)toNodeName usingBeaconsWithUUID:(NSString *)uuidstr andMajorID:(CLBeaconMajorValue)majorID withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled {
+    _logReplay = false;
     [NavLog startLog];
     [NavLog logArray:@[fromNodeName,toNodeName] withType:@"Route"];
     // set speech rate of notification speaker
@@ -355,9 +369,171 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     [_beaconManager startRangingBeaconsInRegion:_beaconRegion];
 }
 
+- (void)simulateNavigationOnTopoMap:(TopoMap *)topoMap usingLogFileWithPath:(NSString *)logFilePath usingBeaconsWithUUID:(NSString *)uuidstr withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled {
+    _logReplay = true;
+    
+    NSString* fromNodeName;
+    NSString* toNodeName;
+    NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
+    [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
+    NSDate* startTime;
+    
+    //parse log to array
+    
+    //create dictionary with time -> object: either motion or beaconlist
+    NSMutableArray* timesArray = [[NSMutableArray alloc] init];
+    NSMutableArray* objectsArray = [[NSMutableArray alloc] init];
+    
+    //motion holds just 3 values, beaconlist holds array of clbeacons
+    NSString *fileContents = [NSString stringWithContentsOfFile:logFilePath encoding:NSUTF8StringEncoding error:NULL];
+    for (NSString *line in [fileContents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]) {
+        
+        if ([line isEqualToString:@""])
+            break;
+        
+        //Explode the line with space
+        NSString* dateAndTime = [line substringToIndex:23];
+        NSString* typeAndData = [line substringFromIndex:44];
+        NSArray *typeAndDataStringArray = [typeAndData componentsSeparatedByString:@","];
+        
+        
+        if ([typeAndDataStringArray[0] isEqualToString: @"Route"]) {
+            startTime = [dateFormat dateFromString: dateAndTime];
+            fromNodeName = typeAndDataStringArray[1];
+            toNodeName = typeAndDataStringArray[2];
+        } else if ([typeAndDataStringArray[0] isEqualToString: @"Motion"]) {
+            //get time
+            NSDate* currentTime = [dateFormat dateFromString: dateAndTime];
+            
+            //create motion data object
+            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
+            
+            [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
+            [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
+            [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
+
+            //feed to object
+            [timesArray addObject: currentTime];
+            [objectsArray addObject: motionData];
+            
+        } else if ([typeAndDataStringArray[0] isEqualToString: @"Beacon"]) { //beacon data
+            //get number of beacons
+            int beaconsNumber = [typeAndDataStringArray[1] intValue];
+            NSMutableArray* beaconArrayTmp = [NSMutableArray arrayWithCapacity:beaconsNumber];
+            
+            for (int i = 0; i < beaconsNumber; i++) {
+                CLBeacon* newBeacon = [[CLBeacon alloc] init];
+                [newBeacon setValue:[NSNumber numberWithInt:[typeAndDataStringArray[3*i+2] intValue]] forKey:@"major"];
+                [newBeacon setValue:[NSNumber numberWithInt:[typeAndDataStringArray[3*i+3] intValue]] forKey:@"minor"];
+                [newBeacon setValue:[NSNumber numberWithInt:[typeAndDataStringArray[3*i+4] intValue]] forKey:@"rssi"];
+                [newBeacon setValue:[[NSUUID alloc] initWithUUIDString:uuidstr] forKey:@"proximityUUID"];
+                
+                [beaconArrayTmp addObject:newBeacon];
+            }
+            //transform it to nsarray
+            NSArray* beaconArray = [NSArray arrayWithArray:beaconArrayTmp];
+            //get time
+            NSDate* currentTime = [dateFormat dateFromString: dateAndTime];
+            
+            //feed to object
+            [timesArray addObject: currentTime];
+            [objectsArray addObject: beaconArray];
+        }
+    }
+    
+    //logging
+    [NavLog startLog];
+    [NavLog logArray:@[fromNodeName,toNodeName] withType:@"Route"];
+    // set speech rate of notification speaker
+    [NavNotificationSpeaker setFastSpeechOnAndOff:fastSpeechEnabled];
+    
+    // set UI type (speech and click sound)
+    _speechEnabled = speechEnabled;
+    _clickEnabled = clickEnabled;
+    
+    // search a path
+    _topoMap = topoMap;
+    _pathNodes = nil;
+    if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
+        _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
+        [self initializeWithPathNodes:_pathNodes];
+        _isStartFromCurrentLocation = false;
+        _isNavigationStarted = true;
+        [_delegate navigationReadyToGo];
+    } else {
+        _destNodeName = toNodeName;
+        _isStartFromCurrentLocation = true;
+        _isNavigationStarted = false;
+    }
+    
+    dispatch_queue_t queue = dispatch_queue_create("com.navcog.logsimulatorqueue", NULL);
+    
+    unsigned long int arraySize = [timesArray count];
+    
+    dispatch_async(queue, ^{
+
+        NSDate* time = startTime;
+        
+        for (int i=0; i < arraySize; i++) {
+            
+        
+            if ([objectsArray[i] isKindOfClass: [NSArray class]]) {
+                //create
+                NSTimeInterval waitTime = [timesArray[i] timeIntervalSinceDate:time];
+                
+                NSArray* beacons = objectsArray[i];
+                
+                //call beacons
+                [NSThread sleepForTimeInterval:waitTime];
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self receivedBeaconsArray: beacons];
+                });
+                
+                time = timesArray[i];
+                
+            } else if ([objectsArray[i] isKindOfClass: [NSMutableDictionary class]]) {
+                
+                NSTimeInterval waitTime = [timesArray[i] timeIntervalSinceDate:time];
+                
+                NSMutableDictionary* motionData = objectsArray[i];
+                
+                //call motion
+                    [NSThread sleepForTimeInterval:waitTime];
+                dispatch_sync(dispatch_get_main_queue(), ^{
+                    [self triggerMotionWithData:motionData];
+                });
+                
+                time = timesArray[i];
+                
+            }
+        
+        }
+    });
+    
+}
+
+- (NSMutableArray *)loadLogList {
+    NSFileManager *fm = [NSFileManager defaultManager];
+    
+    NSString* documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    NSArray* allFileNames = [fm contentsOfDirectoryAtPath:documentsPath error:nil];
+    NSMutableArray* logList = [[NSMutableArray alloc] init];
+    
+    for (NSString* fileName in allFileNames) {
+        if([[fileName lowercaseString] hasSuffix:@".log"]) {
+            [logList addObject:[documentsPath stringByAppendingPathComponent:fileName]];
+        }
+    }
+    
+    return logList;
+}
+
 - (void)stopNavigation {
     [self stopAudio];
-    [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+    if (!(_logReplay)) {
+        [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+    }
+    
     [_topoMap cleanTmpNodeAndEdges];
     _navState = NAV_STATE_IDLE;
     _initialState = nil;
@@ -382,11 +558,16 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     }
 }
 
+//TODO: this even used?
 - (void)triggerNextState {
-    [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+    if (!(_logReplay)) {
+        [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+    }
     _currentState = _currentState.nextState;
     if (_currentState != nil) {
-        [_beaconManager startRangingBeaconsInRegion:_beaconRegion];
+        if (!(_logReplay)) {
+            [_beaconManager startRangingBeaconsInRegion:_beaconRegion];
+        }
     } else {
         [_delegate navigationFinished];
         [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];
@@ -395,6 +576,10 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 }
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region {
+    [self receivedBeaconsArray:beacons];
+}
+
+- (void)receivedBeaconsArray:(NSArray *)beacons {
     [NavLog logBeacons:beacons];
     // if we start navigation from current location
     // and the navigation does not start yet
@@ -424,10 +609,12 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                     if (_currentState == nil) {
                         [_delegate navigationFinished];
                         [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];
-                        [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+                        if (!(_logReplay)) {
+                            [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+                        }
                         [_topoMap cleanTmpNodeAndEdges];
                     } else if (_currentState.type == STATE_TYPE_WALKING) {
-//                        if (ABS(_curOri - _currentState.ori) > 15) {
+                        //                        if (ABS(_curOri - _currentState.ori) > 15) {
                         float diff = ABS(_curOri - _currentState.ori);
                         if (diff > 15 && diff < 345) {
                             _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
