@@ -13,6 +13,9 @@
 /* Class = "UIButton"; normalTitle = "Get Data"; ObjectID = "P9j-yz-NDt"; */
 "P9j-yz-NDt.normalTitle" = "データ取得";
 
+/* Class = "UIButton"; normalTitle = "Replay Log"; ObjectID = "0I2-Fh-jrn"; */
+"0I2-Fh-jrn.normalTitle" = "Replay Log";
+
 /* Class = "UISegmentedControl"; PK7-RU-nau.segmentTitles[0] = "Normal"; ObjectID = "PK7-RU-nau"; */
 "PK7-RU-nau.segmentTitles[0]" = "通常";
 
