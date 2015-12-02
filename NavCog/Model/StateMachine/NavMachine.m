@@ -292,6 +292,11 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 }
 
 - (void)initializeOrientation {
+    [_motionManager stopAccelerometerUpdates];
+    [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
+        [NavLog logAcc:acc];
+    }];
+
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
@@ -320,10 +325,6 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             _navState = NAV_STATE_WALKING;
             [self logState];
         }
-    [_motionManager stopAccelerometerUpdates];
-    [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
-        [NavLog logAcc:acc];
-    }];
     }
 }
 
@@ -335,6 +336,11 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     _logReplay = false;
     [NavLog startLog];
     [NavLog logArray:@[fromNodeName,toNodeName] withType:@"Route"];
+    
+    //if started kill motionmanager
+    [_motionManager stopAccelerometerUpdates];
+    [_motionManager stopDeviceMotionUpdates];
+
     // set speech rate of notification speaker
     [NavNotificationSpeaker setFastSpeechOnAndOff:fastSpeechEnabled];
     

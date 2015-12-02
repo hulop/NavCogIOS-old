@@ -43,6 +43,7 @@
 @property (nonatomic) Boolean isClickEnabled;
 @property (nonatomic) Boolean isSpeechFast;
 @property (weak, nonatomic) IBOutlet UIButton *getDataBtn;
+@property (weak, nonatomic) IBOutlet UIButton *logReplayBtn;
 
 @end
 
@@ -164,8 +165,10 @@
 - (void) checkDevMode{
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"devmode_preference"]) {
         self.getDataBtn.hidden = NO;
+        self.logReplayBtn.hidden = NO;
     } else {
         self.getDataBtn.hidden = YES;
+        self.logReplayBtn.hidden = YES;
     }
 }
 
@@ -291,6 +294,12 @@
 
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
+}
+
+//start simulation
+- (IBAction)startSimulation:(id)sender {
+    
+    [_navMachine simulateNavigationOnTopoMap:_topoMap usingLogFileWithPath: [[_navMachine loadLogList] objectAtIndex:0] usingBeaconsWithUUID:[_topoMap getUUIDString] withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
 }
 
 // go to map list table view
