@@ -23,6 +23,7 @@
 #import "NavMinHeap.h"
 #import "TopoMap.h"
 #import "NavLog.h"
+#import "NavCogFuncViewController.h"
 #import <CoreFoundation/CoreFoundation.h>
 
 @implementation NavLocation
@@ -506,6 +507,28 @@
         [data addObject:[NSNumber numberWithFloat:location.yInEdge]];
         [data addObject:[NSNumber numberWithFloat:lastKnnDist]];
         [NavLog logArray:data withType:@"FoundCurrentLocation"];
+    }
+    if ([NavLog isLogging] == YES) {
+        if (location.edgeID == nil) {
+            [[NavCogFuncViewController sharedNavCogFuntionViewController] runCmdWithString:@"updateRedDot(null)"];
+        } else {
+            NavEdge *edge = [self getEdgeFromLayer:location.layerID withEdgeID:location.edgeID];
+            NavNode *node1 = edge.node1, *node2 = edge.node2;
+            NSDictionary* info1 = [node1.infoFromEdges objectForKey:edge.edgeID];
+            NSDictionary* info2 = [node2.infoFromEdges objectForKey:edge.edgeID];
+            float cy = location.yInEdge;
+            float slat = node1.lat;
+            float slng = node1.lng;
+            float tlat = node2.lat;
+            float tlng = node2.lng;
+            float sy = ((NSNumber *)[info1 objectForKey:@"y"]).floatValue;
+            float ty = ((NSNumber *)[info2 objectForKey:@"y"]).floatValue;
+            float ratio = (cy - sy) / (ty - sy);
+            float lat = slat + ratio * (tlat - slat);
+            float lng = slng + ratio * (tlng - slng);
+            NSString *cmd = [NSString stringWithFormat:@"updateRedDot({lat:%f, lng:%f})", lat, lng];
+            [[NavCogFuncViewController sharedNavCogFuntionViewController] runCmdWithString:cmd];
+        }
     }
     return location;
 }

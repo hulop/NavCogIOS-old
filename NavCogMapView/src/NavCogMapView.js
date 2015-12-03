@@ -21,6 +21,7 @@
  *******************************************************************************/
  
 var _blueDot = null;
+var _redDot = null;
 var _currentLayer = null;
 var _layers = null;
 var _map = null;
@@ -76,6 +77,34 @@ function updateBlueDot(latLng) {
 		_blueDot.setPosition(latLng);
 	}
 	_map.setCenter(latLng);
+}
+
+function updateRedDot(latLng) {
+    if (!latLng) {
+        if (_redDot) {
+            _redDot.setMap(null);
+        }
+        return;
+    }
+    if (_redDot == null) {
+        var image = {
+        scaledSize: new google.maps.Size(12.5, 12.5),
+        anchor: new google.maps.Point(6.25, 6.25),
+        url: "./img/round-red.png"
+        };
+        _redDot = new google.maps.Marker({
+                                         map : _map,
+                                         position: new google.maps.LatLng(latLng.lat, latLng.lng),
+                                         icon: image,
+                                         shape: {
+                                         coords: [6.25, 6.25, 10],
+                                         type: "circle"
+                                         },
+                                         });
+    } else {
+        _redDot.setMap(_map);
+        _redDot.setPosition(latLng);
+    }
 }
 
 function stopNavigation() {
