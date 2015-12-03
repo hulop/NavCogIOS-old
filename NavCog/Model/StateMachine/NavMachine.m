@@ -337,10 +337,6 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     [NavLog startLog];
     [NavLog logArray:@[fromNodeName,toNodeName] withType:@"Route"];
     
-    //if started kill motionmanager
-    [_motionManager stopAccelerometerUpdates];
-    [_motionManager stopDeviceMotionUpdates];
-
     // set speech rate of notification speaker
     [NavNotificationSpeaker setFastSpeechOnAndOff:fastSpeechEnabled];
     
@@ -378,6 +374,10 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 - (void)simulateNavigationOnTopoMap:(TopoMap *)topoMap usingLogFileWithPath:(NSString *)logFilePath usingBeaconsWithUUID:(NSString *)uuidstr withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled {
     _logReplay = true;
     
+    //if started kill motionmanager
+    [_motionManager stopAccelerometerUpdates];
+    [_motionManager stopDeviceMotionUpdates];
+
     NSString* fromNodeName;
     NSString* toNodeName;
     NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
