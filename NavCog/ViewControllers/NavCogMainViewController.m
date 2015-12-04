@@ -27,6 +27,7 @@
 @property (strong, nonatomic) UIPickerView *fromPicker;
 @property (strong, nonatomic) UIPickerView *toPicker;
 @property (strong, nonatomic) NavCogFuncViewController *navFuncViewCtrl;
+@property (strong, nonatomic) NavCogChooseLogViewController *navLogViewCtrl;
 @property (strong, nonatomic) NavCogDataSamplingViewController *dataSamplingViewCtrl;
 @property (strong, nonatomic) NavCogHelpPageViewController *helpPageViewCtrl;
 @property (strong, nonatomic) TopoMap *topoMap;
@@ -43,6 +44,7 @@
 @property (nonatomic) Boolean isClickEnabled;
 @property (nonatomic) Boolean isSpeechFast;
 @property (weak, nonatomic) IBOutlet UIButton *getDataBtn;
+@property (weak, nonatomic) IBOutlet UIButton *logReplayBtn;
 
 @end
 
@@ -66,6 +68,7 @@
     _isClickEnabled = false;
     _isSpeechFast = true;
     [NavCogChooseMapViewController setMapChooserDelegate:self];
+    [NavCogChooseLogViewController setLogChooserDelegate:self];
 }
 
 - (void)setupUI {
@@ -164,8 +167,10 @@
 - (void) checkDevMode{
     if ([[NSUserDefaults standardUserDefaults] boolForKey:@"devmode_preference"]) {
         self.getDataBtn.hidden = NO;
+        self.logReplayBtn.hidden = NO;
     } else {
         self.getDataBtn.hidden = YES;
+        self.logReplayBtn.hidden = YES;
     }
 }
 
@@ -293,6 +298,12 @@
     [super didReceiveMemoryWarning];
 }
 
+//start simulation TODO: change to picker subview
+- (IBAction)switchToLogChooseUI:(id)sender {
+    _navLogViewCtrl = [NavCogChooseLogViewController sharedLogChooser];
+    [self.view addSubview:_navLogViewCtrl.view];
+}
+
 // go to map list table view
 - (IBAction)switchToMapChooseUI:(id)sender {
     NavCogChooseMapViewController *mapChooser = [NavCogChooseMapViewController sharedMapChooser];
@@ -304,6 +315,7 @@
     [self.view addSubview:_dataSamplingViewCtrl.view];
 }
 
+// go to help page
 - (IBAction)switchToHelpPage:(id)sender {
     [self.view addSubview:_helpPageViewCtrl.view];
 }
@@ -348,6 +360,16 @@
     } else {
         _mapDataString = dataStr;
     }
+}
+
+// new topo map loaded
+- (void)logToSimulate:(NSString *)logName {
+    _startNavButton.enabled = false;
+    [_navLogViewCtrl.view removeFromSuperview];
+
+    NSString* documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    
+    [_navMachine simulateNavigationOnTopoMap:_topoMap usingLogFileWithPath: [documentsPath stringByAppendingPathComponent:logName] usingBeaconsWithUUID:[_topoMap getUUIDString] withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
 }
 
 @end

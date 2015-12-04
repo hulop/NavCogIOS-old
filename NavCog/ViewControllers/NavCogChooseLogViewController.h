@@ -20,37 +20,21 @@
  * THE SOFTWARE.
  *******************************************************************************/
 
-#import <Foundation/Foundation.h>
-#import <CoreLocation/CoreLocation.h>
-#import <CoreMotion/CoreMotion.h>
 #import <UIKit/UIKit.h>
-#import "NavState.h"
-#import "TopoMap.h"
-#import "TTTOrdinalNumberFormatter.h"
 
-@protocol NavMachineDelegate;
+@protocol NavCogChooseLogViewControllerDelegate;
 
-@interface NavMachine : NSObject <CLLocationManagerDelegate>
+@interface NavCogChooseLogViewController : UIViewController <UITableViewDataSource, UITableViewDelegate>
 
-- (void)startNavigationOnTopoMap:(TopoMap *)topoMap fromNodeWithName:(NSString *)fromNodeName toNodeWithName:(NSString *)toNodeName usingBeaconsWithUUID:(NSString *)uuidstr andMajorID:(CLBeaconMajorValue)majorID withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled;
-- (void)simulateNavigationOnTopoMap:(TopoMap *)topoMap usingLogFileWithPath:(NSString *)logFilePath usingBeaconsWithUUID:(NSString *)uuidstr withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled;
-- (void)initializeOrientation;
-- (void)triggerMotionWithData: (NSMutableDictionary*) data;
-- (void)stopNavigation;
-- (void)repeatInstruction;
-- (void)announceSurroundInfo;
-- (void)announceAccessibilityInfo;
-- (void)triggerNextState;
-- (NSArray *)getPathNodes;
-
-@property (strong, nonatomic) id <NavMachineDelegate> delegate;
+@property (strong, nonatomic) id <NavCogChooseLogViewControllerDelegate> delegate;
++ (instancetype)sharedLogChooser;
++ (void)setLogChooserDelegate:(id)obj;
+- (NSMutableArray *)loadLogList;
 
 @end
 
+@protocol NavCogChooseLogViewControllerDelegate <NSObject>
 
-@protocol NavMachineDelegate <NSObject>
-
-- (void)navigationFinished;
-- (void)navigationReadyToGo;
+- (void)logToSimulate:(NSString *)logPath;
 
 @end
