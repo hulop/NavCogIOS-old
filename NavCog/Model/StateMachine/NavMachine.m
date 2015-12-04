@@ -377,6 +377,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     //if started kill motionmanager
     [_motionManager stopAccelerometerUpdates];
     [_motionManager stopDeviceMotionUpdates];
+    [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
 
     NSString* fromNodeName;
     NSString* toNodeName;
@@ -516,22 +517,6 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         }
     });
     
-}
-
-- (NSMutableArray *)loadLogList {
-    NSFileManager *fm = [NSFileManager defaultManager];
-    
-    NSString* documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
-    NSArray* allFileNames = [fm contentsOfDirectoryAtPath:documentsPath error:nil];
-    NSMutableArray* logList = [[NSMutableArray alloc] init];
-    
-    for (NSString* fileName in allFileNames) {
-        if([[fileName lowercaseString] hasSuffix:@".log"]) {
-            [logList addObject:[documentsPath stringByAppendingPathComponent:fileName]];
-        }
-    }
-    
-    return logList;
 }
 
 - (void)stopNavigation {

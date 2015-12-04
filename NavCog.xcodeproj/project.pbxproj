@@ -39,6 +39,8 @@
 		A06736B81BC577050008B818 /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A06736B71BC577050008B818 /* Images.xcassets */; };
 		A06736BE1BC577340008B818 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = A06736BC1BC577340008B818 /* main.m */; };
 		A083F7751BC5B2BE001A1A1B /* NavCogHelpPageViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */; };
+		B4048C481C10E95C00634A15 /* NavCogChooseLogViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = B4048C471C10E95C00634A15 /* NavCogChooseLogViewController.m */; };
+		B4048C4A1C10E97000634A15 /* NavCogChooseLogViewController.xib in Resources */ = {isa = PBXBuildFile; fileRef = B4048C491C10E97000634A15 /* NavCogChooseLogViewController.xib */; };
 		B9594B048A7EF7BE0E0DD7F8 /* libPods-NavCog.a in Frameworks */ = {isa = PBXBuildFile; fileRef = FD8FBC95C14E3EBB386797B7 /* libPods-NavCog.a */; };
 /* End PBXBuildFile section */
 
@@ -108,6 +110,9 @@
 		A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogHelpPageViewController.m; path = NavCog/ViewControllers/NavCogHelpPageViewController.m; sourceTree = SOURCE_ROOT; };
 		A0E9843C1B73A6DC00DB2040 /* NavCog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavCog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AADC4813EC20E1F583DD9974 /* Pods-NavCog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NavCog.release.xcconfig"; path = "Pods/Target Support Files/Pods-NavCog/Pods-NavCog.release.xcconfig"; sourceTree = "<group>"; };
+		B4048C461C10E92B00634A15 /* NavCogChooseLogViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NavCogChooseLogViewController.h; path = NavCog/ViewControllers/NavCogChooseLogViewController.h; sourceTree = SOURCE_ROOT; };
+		B4048C471C10E95C00634A15 /* NavCogChooseLogViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogChooseLogViewController.m; path = NavCog/ViewControllers/NavCogChooseLogViewController.m; sourceTree = SOURCE_ROOT; };
+		B4048C491C10E97000634A15 /* NavCogChooseLogViewController.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = NavCogChooseLogViewController.xib; path = NavCog/ViewControllers/NavCogChooseLogViewController.xib; sourceTree = SOURCE_ROOT; };
 		FD8FBC95C14E3EBB386797B7 /* libPods-NavCog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NavCog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -178,6 +183,9 @@
 				A083F7721BC5B2BE001A1A1B /* NavCogHelpPageViewController.h */,
 				A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */,
 				2365BC811BE1808C007F14C3 /* NavCogHelpPageViewController.xib */,
+				B4048C461C10E92B00634A15 /* NavCogChooseLogViewController.h */,
+				B4048C471C10E95C00634A15 /* NavCogChooseLogViewController.m */,
+				B4048C491C10E97000634A15 /* NavCogChooseLogViewController.xib */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
@@ -358,6 +366,7 @@
 				2365BC791BE1802D007F14C3 /* NavCogChooseMapViewController.xib in Resources */,
 				A06736B81BC577050008B818 /* Images.xcassets in Resources */,
 				2365BC7F1BE1808C007F14C3 /* NavCogHelpPageViewController.xib in Resources */,
+				B4048C4A1C10E97000634A15 /* NavCogChooseLogViewController.xib in Resources */,
 				2365BC741BE17ECC007F14C3 /* NavCogMainViewController.xib in Resources */,
 				2365BC7C1BE18079007F14C3 /* NavCogDataSamplingViewController.xib in Resources */,
 				A06736781BC575360008B818 /* NavCogMapView in Resources */,
@@ -435,6 +444,7 @@
 				A06736971BC576960008B818 /* NavLayer.m in Sources */,
 				A067369C1BC576960008B818 /* TopoMap.m in Sources */,
 				A06736B51BC576CF0008B818 /* NavCogMainViewController.m in Sources */,
+				B4048C481C10E95C00634A15 /* NavCogChooseLogViewController.m in Sources */,
 				A06736841BC5764E0008B818 /* NavState.m in Sources */,
 				A06736B31BC576CF0008B818 /* NavCogDataSamplingViewController.m in Sources */,
 				A06736B61BC576CF0008B818 /* NavDownloadingViewController.m in Sources */,

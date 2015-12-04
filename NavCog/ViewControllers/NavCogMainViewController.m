@@ -67,6 +67,7 @@
     _isClickEnabled = false;
     _isSpeechFast = true;
     [NavCogChooseMapViewController setMapChooserDelegate:self];
+    [NavCogChooseLogViewController setLogChooserDelegate:self];
 }
 
 - (void)setupUI {
@@ -296,11 +297,10 @@
     [super didReceiveMemoryWarning];
 }
 
-//start simulation
-- (IBAction)startSimulation:(id)sender {
-    _startNavButton.enabled = false;
-
-    [_navMachine simulateNavigationOnTopoMap:_topoMap usingLogFileWithPath: [[_navMachine loadLogList] objectAtIndex:0] usingBeaconsWithUUID:[_topoMap getUUIDString] withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
+//start simulation TODO: change to picker subview
+- (IBAction)switchToLogChooseUI:(id)sender {
+    NavCogChooseLogViewController *logChooser = [NavCogChooseLogViewController sharedLogChooser];
+    [self.view addSubview:logChooser.view];
 }
 
 // go to map list table view
@@ -314,6 +314,7 @@
     [self.view addSubview:_dataSamplingViewCtrl.view];
 }
 
+// go to help page
 - (IBAction)switchToHelpPage:(id)sender {
     [self.view addSubview:_helpPageViewCtrl.view];
 }
@@ -358,6 +359,15 @@
     } else {
         _mapDataString = dataStr;
     }
+}
+
+// new topo map loaded
+- (void)logToSimulate:(NSString *)logName {
+    _startNavButton.enabled = false;
+    
+    NSString* documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
+    
+    [_navMachine simulateNavigationOnTopoMap:_topoMap usingLogFileWithPath: [documentsPath stringByAppendingPathComponent:logName] usingBeaconsWithUUID:[_topoMap getUUIDString] withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];
 }
 
 @end
