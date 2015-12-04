@@ -27,6 +27,7 @@
 @property (strong, nonatomic) UIPickerView *fromPicker;
 @property (strong, nonatomic) UIPickerView *toPicker;
 @property (strong, nonatomic) NavCogFuncViewController *navFuncViewCtrl;
+@property (strong, nonatomic) NavCogChooseLogViewController *navLogViewCtrl;
 @property (strong, nonatomic) NavCogDataSamplingViewController *dataSamplingViewCtrl;
 @property (strong, nonatomic) NavCogHelpPageViewController *helpPageViewCtrl;
 @property (strong, nonatomic) TopoMap *topoMap;
@@ -299,8 +300,8 @@
 
 //start simulation TODO: change to picker subview
 - (IBAction)switchToLogChooseUI:(id)sender {
-    NavCogChooseLogViewController *logChooser = [NavCogChooseLogViewController sharedLogChooser];
-    [self.view addSubview:logChooser.view];
+    _navLogViewCtrl = [NavCogChooseLogViewController sharedLogChooser];
+    [self.view addSubview:_navLogViewCtrl.view];
 }
 
 // go to map list table view
@@ -364,7 +365,8 @@
 // new topo map loaded
 - (void)logToSimulate:(NSString *)logName {
     _startNavButton.enabled = false;
-    
+    [_navLogViewCtrl.view removeFromSuperview];
+
     NSString* documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     
     [_navMachine simulateNavigationOnTopoMap:_topoMap usingLogFileWithPath: [documentsPath stringByAppendingPathComponent:logName] usingBeaconsWithUUID:[_topoMap getUUIDString] withSpeechOn:_isSpeechEnabled withClickOn:_isClickEnabled withFastSpeechOn:_isSpeechFast];

@@ -61,6 +61,10 @@
     for (NSString *mapName in logList) {
         [instance.logFileNameList addObject:mapName];
     }
+    
+    dispatch_async(dispatch_get_main_queue(), ^{
+        [instance.logFileNameListTableView reloadData];
+    });
 
     return instance;
 }
