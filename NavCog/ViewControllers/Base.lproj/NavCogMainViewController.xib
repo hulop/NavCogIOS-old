@@ -8,7 +8,6 @@
         <placeholder placeholderIdentifier="IBFilesOwner" id="-1" userLabel="File's Owner" customClass="NavCogMainViewController">
             <connections>
                 <outlet property="getDataBtn" destination="P9j-yz-NDt" id="jLd-cd-W3k"/>
-                <outlet property="logReplayBtn" destination="0I2-Fh-jrn" id="fem-OE-FcZ"/>
                 <outlet property="view" destination="i5M-Pr-FkT" id="sfx-zR-JGt"/>
             </connections>
         </placeholder>
@@ -113,7 +112,7 @@
                                         <color key="titleColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                     </state>
                                     <connections>
-                                        <action selector="startSimulation:" destination="-1" eventType="touchUpInside" id="9of-2H-VB5"/>
+                                        <action selector="switchToLogChooseUI:" destination="-2" eventType="touchUpInside" id="JZl-LJ-bvG"/>
                                     </connections>
                                 </button>
                                 <button opaque="NO" contentMode="scaleToFill" fixedFrame="YES" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" showsTouchWhenHighlighted="YES" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vgl-0E-SXC">
