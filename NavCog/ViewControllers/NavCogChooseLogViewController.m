@@ -52,11 +52,16 @@
     if (instance == nil) {
         instance = [[NavCogChooseLogViewController alloc] init];
         instance.logFileNameList = [[NSMutableArray alloc] init];
-        NSMutableArray* logList = [instance loadLogList];
-        for (NSString *mapName in logList) {
-            [instance.logFileNameList addObject:mapName];
-        }
     }
+
+    NSMutableArray* logList = [instance loadLogList];
+
+    [instance.logFileNameList removeAllObjects];
+
+    for (NSString *mapName in logList) {
+        [instance.logFileNameList addObject:mapName];
+    }
+
     return instance;
 }
 

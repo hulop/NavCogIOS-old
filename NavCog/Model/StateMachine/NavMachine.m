@@ -233,7 +233,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 
 - (NSString *)getFloorString:(int)floor {
     NSString *ordinalNumber;
-
+    
     // TODO(cgleason): find way to remove special case for floor numbering in Japanese
     NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
     if([@"ja" compare:language] == NSOrderedSame) {
@@ -293,7 +293,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 }
 
 - (void)initializeOrientation {
-
+    
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
@@ -304,7 +304,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         
         [self triggerMotionWithData:motionData];
     }];
-
+    
     [_motionManager stopAccelerometerUpdates];
     [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
         [NavLog logAcc:acc];
@@ -318,7 +318,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     _curOri = - [yaw doubleValue] / M_PI * 180;
     [NavLog logMotion:data];
     [self logState];
-
+    
     if (_navState == NAV_STATE_TURNING) {
         //if (ABS(_curOri - _currentState.ori) <= 10) {
         float diff = ABS(_curOri - _currentState.ori);
@@ -380,7 +380,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     [_motionManager stopAccelerometerUpdates];
     [_motionManager stopDeviceMotionUpdates];
     [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
-
+    
     NSString* fromNodeName;
     NSString* toNodeName;
     NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
@@ -420,7 +420,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
             [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
             [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
-
+            
             //feed to object
             [timesArray addObject: currentTime];
             [objectsArray addObject: motionData];
@@ -480,12 +480,14 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     unsigned long int arraySize = [timesArray count];
     
     dispatch_async(queue, ^{
-
+        
         NSDate* time = startTime;
         
         for (int i=0; i < arraySize; i++) {
             
-        
+            if (_navState == NAV_STATE_IDLE)
+                break;
+            
             if ([objectsArray[i] isKindOfClass: [NSArray class]]) {
                 //create
                 NSTimeInterval waitTime = [timesArray[i] timeIntervalSinceDate:time];
@@ -507,7 +509,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                 NSMutableDictionary* motionData = objectsArray[i];
                 
                 //call motion
-                    [NSThread sleepForTimeInterval:waitTime];
+                [NSThread sleepForTimeInterval:waitTime];
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [self triggerMotionWithData:motionData];
                 });
@@ -515,8 +517,14 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                 time = timesArray[i];
                 
             }
-        
+            
         }
+        
+        dispatch_sync(dispatch_get_main_queue(), ^{
+            [self stopNavigation];
+            [_delegate navigationFinished];
+        });
+        
     });
     
 }
@@ -602,7 +610,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
                         [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
                         [_topoMap cleanTmpNodeAndEdges];
                     } else if (_currentState.type == STATE_TYPE_WALKING) {
-//                        if (ABS(_curOri - _currentState.ori) > 15) {
+                        //                        if (ABS(_curOri - _currentState.ori) > 15) {
                         float diff = ABS(_curOri - _currentState.ori);
                         if (diff > 15 && diff < 345) {
                             _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
