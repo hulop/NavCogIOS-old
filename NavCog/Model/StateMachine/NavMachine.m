@@ -292,10 +292,6 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 }
 
 - (void)initializeOrientation {
-    [_motionManager stopAccelerometerUpdates];
-    [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
-        [NavLog logAcc:acc];
-    }];
 
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
@@ -306,6 +302,11 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
         
         [self triggerMotionWithData:motionData];
+    }];
+
+    [_motionManager stopAccelerometerUpdates];
+    [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
+        [NavLog logAcc:acc];
     }];
 }
 
