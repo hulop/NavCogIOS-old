@@ -108,6 +108,7 @@
 		A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; name = NavCogHelpPageViewController.m; path = NavCog/ViewControllers/NavCogHelpPageViewController.m; sourceTree = SOURCE_ROOT; };
 		A0E9843C1B73A6DC00DB2040 /* NavCog.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = NavCog.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		AADC4813EC20E1F583DD9974 /* Pods-NavCog.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-NavCog.release.xcconfig"; path = "Pods/Target Support Files/Pods-NavCog/Pods-NavCog.release.xcconfig"; sourceTree = "<group>"; };
+		B4048C521C11DBA800634A15 /* NavCogChooseLogViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = NavCogChooseLogViewController.h; path = NavCog/ViewControllers/NavCogChooseLogViewController.h; sourceTree = SOURCE_ROOT; };
 		FD8FBC95C14E3EBB386797B7 /* libPods-NavCog.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-NavCog.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -178,6 +179,7 @@
 				A083F7721BC5B2BE001A1A1B /* NavCogHelpPageViewController.h */,
 				A083F7731BC5B2BE001A1A1B /* NavCogHelpPageViewController.m */,
 				2365BC811BE1808C007F14C3 /* NavCogHelpPageViewController.xib */,
+				B4048C521C11DBA800634A15 /* NavCogChooseLogViewController.h */,
 			);
 			name = ViewControllers;
 			sourceTree = "<group>";
