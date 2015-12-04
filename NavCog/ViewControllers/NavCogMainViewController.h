@@ -25,11 +25,12 @@
 #import "NavMachine.h"
 #import "NavCogFuncViewController.h"
 #import "NavCogChooseMapViewController.h"
+#import "NavCogChooseLogViewController.h"
 #import "NavCogDataSamplingViewController.h"
 #import "NavCogHelpPageViewController.h"
 
 enum UIType {SpeechForAll, SpeechForStartAndTurnSoundForDistance, SpeechForAllAndSoundForDistance, SpeechForStartSoundForDistanceAndTurn};
 
-@interface NavCogMainViewController : UIViewController <UIPickerViewDataSource, UIPickerViewDelegate, NavMachineDelegate, NavCogFuncViewControllerDelegate, NavCogChooseMapViewControllerDelegate>
+@interface NavCogMainViewController : UIViewController <UIPickerViewDataSource, UIPickerViewDelegate, NavMachineDelegate, NavCogFuncViewControllerDelegate, NavCogChooseMapViewControllerDelegate, NavCogChooseLogViewControllerDelegate>
 
 @end

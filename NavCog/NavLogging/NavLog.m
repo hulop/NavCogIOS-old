@@ -98,6 +98,18 @@ static int stderrSave = 0;
     NSLog(@"Acc,%f,%f,%f",data.acceleration.x,data.acceleration.y,data.acceleration.z);
 }
 
++(void)logMotion:(NSDictionary *)data {
+    if(stderrSave == 0) {
+        return;
+    }
+    
+    NSNumber *pitch = [data objectForKey:@"pitch"];
+    NSNumber *roll = [data objectForKey:@"roll"];
+    NSNumber *yaw = [data objectForKey:@"yaw"];
+    
+    NSLog(@"Motion,%f,%f,%f", [pitch doubleValue], [roll doubleValue], [yaw doubleValue]);
+}
+
 +(void)logArray:(NSArray *)data withType:(NSString *)type {
     if(stderrSave == 0) {
         return;
