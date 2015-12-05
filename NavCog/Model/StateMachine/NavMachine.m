@@ -24,7 +24,7 @@
 #import "NavNotificationSpeaker.h"
 #import "NavLog.h"
 
-enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
+enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STATE_TURNING};
 
 @interface NavMachine ()
 
@@ -349,6 +349,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
+    _navState = NAV_STATE_INIT;
     if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
         _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
         [self initializeWithPathNodes:_pathNodes];
@@ -463,6 +464,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
+    _navState = NAV_STATE_INIT;
     if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
         _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
         [self initializeWithPathNodes:_pathNodes];
@@ -665,9 +667,12 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         case NAV_STATE_TURNING:
             type = @"Turning";;
             break;
+        case NAV_STATE_INIT:
+            type = @"Starting";
+            break;
         case NAV_STATE_IDLE:
             type = @"Idle";
-            break;
+        break;
     }
     [NavLog logArray:data withType:type];
 }
