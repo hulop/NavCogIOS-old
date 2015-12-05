@@ -35,6 +35,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 @property (strong, nonatomic) NavState *currentState;
 @property (nonatomic) enum NavigationState navState;
 @property (nonatomic) float curOri;
+@property (nonatomic) float gyroDrift;
+@property (nonatomic) float gyroDriftMultiplier;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (nonatomic) Boolean logReplay;
 @property (nonatomic) Boolean speechEnabled;
@@ -53,6 +55,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 {
     self = [super init];
     if (self) {
+        _gyroDrift = 0;
+        _gyroDriftMultiplier = 5;
         _initialState = nil;
         _currentState = nil;
         _motionManager = [[CMMotionManager alloc] init];
@@ -315,7 +319,10 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     
     NSNumber* yaw = [data objectForKey:@"yaw"];
     
-    _curOri = - [yaw doubleValue] / M_PI * 180;
+    double rawOri = - [yaw doubleValue] / M_PI * 180;
+    
+    _curOri = rawOri - _gyroDrift;
+    
     [NavLog logMotion:data];
     [self logState];
     
@@ -326,6 +333,14 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             [NavSoundEffects playSuccessSound];
             _navState = NAV_STATE_WALKING;
             [self logState];
+        }
+    } else if (_navState == NAV_STATE_WALKING) {
+        if (_currentState.startNode == _currentState.walkingEdge.node1) {
+            _gyroDrift = ( _gyroDrift * (_gyroDriftMultiplier-1) + (rawOri - _currentState.walkingEdge.ori1)) / _gyroDriftMultiplier;
+            [NavLog logGyroDrift:_gyroDrift rawGyro: rawOri edgeDir: _currentState.walkingEdge.ori1 predicted: _curOri];
+        } else {
+            _gyroDrift = ( _gyroDrift * (_gyroDriftMultiplier-1) + (rawOri - _currentState.walkingEdge.ori2)) / _gyroDriftMultiplier;
+            [NavLog logGyroDrift:_gyroDrift rawGyro: rawOri edgeDir: _currentState.walkingEdge.ori2 predicted: _curOri];
         }
     }
 }

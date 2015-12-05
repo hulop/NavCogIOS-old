@@ -81,21 +81,21 @@ static int stderrSave = 0;
         CLBeacon *b = (CLBeacon*)[beacons objectAtIndex:i];
         [str appendFormat:@",%@,%@,%ld",b.major, b.minor, (long)b.rssi];
     }
-    NSLog(@"%@", str);
+    //NSLog(@"%@", str);
 }
 
 +(void)logMotion:(CMDeviceMotion *)data withFrame:(CMAttitudeReferenceFrame)frame {
     if(stderrSave == 0) {
         return;
     }
-    NSLog(@"Motion,%f,%f,%f",data.attitude.pitch,data.attitude.roll,data.attitude.yaw);
+    //NSLog(@"Motion,%f,%f,%f",data.attitude.pitch,data.attitude.roll,data.attitude.yaw);
 }
 
 +(void)logAcc:(CMAccelerometerData *) data {
     if(stderrSave == 0) {
         return;
     }
-    NSLog(@"Acc,%f,%f,%f",data.acceleration.x,data.acceleration.y,data.acceleration.z);
+    //NSLog(@"Acc,%f,%f,%f",data.acceleration.x,data.acceleration.y,data.acceleration.z);
 }
 
 +(void)logMotion:(NSDictionary *)data {
@@ -107,7 +107,16 @@ static int stderrSave = 0;
     NSNumber *roll = [data objectForKey:@"roll"];
     NSNumber *yaw = [data objectForKey:@"yaw"];
     
-    NSLog(@"Motion,%f,%f,%f", [pitch doubleValue], [roll doubleValue], [yaw doubleValue]);
+    //NSLog(@"Motion,%f,%f,%f", [pitch doubleValue], [roll doubleValue], [yaw doubleValue]);
+}
+
++(void)logGyroDrift:(double)drift rawGyro: (double)raw edgeDir: (double)edir predicted:(double)pred {
+
+    if(stderrSave == 0) {
+        return;
+    }
+    
+    NSLog(@"Drift,%f,%f,%f,%f", drift, raw, edir, pred);
 }
 
 +(void)logArray:(NSArray *)data withType:(NSString *)type {
@@ -119,7 +128,7 @@ static int stderrSave = 0;
     for(NSObject *obj in data) {
         [str appendFormat:@",%@", obj];
     }
-    NSLog(@"%@", str);
+    //NSLog(@"%@", str);
 }
 
 @end
