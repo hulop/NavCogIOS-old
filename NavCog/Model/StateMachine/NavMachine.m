@@ -24,7 +24,7 @@
 #import "NavNotificationSpeaker.h"
 #import "NavLog.h"
 
-enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INITIALIZING, NAV_STATE_WALKING, NAV_STATE_TURNING};
+enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STATE_TURNING};
 
 @interface NavMachine ()
 
@@ -430,8 +430,7 @@ double limitAngle(double x) {
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
-    _navState = NAV_STATE_INITIALIZING;
-
+    _navState = NAV_STATE_INIT;
     if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
         _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
         [self initializeWithPathNodes:_pathNodes];
@@ -547,8 +546,7 @@ double limitAngle(double x) {
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
-    _navState = NAV_STATE_INITIALIZING;
-    
+    _navState = NAV_STATE_INIT;
     if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
         _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
         [self initializeWithPathNodes:_pathNodes];
@@ -767,14 +765,14 @@ double limitAngle(double x) {
     }
     NSString *type = @"Navigation";
     switch (_navState) {
-        case NAV_STATE_INITIALIZING:
-            type = @"Walking";
-            break;
         case NAV_STATE_WALKING:
             type = @"Walking";
             break;
         case NAV_STATE_TURNING:
             type = @"Turning";;
+            break;
+        case NAV_STATE_INIT:
+            type = @"Starting";
             break;
         case NAV_STATE_IDLE:
             type = @"Idle";
