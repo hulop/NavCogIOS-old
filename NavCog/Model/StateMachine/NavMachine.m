@@ -24,7 +24,7 @@
 #import "NavNotificationSpeaker.h"
 #import "NavLog.h"
 
-enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
+enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INITIALIZING, NAV_STATE_WALKING, NAV_STATE_TURNING};
 
 @interface NavMachine ()
 
@@ -33,6 +33,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 @property (strong, nonatomic) CMMotionManager *motionManager;
 @property (strong, nonatomic) NavState *initialState;
 @property (strong, nonatomic) NavState *currentState;
+@property (strong, nonatomic) NavLocation *currentLocation;
+@property (strong, nonatomic) NavLocation *previousLocation;
 @property (nonatomic) enum NavigationState navState;
 @property (nonatomic) float curOri;
 @property (nonatomic) float gyroDrift;
@@ -49,6 +51,39 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
 
 @end
 
+double clipAngle(double x) {
+    x = fmod(x, 360);
+    if (x<0)
+        x+=360;
+        
+        return x;
+}
+
+double clipAngle3(double x) {
+    x = fmod(x, 360);
+    if (x>0)
+        x-=360;
+    
+    return x;
+}
+
+double clipAngle2(double x) {
+    x = fmod(x+180, 360);
+    if (x<0)
+        x+=360;
+    
+    return x-180;
+}
+
+double limitAngle(double x) {
+    if (x > 3)
+        return 3;
+    else if (x < -3)
+        return -3;
+    else
+        return x;
+}
+
 @implementation NavMachine
 
 - (instancetype)init
@@ -56,9 +91,11 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     self = [super init];
     if (self) {
         _gyroDrift = 0;
-        _gyroDriftMultiplier = 5;
+        _gyroDriftMultiplier = 10;
         _initialState = nil;
         _currentState = nil;
+        _currentLocation = nil;
+        _previousLocation = nil;
         _motionManager = [[CMMotionManager alloc] init];
         _motionManager.deviceMotionUpdateInterval = 0.1;
         _motionManager.accelerometerUpdateInterval = 0.01;
@@ -204,7 +241,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         
         if (diff < 180) {
             if (diff > 15) {
-                _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_initialState.ori];
+                _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri - _gyroDrift) toOri:_initialState.ori];
                 [NavNotificationSpeaker speakWithCustomizedSpeedImmediately:_currentState.previousInstruction];
                 _navState = NAV_STATE_TURNING;
             } else {
@@ -212,7 +249,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
             }
         } else {
             if (diff < 345) {
-                _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_initialState.ori];
+                _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri - _gyroDrift) toOri:_initialState.ori];
                 [NavNotificationSpeaker speakWithCustomizedSpeedImmediately:_currentState.previousInstruction];
                 _navState = NAV_STATE_TURNING;
             } else {
@@ -319,29 +356,58 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     
     NSNumber* yaw = [data objectForKey:@"yaw"];
     
-    double rawOri = - [yaw doubleValue] / M_PI * 180;
-    
-    _curOri = rawOri - _gyroDrift;
+    _curOri = - [yaw doubleValue] / M_PI * 180;
     
     [NavLog logMotion:data];
     [self logState];
     
     if (_navState == NAV_STATE_TURNING) {
         //if (ABS(_curOri - _currentState.ori) <= 10) {
-        float diff = ABS(_curOri - _currentState.ori);
+        float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
         if (diff <= 10 || diff >= 350) {
             [NavSoundEffects playSuccessSound];
             _navState = NAV_STATE_WALKING;
             [self logState];
         }
-    } else if (_navState == NAV_STATE_WALKING) {
-        if (_currentState.startNode == _currentState.walkingEdge.node1) {
-            _gyroDrift = ( _gyroDrift * (_gyroDriftMultiplier-1) + (rawOri - _currentState.walkingEdge.ori1)) / _gyroDriftMultiplier;
-            [NavLog logGyroDrift:_gyroDrift rawGyro: rawOri edgeDir: _currentState.walkingEdge.ori1 predicted: _curOri];
-        } else {
-            _gyroDrift = ( _gyroDrift * (_gyroDriftMultiplier-1) + (rawOri - _currentState.walkingEdge.ori2)) / _gyroDriftMultiplier;
-            [NavLog logGyroDrift:_gyroDrift rawGyro: rawOri edgeDir: _currentState.walkingEdge.ori2 predicted: _curOri];
-        }
+    } else if ((_navState == NAV_STATE_WALKING) && (_currentState.type != STATE_TYPE_TRANSITION)) {
+        double edgeori;
+        if (_currentState.startNode == _currentState.walkingEdge.node1)
+            edgeori = _currentState.walkingEdge.ori1;
+        else
+            edgeori = _currentState.walkingEdge.ori2;
+        
+        //TODO: no clue on how to deal with angle wrapping. unnoticable for low multipliers (10), bad for high multipliers (100)
+//        double gda = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle(_curOri - clipAngle(edgeori)))/_gyroDriftMultiplier);
+//        double gdb = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle3(_curOri - clipAngle(edgeori)))/_gyroDriftMultiplier);
+//
+//        if(fabs(clipAngle2(_curOri - gda - clipAngle2(edgeori))) < fabs(clipAngle2(_curOri - gdb - clipAngle2(edgeori))))
+//            _gyroDrift = gda;
+//        else
+//            _gyroDrift = gdb;
+        
+//        if ((_gyroDrift > 0) && clipAngle2(_curOri - clipAngle2(edgeori)) < 0) {
+//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + 360 + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
+//        } else if ((_gyroDrift < 0) && clipAngle2(_curOri - clipAngle2(edgeori)) > 0) {
+//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) - 360 + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
+//        } else {
+//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
+//        }
+        
+//        if ((_gyroDrift > 0) && clipAngle2(_curOri - clipAngle2(edgeori)) < 0) {
+//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + 360 + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
+//        } else if ((_gyroDrift < 0) && clipAngle2(_curOri - clipAngle2(edgeori)) > 0) {
+//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) - 360 + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
+//        } else {
+//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
+//        }
+        
+        //model that gracefully adapts to drift. actually worse when error switches sign, takes time to wrap. unnoticable on smal multipliers (10), bad on high multipliers (100)
+        //_gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
+        //limit drift correction to some degrees each update. very naive
+        _gyroDrift += limitAngle(clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)));
+        //simple model that completely offsets drift
+        //_gyroDrift = clipAngle2(_curOri - clipAngle2(edgeori));
+        [NavLog logGyroDrift:_gyroDrift edge:clipAngle2(edgeori) curori:_curOri fixedDelta: clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)) oldDelta: clipAngle2(_curOri - clipAngle(edgeori))];
     }
 }
 
@@ -364,6 +430,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
+    _navState = NAV_STATE_INITIALIZING;
+
     if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
         _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
         [self initializeWithPathNodes:_pathNodes];
@@ -417,7 +485,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
         
         //Explode the line with space
         NSString* dateAndTime = [line substringToIndex:23];
-        NSString* typeAndData = [line substringFromIndex:44];
+        NSArray *breakarray = [line componentsSeparatedByString:@"]"];
+        NSString* typeAndData = [breakarray[1] substringFromIndex:1];
         NSArray *typeAndDataStringArray = [typeAndData componentsSeparatedByString:@","];
         
         
@@ -478,6 +547,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
+    _navState = NAV_STATE_INITIALIZING;
+    
     if (![fromNodeName isEqualToString:NSLocalizedString(@"currentLocation", @"Current Location")]) {
         _pathNodes = [_topoMap findShortestPathFromNodeWithName:fromNodeName toNodeWithName:toNodeName];
         [self initializeWithPathNodes:_pathNodes];
@@ -596,49 +667,71 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     [NavLog logBeacons:beacons];
     // if we start navigation from current location
     // and the navigation does not start yet
+    [self logState];
+    _previousLocation = _currentLocation;
+    _currentLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
+
     if (_isStartFromCurrentLocation && !_isNavigationStarted) {
-        NavLocation *curLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
-        if (curLocation.edgeID == nil) {
+        if (_currentLocation.edgeID == nil)
             return;
-        }
-        _pathNodes = [_topoMap findShortestPathFromCurrentLocation:curLocation toNodeWithName:_destNodeName];
+
+        _pathNodes = [_topoMap findShortestPathFromCurrentLocation:_currentLocation toNodeWithName:_destNodeName];
         [self initializeWithPathNodes:_pathNodes];
         _isNavigationStarted = true;
         [_delegate navigationReadyToGo];
         NSLog(@"***********************************************");
-        NSLog(@"layer : %@", curLocation.layerID);
-        NSLog(@"edge : %@", curLocation.edgeID);
-        NSLog(@"x : %f", curLocation.xInEdge);
-        NSLog(@"y : %f", curLocation.yInEdge);
-    } else {
-        [self logState];
-        if ([NavLog isLogging] == YES) {
-            [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
-        }
-        if (_navState == NAV_STATE_WALKING) {
-            if ([beacons count] > 0) {
-                if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
-                    _currentState = _currentState.nextState;
-                    if (_currentState == nil) {
-                        [_delegate navigationFinished];
-                        [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];
-                        [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
-                        [_topoMap cleanTmpNodeAndEdges];
-                    } else if (_currentState.type == STATE_TYPE_WALKING) {
-                        //                        if (ABS(_curOri - _currentState.ori) > 15) {
-                        float diff = ABS(_curOri - _currentState.ori);
-                        if (diff > 15 && diff < 345) {
-                            _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
-                            [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
-                            _navState = NAV_STATE_TURNING;
-                        } else {
-                            _navState = NAV_STATE_WALKING;
-                        }
-                    } else if (_currentState.type == STATE_TYPE_TRANSITION) {
+        NSLog(@"layer : %@", _currentLocation.layerID);
+        NSLog(@"edge : %@", _currentLocation.edgeID);
+        NSLog(@"x : %f", _currentLocation.xInEdge);
+        NSLog(@"y : %f", _currentLocation.yInEdge);
+    } else if (_navState == NAV_STATE_WALKING) {
+        if ([beacons count] > 0) {
+            if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
+                _currentState = _currentState.nextState;
+                if (_currentState == nil) {
+                    [_delegate navigationFinished];
+                    [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];
+                    [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+                    [_topoMap cleanTmpNodeAndEdges];
+                }
+                else if (_currentState.type == STATE_TYPE_WALKING) {
+//                    if(_previousLocation != nil) {
+//                        if(_currentLocation.edgeID == _previousLocation.edgeID) {
+//                            //calculate delta
+//                            double deltax = _currentLocation.xInEdge-_previousLocation.xInEdge;
+//                            double deltay = _currentLocation.yInEdge-_previousLocation.yInEdge;
+//                            double delta = sqrt(deltax*deltax+deltay*deltay);
+//                            if (delta > _gyroDriftThreshold) {
+//                                //update drift, called only in WALKING state, else check it
+//                                double edgeori;
+//                                if (_currentState.startNode == _currentState.walkingEdge.node1)
+//                                    edgeori = _currentState.walkingEdge.ori1;
+//                                else
+//                                    edgeori = _currentState.walkingEdge.ori2;
+//                                
+//                                _gyroDrift = (_gyroDrift + (_curOri - edgeori))/2;
+//                                [NavLog logGyroDrift:_gyroDrift edge: edgeori curori: _curOri];
+//                            }
+//                        }
+//                    }
+                    
+                    //                        if (ABS(_curOri - _currentState.ori) > 15) {
+                    //float diff = ABS(_curOri - _currentState.ori);
+                    float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
+                    
+                    if (diff > 15 && diff < 345) {
+                        //_currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
+                        _currentState.previousInstruction = [self getTurnStringFromOri:(_curOri-_gyroDrift) toOri:_currentState.ori];
+
+                        [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
+                        _navState = NAV_STATE_TURNING;
+                    } else {
                         _navState = NAV_STATE_WALKING;
                     }
-                    [self logState];
+                } else if (_currentState.type == STATE_TYPE_TRANSITION) {
+                    _navState = NAV_STATE_WALKING;
                 }
+                [self logState];
             }
         }
     }
@@ -674,6 +767,9 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_WALKING, NAV_STATE_TURNING};
     }
     NSString *type = @"Navigation";
     switch (_navState) {
+        case NAV_STATE_INITIALIZING:
+            type = @"Walking";
+            break;
         case NAV_STATE_WALKING:
             type = @"Walking";
             break;
