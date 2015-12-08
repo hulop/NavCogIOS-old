@@ -28,7 +28,7 @@
 
 #define KNN_NUM 5
 #define TREE_NUM 5
-#define SMOOTHING_WEIGHT 0.6
+#define SMOOTHING_WEIGHT 0.8 // 0.6
 #define JUMPING_BOUND 3
 
 using namespace std;
@@ -48,7 +48,7 @@ using namespace std;
 @property (nonatomic) int beaconNum;
 @property (nonatomic) Boolean bStart;
 @property (nonatomic) struct NavPoint prePoint;
-@property (nonatomic) NSDate* preDate;
+@property (nonatomic) NSDate *preDate, *jumpDate;
 
 @end
 
@@ -175,17 +175,26 @@ using namespace std;
 }
 
 - (struct NavPoint)localizeWithBeacons:(NSArray *)beacons {
-    float jump = JUMPING_BOUND, smooth = SMOOTHING_WEIGHT;
     NSDate* now = [NSDate date];
-    if (_bStart && _preDate) {
-        double weight = [now timeIntervalSinceDate:_preDate] / 1.0;
-        jump = jump * weight;
-        smooth = MIN(smooth * weight, 1.0);
-        if (weight > 2) {
-            NSLog(@"weight=%f, jump=%f, smooth=%f", weight, jump, smooth);
-        }
+    if (_bStart && _preDate && [now timeIntervalSinceDate:_preDate] < 0.5) {
+        // Return last position after 0.5 sec
+        struct NavPoint result;
+        result.knndist = _prePoint.knndist;
+        result.x = _prePoint.x * 3;
+        result.y = _prePoint.y * 3;
+        return result;
     }
     _preDate = now;
+    float jump = JUMPING_BOUND, smooth = SMOOTHING_WEIGHT;
+    if (_bStart && _jumpDate) {
+        double duration = [now timeIntervalSinceDate:_jumpDate];
+        if (duration > 1) {
+            // Adjust jump & smooth parameter based on jumping duration
+            jump = jump * duration * 2;
+            smooth = 1.0;
+            NSLog(@"duration=%f, jump=%f, smooth=%f", duration, jump, smooth);
+        }
+    }
     for (int i = 0; i < _beaconNum; i++) {
         _featVec[i] = -100;
     }
@@ -226,6 +235,13 @@ using namespace std;
     }
     
     if (_bStart) {
+        if (ABS(result.x - _prePoint.x) > jump || ABS(result.y - _prePoint.y) > jump) {
+            if (_jumpDate == nil) {
+                _jumpDate = now;
+            }
+        } else {
+            _jumpDate = nil;
+        }
         if (result.x - _prePoint.x > jump) {
             result.x = _prePoint.x + jump;
         } else if (result.x - _prePoint.x < -jump) {
@@ -246,7 +262,9 @@ using namespace std;
     } else {
         _prePoint.x = result.x;
         _prePoint.y = result.y;
+        _jumpDate = nil;
     }
+    _prePoint.knndist = result.knndist;
     
     _bStart = true;
     result.x *= 3;

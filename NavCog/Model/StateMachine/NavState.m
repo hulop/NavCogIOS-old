@@ -51,6 +51,22 @@
     return (int)(((float)feet * 0.3048) + 0.5f);
 }
 
+- (float)getStartDistance:(struct NavPoint)pos {
+    return (_ty > _sy ? 1 : -1) * (pos.y - _sy);
+}
+
+- (float)getTargetDistance:(struct NavPoint)pos {
+    return (_ty > _sy ? 1 : -1) * (_ty - pos.y);
+}
+
+- (float)getStartRatio:(struct NavPoint)pos {
+    return [self getStartDistance:pos] / ABS(_ty - _sy);
+}
+
+- (float)getTargetRatio:(struct NavPoint)pos {
+    return [self getTargetDistance:pos] / ABS(_ty - _sy);
+}
+
 - (instancetype)init
 {
     self = [super init];
@@ -62,6 +78,7 @@
         _nextState = nil;
         _isTricky = false;
         _didTrickyNotification = false;
+        _closestDist = INT_MAX;
     }
     return self;
 }
@@ -137,6 +154,26 @@
         _didTrickyNotification = true;
         [NavNotificationSpeaker speakImmediatelyAndSlowly:NSLocalizedString(@"accessNotif", @"Alert that an accessibility notification is available")];
     }
+
+    // snap y within edge
+    float targetDist = [self getTargetDistance:pos];
+    if (targetDist < 0) {
+        NSLog(@"SnapDistance,%f",targetDist);
+        dist = 0;
+    }
+    _closestDist = MIN(dist, _closestDist);
+    if(_closestDist < 20 && _nextState != nil && _nextState.type == STATE_TYPE_WALKING) {
+        // check if we already on the next edge
+        struct NavPoint nextPos = [_nextState.walkingEdge getCurrentPositionInEdgeUsingBeacons:beacons];
+        float nextStartDist = [_nextState getStartRatio:nextPos];
+        float nextStartRatio = [_nextState getStartRatio:nextPos];
+        if (nextStartDist > 20 || nextStartRatio > 0.25) {
+            NSLog(@"ForceNextState,%f,%f,%f,%f",_closestDist, pos.knndist, nextStartDist, nextPos.knndist);
+            dist = 0;
+            pos.knndist = 0; // for exit transition
+        }
+    }
+
     float threshold = 5;
     if (_type == STATE_TYPE_WALKING) {
         NSString *distFormat = NSLocalizedString([self isMeter]?@"meterFormat":@"feetFormat", @"Use to express a distance in feet");

@@ -105,6 +105,7 @@ function updateRedDot(latLng) {
         _redDot.setMap(_map);
         _redDot.setPosition(latLng);
     }
+    _map.setCenter(latLng);
 }
 
 function stopNavigation() {

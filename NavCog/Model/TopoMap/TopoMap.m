@@ -92,6 +92,8 @@
             node.transitInfo = [nodeJson objectForKey:@"transitInfo"];
             node.transitKnnDistThres = ((NSNumber *)[nodeJson objectForKey:@"knnDistThres"]).floatValue;
             node.transitPosThres = ((NSNumber *)[nodeJson objectForKey:@"posDistThres"]).floatValue;
+            node.transitKnnDistThres = MAX(1.0, node.transitKnnDistThres);
+            node.transitPosThres = MAX(10, node.transitPosThres);
             node.parentLayer = layer;
             [_nodeNameNodeIDDict setObject:node.nodeID forKey:node.name];
             [_nodeNameLayerIDDict setObject:zIndex forKey:node.name];
@@ -460,10 +462,14 @@
     return [layer.nodes objectForKey:nodeID];
 }
 
+- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons {
+    return [self getCurrentLocationOnMapUsingBeacons:beacons withInit:YES];
+}
+
 // get current location on the map
 // check which layer and which edge you're in
 // find a edge in which we get a minimum normalized KNN Distance
-- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons {
+- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons withInit:(BOOL)init {
     NavLocation *location = [[NavLocation alloc] init];
     float minKnnDist = 1;
     float lastKnnDist = 0;
@@ -471,7 +477,9 @@
         NavLayer *layer = [_layers objectForKey:layerID];
         for (NSString *edgeID in layer.edges) {
             NavEdge *edge = [layer.edges objectForKey:edgeID];
-            [edge initLocalization];
+            if (init) {
+                [edge initLocalization];
+            }
             struct NavPoint pos = [edge getCurrentPositionInEdgeUsingBeacons:beacons];
             float dist = (pos.knndist - edge.minKnnDist) / (edge.maxKnnDist - edge.minKnnDist);
             NSMutableArray *data = [[NSMutableArray alloc] init];

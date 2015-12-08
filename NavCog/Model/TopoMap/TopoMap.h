@@ -43,6 +43,7 @@
 - (NSArray *)findShortestPathFromNodeWithName:(NSString *)fromName toNodeWithName:(NSString *)toName;
 - (NSArray *)getAllLocationNamesOnMap;
 - (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons;
+- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons withInit:(BOOL)init;
 - (NSArray *)findShortestPathFromCurrentLocation:(NavLocation *)curLocation toNodeWithName:(NSString *)toNodeName;
 - (void)cleanTmpNodeAndEdges;
 
