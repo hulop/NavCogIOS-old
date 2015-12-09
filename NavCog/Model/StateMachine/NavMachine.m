@@ -39,6 +39,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 @property (nonatomic) float curOri;
 @property (nonatomic) float gyroDrift;
 @property (nonatomic) float gyroDriftMultiplier;
+@property (nonatomic) float gyroDriftLimit;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (nonatomic) Boolean logReplay;
 @property (nonatomic) Boolean speechEnabled;
@@ -51,7 +52,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 
 @end
 
-double clipAngle(double x) {
+double clipAngle(double x) { //clips the angle between 0 and 360
     x = fmod(x, 360);
     if (x<0)
         x+=360;
@@ -59,15 +60,7 @@ double clipAngle(double x) {
         return x;
 }
 
-double clipAngle3(double x) {
-    x = fmod(x, 360);
-    if (x>0)
-        x-=360;
-    
-    return x;
-}
-
-double clipAngle2(double x) {
+double clipAngle2(double x) { //clips the angle between -180 and 180
     x = fmod(x+180, 360);
     if (x<0)
         x+=360;
@@ -75,11 +68,11 @@ double clipAngle2(double x) {
     return x-180;
 }
 
-double limitAngle(double x) {
-    if (x > 3)
-        return 3;
-    else if (x < -3)
-        return -3;
+double limitAngle(double x, double l) { //limits angle change to l
+    if (x > l)
+        return l;
+    else if (x < -l)
+        return -l;
     else
         return x;
 }
@@ -91,7 +84,8 @@ double limitAngle(double x) {
     self = [super init];
     if (self) {
         _gyroDrift = 0;
-        _gyroDriftMultiplier = 10;
+        _gyroDriftMultiplier = 100;
+        _gyroDriftLimit = 3;
         _initialState = nil;
         _currentState = nil;
         _currentLocation = nil;
@@ -376,35 +370,10 @@ double limitAngle(double x) {
         else
             edgeori = _currentState.walkingEdge.ori2;
         
-        //TODO: no clue on how to deal with angle wrapping. unnoticable for low multipliers (10), bad for high multipliers (100)
-//        double gda = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle(_curOri - clipAngle(edgeori)))/_gyroDriftMultiplier);
-//        double gdb = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle3(_curOri - clipAngle(edgeori)))/_gyroDriftMultiplier);
-//
-//        if(fabs(clipAngle2(_curOri - gda - clipAngle2(edgeori))) < fabs(clipAngle2(_curOri - gdb - clipAngle2(edgeori))))
-//            _gyroDrift = gda;
-//        else
-//            _gyroDrift = gdb;
-        
-//        if ((_gyroDrift > 0) && clipAngle2(_curOri - clipAngle2(edgeori)) < 0) {
-//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + 360 + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
-//        } else if ((_gyroDrift < 0) && clipAngle2(_curOri - clipAngle2(edgeori)) > 0) {
-//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) - 360 + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
-//        } else {
-//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
-//        }
-        
-//        if ((_gyroDrift > 0) && clipAngle2(_curOri - clipAngle2(edgeori)) < 0) {
-//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + 360 + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
-//        } else if ((_gyroDrift < 0) && clipAngle2(_curOri - clipAngle2(edgeori)) > 0) {
-//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) - 360 + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
-//        } else {
-//            _gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
-//        }
-        
-        //model that gracefully adapts to drift. actually worse when error switches sign, takes time to wrap. unnoticable on smal multipliers (10), bad on high multipliers (100)
-        //_gyroDrift = clipAngle2((_gyroDrift*(_gyroDriftMultiplier-1) + clipAngle2(_curOri - clipAngle2(edgeori)))/_gyroDriftMultiplier);
+        //model that gracefully adapts to drift.
+        _gyroDrift += (clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)))/_gyroDriftMultiplier;
         //limit drift correction to some degrees each update. very naive
-        _gyroDrift += limitAngle(clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)));
+        //_gyroDrift += limitAngle(clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)));
         //simple model that completely offsets drift
         //_gyroDrift = clipAngle2(_curOri - clipAngle2(edgeori));
         [NavLog logGyroDrift:_gyroDrift edge:clipAngle2(edgeori) curori:_curOri fixedDelta: clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)) oldDelta: clipAngle2(_curOri - clipAngle(edgeori))];
