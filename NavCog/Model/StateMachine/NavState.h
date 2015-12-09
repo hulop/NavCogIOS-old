@@ -46,6 +46,7 @@ enum StateType {STATE_TYPE_WALKING, STATE_TYPE_TRANSITION};
 @property (strong, nonatomic) NSString *surroundInfo;
 @property (strong, nonatomic) NSString *trickyInfo;
 @property (nonatomic) Boolean isTricky;
+@property (nonatomic) float closestDist;
 
 @property (nonatomic) float ori; // expected orientation when walking in this state
 @property (nonatomic) float sx; // x of start node
@@ -61,5 +62,9 @@ enum StateType {STATE_TYPE_WALKING, STATE_TYPE_TRANSITION};
 
 - (BOOL)isMeter;
 - (int)toMeter:(int) feet;
+- (float)getStartDistance:(struct NavPoint) pos;
+- (float)getTargetDistance:(struct NavPoint) pos;
+- (float)getStartRatio:(struct NavPoint) pos;
+- (float)getTargetRatio:(struct NavPoint) pos;
 
 @end

@@ -128,6 +128,8 @@ double limitAngle(double x, double l) { //limits angle change to l
                 [newState.targetEdge initLocalization];
                 newState.tx = [node2 getXInEdgeWithID:node3.preEdgeInPath.edgeID];
                 newState.ty = [node2 getYInEdgeWithID:node3.preEdgeInPath.edgeID];
+                newState.sx = [node3 getXInEdgeWithID:node3.preEdgeInPath.edgeID];// fix for snap min/max
+                newState.sy = [node3 getYInEdgeWithID:node3.preEdgeInPath.edgeID];// fix for snap min/max
             }
             [startInfo appendString:[node1 getInfoComingFromEdgeWithID:node1.preEdgeInPath.edgeID]];
             switch (node1.type) {
@@ -651,48 +653,63 @@ double limitAngle(double x, double l) { //limits angle change to l
         NSLog(@"edge : %@", _currentLocation.edgeID);
         NSLog(@"x : %f", _currentLocation.xInEdge);
         NSLog(@"y : %f", _currentLocation.yInEdge);
-    } else if (_navState == NAV_STATE_WALKING) {
-        if ([beacons count] > 0) {
-            if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
-                _currentState = _currentState.nextState;
-                if (_currentState == nil) {
-                    [_delegate navigationFinished];
-                    [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];
-                    [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
-                    [_topoMap cleanTmpNodeAndEdges];
-                }
-                else if (_currentState.type == STATE_TYPE_WALKING) {
-//                    if(_previousLocation != nil) {
-//                        if(_currentLocation.edgeID == _previousLocation.edgeID) {
-//                            //calculate delta
-//                            double deltax = _currentLocation.xInEdge-_previousLocation.xInEdge;
-//                            double deltay = _currentLocation.yInEdge-_previousLocation.yInEdge;
-//                            double delta = sqrt(deltax*deltax+deltay*deltay);
-//                            if (delta > _gyroDriftThreshold) {
-//                                //update drift, called only in WALKING state, else check it
-//                                double edgeori;
-//                                if (_currentState.startNode == _currentState.walkingEdge.node1)
-//                                    edgeori = _currentState.walkingEdge.ori1;
-//                                else
-//                                    edgeori = _currentState.walkingEdge.ori2;
-//                                
-//                                _gyroDrift = (_gyroDrift + (_curOri - edgeori))/2;
-//                                [NavLog logGyroDrift:_gyroDrift edge: edgeori curori: _curOri];
-//                            }
-//                        }
-//                    }
-                    
-                    //                        if (ABS(_curOri - _currentState.ori) > 15) {
-                    //float diff = ABS(_curOri - _currentState.ori);
-                    float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
-                    
-                    if (diff > 15 && diff < 345) {
-                        //_currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
-                        _currentState.previousInstruction = [self getTurnStringFromOri:(_curOri-_gyroDrift) toOri:_currentState.ori];
-
-                        [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
-                        _navState = NAV_STATE_TURNING;
-                    } else {
+    } else {
+        [self logState];
+        if ([NavLog isLogging] == YES) {
+            [_topoMap getCurrentLocationOnMapUsingBeacons:beacons withInit:NO];
+        }
+        if (_navState == NAV_STATE_TURNING && [beacons count] > 0) {
+            // check if user keep moving to destination without turn
+            struct NavPoint pos = [_currentState.walkingEdge getCurrentPositionInEdgeUsingBeacons:beacons];
+            float startDist = [_currentState getStartDistance:pos];
+            float startRatio = [_currentState getStartRatio:pos];
+            if (startDist > 20 || startRatio > 0.25) {
+                NSLog(@"ForceTurn,%f,%f",startDist, startRatio);
+                [NavSoundEffects playSuccessSound];
+                _navState = NAV_STATE_WALKING;
+            }
+        }
+        if (_navState == NAV_STATE_WALKING) {
+            if ([beacons count] > 0) {
+                if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
+                    _currentState = _currentState.nextState;
+                    if (_currentState == nil) {
+                        [_delegate navigationFinished];
+                        [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];
+                        [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
+                        [_topoMap cleanTmpNodeAndEdges];
+                    } else if (_currentState.type == STATE_TYPE_WALKING) {
+                        //                    if(_previousLocation != nil) {
+                        //                        if(_currentLocation.edgeID == _previousLocation.edgeID) {
+                        //                            //calculate delta
+                        //                            double deltax = _currentLocation.xInEdge-_previousLocation.xInEdge;
+                        //                            double deltay = _currentLocation.yInEdge-_previousLocation.yInEdge;
+                        //                            double delta = sqrt(deltax*deltax+deltay*deltay);
+                        //                            if (delta > _gyroDriftThreshold) {
+                        //                                //update drift, called only in WALKING state, else check it
+                        //                                double edgeori;
+                        //                                if (_currentState.startNode == _currentState.walkingEdge.node1)
+                        //                                    edgeori = _currentState.walkingEdge.ori1;
+                        //                                else
+                        //                                    edgeori = _currentState.walkingEdge.ori2;
+                        //
+                        //                                _gyroDrift = (_gyroDrift + (_curOri - edgeori))/2;
+                        //                                [NavLog logGyroDrift:_gyroDrift edge: edgeori curori: _curOri];
+                        //                            }
+                        //                        }
+                        //                    }
+                        
+                        
+                        //                        if (ABS(_curOri - _currentState.ori) > 15) {
+                        float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
+                        if (diff > 15 && diff < 345) {
+                            _currentState.previousInstruction = [self getTurnStringFromOri:(_curOri-_gyroDrift) toOri:_currentState.ori];
+                            [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
+                            _navState = NAV_STATE_TURNING;
+                        } else {
+                            _navState = NAV_STATE_WALKING;
+                        }
+                    } else if (_currentState.type == STATE_TYPE_TRANSITION) {
                         _navState = NAV_STATE_WALKING;
                     }
                 } else if (_currentState.type == STATE_TYPE_TRANSITION) {
@@ -745,7 +762,7 @@ double limitAngle(double x, double l) { //limits angle change to l
             break;
         case NAV_STATE_IDLE:
             type = @"Idle";
-            break;
+        break;
     }
     [NavLog logArray:data withType:type];
 }
