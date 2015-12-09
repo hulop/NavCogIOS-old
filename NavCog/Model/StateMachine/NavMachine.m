@@ -85,7 +85,8 @@ double limitAngle(double x, double l) { //limits angle change to l
 {
     self = [super init];
     if (self) {
-        _gyroDrift = 0;
+        _logReplay = false;
+        _gyroDrift = -110;
         _gyroDriftMultiplier = 100;
         _gyroDriftLimit = 3;
         _initialState = nil;
@@ -328,19 +329,23 @@ double limitAngle(double x, double l) { //limits angle change to l
 
     _gyroDrift = 0;
     [_motionManager stopDeviceMotionUpdates];
-    [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
-        NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
-
-        [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
-        [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.roll] forKey:@"roll"];
-        [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
-
-        [self triggerMotionWithData:motionData];
+    [_motionManager startDeviceMotionUpdatesUsingReferenceFrame: CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
+        if(!_logReplay) {
+            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
+            
+            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
+            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.roll] forKey:@"roll"];
+            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
+            
+            [self triggerMotionWithData:motionData];
+        }
     }];
 
     [_motionManager stopAccelerometerUpdates];
     [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
-        [NavLog logAcc:acc];
+        if(!_logReplay) {
+            [NavLog logAcc:acc];
+        }
     }];
 }
 
@@ -590,6 +595,7 @@ double limitAngle(double x, double l) { //limits angle change to l
         dispatch_sync(dispatch_get_main_queue(), ^{
             [self stopNavigation];
             [_delegate navigationFinished];
+            _logReplay = false;
         });
 
     });
@@ -641,7 +647,9 @@ double limitAngle(double x, double l) { //limits angle change to l
 }
 
 - (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region {
-    [self receivedBeaconsArray:beacons];
+    if(!_logReplay) {
+        [self receivedBeaconsArray:beacons];
+    }
 }
 
 - (void)receivedBeaconsArray:(NSArray *)beacons {

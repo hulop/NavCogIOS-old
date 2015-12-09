@@ -69,6 +69,7 @@
     _isSpeechFast = true;
     [NavCogChooseMapViewController setMapChooserDelegate:self];
     [NavCogChooseLogViewController setLogChooserDelegate:self];
+    [self initializeOrientation];
 }
 
 - (void)setupUI {
@@ -77,27 +78,28 @@
     float bt = 20; // button top
     float bm = 5; // button margin
     float bh = 50; // button height
-    float bw = (sw - 3 * bm) / 2;
+//    float bw = (sw - 3 * bm) / 2;
+    float bw = (sw - 2 * bm);
     float bb = bt + bh;
     float ot = sh - 150;
     
     // buttons
-    UIButton *initalizeOriButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
-    [initalizeOriButton addTarget:self action:@selector(initializeOrientation) forControlEvents:UIControlEventTouchUpInside];
-    initalizeOriButton.frame = CGRectMake(bm, bt, bw, bh);
-    initalizeOriButton.bounds = CGRectMake(0, 0, bw, bh);
-    initalizeOriButton.layer.cornerRadius = 3;
-    initalizeOriButton.backgroundColor = [UIColor clearColor];
-    initalizeOriButton.layer.borderWidth = 2.0;
-    initalizeOriButton.layer.borderColor = [UIColor blackColor].CGColor;
-    [initalizeOriButton setTitle:NSLocalizedString(@"initOrientationButton", @"Button to initialize orientation") forState:UIControlStateNormal];
-    [initalizeOriButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
-    [initalizeOriButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
-    [self.view addSubview:initalizeOriButton];
+//    UIButton *initalizeOriButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
+//    [initalizeOriButton addTarget:self action:@selector(initializeOrientation) forControlEvents:UIControlEventTouchUpInside];
+//    initalizeOriButton.frame = CGRectMake(bm, bt, bw, bh);
+//    initalizeOriButton.bounds = CGRectMake(0, 0, bw, bh);
+//    initalizeOriButton.layer.cornerRadius = 3;
+//    initalizeOriButton.backgroundColor = [UIColor clearColor];
+//    initalizeOriButton.layer.borderWidth = 2.0;
+//    initalizeOriButton.layer.borderColor = [UIColor blackColor].CGColor;
+//    [initalizeOriButton setTitle:NSLocalizedString(@"initOrientationButton", @"Button to initialize orientation") forState:UIControlStateNormal];
+//    [initalizeOriButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
+//    [initalizeOriButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+//    [self.view addSubview:initalizeOriButton];
     
     _startNavButton = [UIButton buttonWithType:UIButtonTypeRoundedRect];
     [_startNavButton addTarget:self action:@selector(startNavigation) forControlEvents:UIControlEventTouchUpInside];
-    _startNavButton.frame = CGRectMake(bw + 2 * bm + 1, bt, bw, bh);
+    _startNavButton.frame = CGRectMake(bm, bt, bw, bh);
     _startNavButton.bounds = CGRectMake(0, 0, bw, bh);
     _startNavButton.layer.cornerRadius = 3;
     _startNavButton.backgroundColor = [UIColor clearColor];
@@ -106,7 +108,7 @@
     [_startNavButton setTitle:NSLocalizedString(@"startNavigationButton", @"Button to start navigation") forState:UIControlStateNormal];
     [_startNavButton setTitleColor:[UIColor blackColor] forState:UIControlStateNormal];
     [_startNavButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
-    _startNavButton.enabled = false;
+    //_startNavButton.enabled = false;
     [self.view addSubview:_startNavButton];
     
     // pikcers
@@ -180,7 +182,7 @@
 
 - (void)initializeOrientation {
     [_navMachine initializeOrientation];
-    _startNavButton.enabled = true;
+    //_startNavButton.enabled = true;
 }
 
 - (void)startNavigation {
@@ -364,7 +366,7 @@
 
 // new topo map loaded
 - (void)logToSimulate:(NSString *)logName {
-    _startNavButton.enabled = false;
+    //_startNavButton.enabled = false;
     [_navLogViewCtrl.view removeFromSuperview];
 
     NSString* documentsPath = [NSSearchPathForDirectoriesInDomains(NSDocumentDirectory, NSUserDomainMask, YES) objectAtIndex:0];
