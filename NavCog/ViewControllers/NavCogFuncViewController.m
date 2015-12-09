@@ -84,6 +84,8 @@
     [preButton setTitle:NSLocalizedString(@"previousInstructionButton", @"HTML Label for previous instruction button in view")forState:UIControlStateNormal];
     [preButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [preButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+    preButton.tag = BUTTON_PRE;
+    [preButton setAccessibilityTraits:UIAccessibilityTraitNone];
     [self.view addSubview:preButton];
     
     // accessibility instruction button
@@ -100,6 +102,8 @@
     [accessButton setTitle:NSLocalizedString(@"accessibilityInstructionButton", @"HTML Label for accessibility instruction button in view") forState:UIControlStateNormal];
     [accessButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [accessButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+    accessButton.tag = BUTTON_ACCESS;
+    [accessButton setAccessibilityTraits:UIAccessibilityTraitNone];
     [self.view addSubview:accessButton];
     
     // surrounding information button
@@ -116,6 +120,8 @@
     [surroundButton setTitle:NSLocalizedString(@"surroundingInformationButton", @"HTML Label for surrounding information button in view") forState:UIControlStateNormal];
     [surroundButton setTitleColor:[UIColor whiteColor] forState:UIControlStateNormal];
     [surroundButton setTitleColor:[UIColor lightGrayColor] forState:UIControlStateDisabled];
+    surroundButton.tag = BUTTON_SURROUND;
+    [surroundButton setAccessibilityTraits:UIAccessibilityTraitNone];
     [self.view addSubview:surroundButton];
     
     // stop navigation button
@@ -163,6 +169,18 @@
 - (void)didReceiveMemoryWarning {
     [super didReceiveMemoryWarning];
     // Dispose of any resources that can be recreated.
+}
+
+- (void)setHintText:(NSString *)str withTag:(NSInteger)tag {
+    UIButton *button = [self.view viewWithTag:tag];
+    if (button != nil) {
+        [button setAccessibilityHint:str];
+    }
+}
+
+- (void)viewDidAppear:(BOOL)animated {
+    [super viewDidAppear:animated];
+    UIAccessibilityPostNotification(UIAccessibilityScreenChangedNotification, [self.view viewWithTag:BUTTON_PRE]);
 }
 
 @end
