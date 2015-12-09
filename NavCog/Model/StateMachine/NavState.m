@@ -267,26 +267,38 @@
 
 - (void)repeatPreviousInstruction {
     if (_previousInstruction != nil) {
-        if ([_previousInstruction containsString:NSLocalizedString([self isMeter]?@"meter":@"feet", @"A unit of distance in feet")] && ([_previousInstruction length] == 8 || [_previousInstruction length] == 7)) {
-            [self speakInstructionImmediately:[NSString stringWithFormat:NSLocalizedString(@"andFormat", @"Used to join two instructions"), _previousInstruction, _nextActionInfo]];
-        } else {
-            [self speakInstructionImmediately:_previousInstruction];
-        }
+        [self speakInstructionImmediately:[self getPreviousInstruction]];
     }
 }
 
 - (void)announceSurroundInfo {
-    if ([_surroundInfo isEqualToString:@""]) {
-        [NavNotificationSpeaker speakImmediatelyAndSlowly:NSLocalizedString(@"noInformation", @"Spoken when no information is available")];
-    } else {
-        [NavNotificationSpeaker speakImmediatelyAndSlowly:_surroundInfo];
-    }
+    [NavNotificationSpeaker speakImmediatelyAndSlowly:[self getSurroundInfo]];
 }
 
 - (void)announceAccessibilityInfo {
     if (_trickyInfo != nil) {
-        [NavNotificationSpeaker speakImmediatelyAndSlowly:_trickyInfo];
+        [NavNotificationSpeaker speakImmediatelyAndSlowly:[self getAccessibilityInfo]];
     }
+}
+
+- (NSString*)getPreviousInstruction {
+    if (_previousInstruction != nil) {
+        if ([_previousInstruction containsString:NSLocalizedString([self isMeter]?@"meter":@"feet", @"A unit of distance in feet")] && ([_previousInstruction length] > 6 && [_previousInstruction length] < 10)) {
+            return [NSString stringWithFormat:NSLocalizedString(@"andFormat", @"Used to join two instructions"), _previousInstruction, _nextActionInfo];
+        }
+    }
+    return _previousInstruction;
+}
+
+- (NSString*)getSurroundInfo {
+    if ([_surroundInfo isEqualToString:@""]) {
+        return NSLocalizedString(@"noInformation", @"Spoken when no information is available");
+    }
+    return _surroundInfo;
+}
+
+- (NSString*)getAccessibilityInfo {
+    return _trickyInfo;
 }
 
 - (void)playClickSound {

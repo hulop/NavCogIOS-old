@@ -22,6 +22,7 @@
 
 #import "NavMachine.h"
 #import "NavNotificationSpeaker.h"
+#import "NavCogFuncViewController.h"
 #import "NavLog.h"
 
 enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STATE_TURNING};
@@ -33,8 +34,13 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 @property (strong, nonatomic) CMMotionManager *motionManager;
 @property (strong, nonatomic) NavState *initialState;
 @property (strong, nonatomic) NavState *currentState;
+@property (strong, nonatomic) NavLocation *currentLocation;
+@property (strong, nonatomic) NavLocation *previousLocation;
 @property (nonatomic) enum NavigationState navState;
 @property (nonatomic) float curOri;
+@property (nonatomic) float gyroDrift;
+@property (nonatomic) float gyroDriftMultiplier;
+@property (nonatomic) float gyroDriftLimit;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (nonatomic) Boolean logReplay;
 @property (nonatomic) Boolean speechEnabled;
@@ -44,8 +50,34 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 @property (strong, nonatomic) NSString *destNodeName;
 @property (strong, atomic) NSArray *pathNodes;
 @property (strong, nonatomic) TopoMap *topoMap;
+@property (strong, nonatomic) NSString *lastPre, *lastAccess, *lastSurround;
 
 @end
+
+double clipAngle(double x) { //clips the angle between 0 and 360
+    x = fmod(x, 360);
+    if (x<0)
+        x+=360;
+        
+        return x;
+}
+
+double clipAngle2(double x) { //clips the angle between -180 and 180
+    x = fmod(x+180, 360);
+    if (x<0)
+        x+=360;
+    
+    return x-180;
+}
+
+double limitAngle(double x, double l) { //limits angle change to l
+    if (x > l)
+        return l;
+    else if (x < -l)
+        return -l;
+    else
+        return x;
+}
 
 @implementation NavMachine
 
@@ -53,8 +85,13 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 {
     self = [super init];
     if (self) {
+        _gyroDrift = 20;
+        _gyroDriftMultiplier = 100;
+        _gyroDriftLimit = 3;
         _initialState = nil;
         _currentState = nil;
+        _currentLocation = nil;
+        _previousLocation = nil;
         _motionManager = [[CMMotionManager alloc] init];
         _motionManager.deviceMotionUpdateInterval = 0.1;
         _motionManager.accelerometerUpdateInterval = 0.01;
@@ -202,7 +239,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
         
         if (diff < 180) {
             if (diff > 15) {
-                _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_initialState.ori];
+                _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri - _gyroDrift) toOri:_initialState.ori];
                 [NavNotificationSpeaker speakWithCustomizedSpeedImmediately:_currentState.previousInstruction];
                 _navState = NAV_STATE_TURNING;
             } else {
@@ -210,7 +247,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
             }
         } else {
             if (diff < 345) {
-                _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_initialState.ori];
+                _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri - _gyroDrift) toOri:_initialState.ori];
                 [NavNotificationSpeaker speakWithCustomizedSpeedImmediately:_currentState.previousInstruction];
                 _navState = NAV_STATE_TURNING;
             } else {
@@ -297,7 +334,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 - (void)initializeOrientation {
     
     [_motionManager stopDeviceMotionUpdates];
-    [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
+    [_motionManager startDeviceMotionUpdatesUsingReferenceFrame: CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
         
         [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
@@ -318,19 +355,36 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
     NSNumber* yaw = [data objectForKey:@"yaw"];
     
     _curOri = - [yaw doubleValue] / M_PI * 180;
+    
     [NavLog logMotion:data];
     [self logState];
     
     if (_navState == NAV_STATE_TURNING) {
         //if (ABS(_curOri - _currentState.ori) <= 10) {
-        float diff = ABS(_curOri - _currentState.ori);
+        float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
         if (diff <= 10 || diff >= 350) {
             [NavSoundEffects playSuccessSound];
             _navState = NAV_STATE_WALKING;
             [self logState];
         }
+    } else if ((_navState == NAV_STATE_WALKING) && (_currentState.type != STATE_TYPE_TRANSITION)) {
+        double edgeori;
+        if (_currentState.startNode == _currentState.walkingEdge.node1)
+            edgeori = _currentState.walkingEdge.ori1;
+        else
+            edgeori = _currentState.walkingEdge.ori2;
+        
+        //model that gracefully adapts to drift.
+        _gyroDrift += (clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)))/_gyroDriftMultiplier;
+        //limit drift correction to some degrees each update. very naive
+        //_gyroDrift += limitAngle(clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)));
+        //simple model that completely offsets drift
+        //_gyroDrift = clipAngle2(_curOri - clipAngle2(edgeori));
+        [NavLog logGyroDrift:_gyroDrift edge:clipAngle2(edgeori) curori:_curOri fixedDelta: clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)) oldDelta: clipAngle2(_curOri - clipAngle(edgeori))];
     }
 }
+
+//TODO: try to get pedometer updates and only update gyro drift on steps
 
 - (NSString *)getTimeStamp {
     return [_dateFormatter stringFromDate:[NSDate date]];
@@ -405,7 +459,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
         
         //Explode the line with space
         NSString* dateAndTime = [line substringToIndex:23];
-        NSString* typeAndData = [line substringFromIndex:44];
+        NSArray *breakarray = [line componentsSeparatedByString:@"]"];
+        NSString* typeAndData = [breakarray[1] substringFromIndex:1];
         NSArray *typeAndDataStringArray = [typeAndData componentsSeparatedByString:@","];
         
         
@@ -585,20 +640,23 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
     [NavLog logBeacons:beacons];
     // if we start navigation from current location
     // and the navigation does not start yet
+    [self logState];
+    _previousLocation = _currentLocation;
+    _currentLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
+
     if (_isStartFromCurrentLocation && !_isNavigationStarted) {
-        NavLocation *curLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
-        if (curLocation.edgeID == nil) {
+        if (_currentLocation.edgeID == nil)
             return;
-        }
-        _pathNodes = [_topoMap findShortestPathFromCurrentLocation:curLocation toNodeWithName:_destNodeName];
+
+        _pathNodes = [_topoMap findShortestPathFromCurrentLocation:_currentLocation toNodeWithName:_destNodeName];
         [self initializeWithPathNodes:_pathNodes];
         _isNavigationStarted = true;
         [_delegate navigationReadyToGo];
         NSLog(@"***********************************************");
-        NSLog(@"layer : %@", curLocation.layerID);
-        NSLog(@"edge : %@", curLocation.edgeID);
-        NSLog(@"x : %f", curLocation.xInEdge);
-        NSLog(@"y : %f", curLocation.yInEdge);
+        NSLog(@"layer : %@", _currentLocation.layerID);
+        NSLog(@"edge : %@", _currentLocation.edgeID);
+        NSLog(@"x : %f", _currentLocation.xInEdge);
+        NSLog(@"y : %f", _currentLocation.yInEdge);
     } else {
         [self logState];
         if ([NavLog isLogging] == YES) {
@@ -625,10 +683,32 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
                         [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
                         [_topoMap cleanTmpNodeAndEdges];
                     } else if (_currentState.type == STATE_TYPE_WALKING) {
+                        // Attempt to do gyro drift updates only while moving. however the localization is not reliable enough to use it
+                        //                    if(_previousLocation != nil) {
+                        //                        if(_currentLocation.edgeID == _previousLocation.edgeID) {
+                        //                            //calculate delta, TODO: only validate delta in forward direction
+                        //                            double deltax = _currentLocation.xInEdge-_previousLocation.xInEdge;
+                        //                            double deltay = _currentLocation.yInEdge-_previousLocation.yInEdge;
+                        //                            double delta = sqrt(deltax*deltax+deltay*deltay);
+                        //                            if (delta > _gyroDriftThreshold) {
+                        //                                //update drift, called only in WALKING state, else check it
+                        //                                double edgeori;
+                        //                                if (_currentState.startNode == _currentState.walkingEdge.node1)
+                        //                                    edgeori = _currentState.walkingEdge.ori1;
+                        //                                else
+                        //                                    edgeori = _currentState.walkingEdge.ori2;
+                        //
+                        //                                _gyroDrift = (_gyroDrift + (_curOri - edgeori))/2;
+                        //                                [NavLog logGyroDrift:_gyroDrift edge: edgeori curori: _curOri];
+                        //                            }
+                        //                        }
+                        //                    }
+                        
+                        
                         //                        if (ABS(_curOri - _currentState.ori) > 15) {
-                        float diff = ABS(_curOri - _currentState.ori);
+                        float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
                         if (diff > 15 && diff < 345) {
-                            _currentState.previousInstruction = [self getTurnStringFromOri:_curOri toOri:_currentState.ori];
+                            _currentState.previousInstruction = [self getTurnStringFromOri:(_curOri-_gyroDrift) toOri:_currentState.ori];
                             [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
                             _navState = NAV_STATE_TURNING;
                         } else {
@@ -637,9 +717,27 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
                     } else if (_currentState.type == STATE_TYPE_TRANSITION) {
                         _navState = NAV_STATE_WALKING;
                     }
-                    [self logState];
+                } else if (_currentState.type == STATE_TYPE_TRANSITION) {
+                    _navState = NAV_STATE_WALKING;
                 }
+                [self logState];
             }
+        }
+    }
+    [self setHintTexts];
+}
+
+- (void)setHintTexts {
+    if (UIAccessibilityIsVoiceOverRunning()) {
+        NSString *pre = [_currentState getPreviousInstruction], *surround = [_currentState getSurroundInfo], *access = [_currentState getAccessibilityInfo];
+        if (![pre isEqualToString:_lastPre]) {
+            [[NavCogFuncViewController sharedNavCogFuntionViewController] setHintText:_lastPre = pre withTag:BUTTON_PRE];
+        }
+        if (![surround isEqualToString:_lastSurround]) {
+            [[NavCogFuncViewController sharedNavCogFuntionViewController] setHintText:_lastSurround = surround withTag:BUTTON_SURROUND];
+        }
+        if (![access isEqualToString:_lastAccess]) {
+            [[NavCogFuncViewController sharedNavCogFuntionViewController] setHintText:_lastAccess = access withTag:BUTTON_ACCESS];
         }
     }
 }

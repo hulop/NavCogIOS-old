@@ -505,7 +505,7 @@
     }
     if (location.edgeID == NULL) {
         location.edgeID = nil;
-        NSLog(@"NoCurrentLocation");
+        //NSLog(@"NoCurrentLocation");
     } else {
         NSMutableArray *data = [[NSMutableArray alloc] init];
         [data addObject:[NSNumber numberWithFloat:minKnnDist]];
