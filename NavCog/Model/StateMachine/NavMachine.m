@@ -83,7 +83,7 @@ double limitAngle(double x, double l) { //limits angle change to l
 {
     self = [super init];
     if (self) {
-        _gyroDrift = 0;
+        _gyroDrift = 20;
         _gyroDriftMultiplier = 100;
         _gyroDriftLimit = 3;
         _initialState = nil;
@@ -332,7 +332,7 @@ double limitAngle(double x, double l) { //limits angle change to l
 - (void)initializeOrientation {
     
     [_motionManager stopDeviceMotionUpdates];
-    [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
+    [_motionManager startDeviceMotionUpdatesUsingReferenceFrame: CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
         
         [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
@@ -381,6 +381,8 @@ double limitAngle(double x, double l) { //limits angle change to l
         [NavLog logGyroDrift:_gyroDrift edge:clipAngle2(edgeori) curori:_curOri fixedDelta: clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)) oldDelta: clipAngle2(_curOri - clipAngle(edgeori))];
     }
 }
+
+//TODO: try to get pedometer updates and only update gyro drift on steps
 
 - (NSString *)getTimeStamp {
     return [_dateFormatter stringFromDate:[NSDate date]];
@@ -679,9 +681,10 @@ double limitAngle(double x, double l) { //limits angle change to l
                         [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
                         [_topoMap cleanTmpNodeAndEdges];
                     } else if (_currentState.type == STATE_TYPE_WALKING) {
+                        // Attempt to do gyro drift updates only while moving. however the localization is not reliable enough to use it
                         //                    if(_previousLocation != nil) {
                         //                        if(_currentLocation.edgeID == _previousLocation.edgeID) {
-                        //                            //calculate delta
+                        //                            //calculate delta, TODO: only validate delta in forward direction
                         //                            double deltax = _currentLocation.xInEdge-_previousLocation.xInEdge;
                         //                            double deltay = _currentLocation.yInEdge-_previousLocation.yInEdge;
                         //                            double delta = sqrt(deltax*deltax+deltay*deltay);
