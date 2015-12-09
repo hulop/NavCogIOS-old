@@ -93,6 +93,8 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
                 [newState.targetEdge initLocalization];
                 newState.tx = [node2 getXInEdgeWithID:node3.preEdgeInPath.edgeID];
                 newState.ty = [node2 getYInEdgeWithID:node3.preEdgeInPath.edgeID];
+                newState.sx = [node3 getXInEdgeWithID:node3.preEdgeInPath.edgeID];// fix for snap min/max
+                newState.sy = [node3 getYInEdgeWithID:node3.preEdgeInPath.edgeID];// fix for snap min/max
             }
             [startInfo appendString:[node1 getInfoComingFromEdgeWithID:node1.preEdgeInPath.edgeID]];
             switch (node1.type) {
@@ -600,7 +602,18 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
     } else {
         [self logState];
         if ([NavLog isLogging] == YES) {
-            [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
+            [_topoMap getCurrentLocationOnMapUsingBeacons:beacons withInit:NO];
+        }
+        if (_navState == NAV_STATE_TURNING && [beacons count] > 0) {
+            // check if user keep moving to destination without turn
+            struct NavPoint pos = [_currentState.walkingEdge getCurrentPositionInEdgeUsingBeacons:beacons];
+            float startDist = [_currentState getStartDistance:pos];
+            float startRatio = [_currentState getStartRatio:pos];
+            if (startDist > 20 || startRatio > 0.25) {
+                NSLog(@"ForceTurn,%f,%f",startDist, startRatio);
+                [NavSoundEffects playSuccessSound];
+                _navState = NAV_STATE_WALKING;
+            }
         }
         if (_navState == NAV_STATE_WALKING) {
             if ([beacons count] > 0) {
