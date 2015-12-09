@@ -22,6 +22,7 @@
 
 #import "NavMachine.h"
 #import "NavNotificationSpeaker.h"
+#import "NavCogFuncViewController.h"
 #import "NavLog.h"
 
 enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STATE_TURNING};
@@ -49,6 +50,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 @property (strong, nonatomic) NSString *destNodeName;
 @property (strong, atomic) NSArray *pathNodes;
 @property (strong, nonatomic) TopoMap *topoMap;
+@property (strong, nonatomic) NSString *lastPre, *lastAccess, *lastSurround;
 
 @end
 
@@ -720,6 +722,22 @@ double limitAngle(double x, double l) { //limits angle change to l
                 }
                 [self logState];
             }
+        }
+    }
+    [self setHintTexts];
+}
+
+- (void)setHintTexts {
+    if (UIAccessibilityIsVoiceOverRunning()) {
+        NSString *pre = [_currentState getPreviousInstruction], *surround = [_currentState getSurroundInfo], *access = [_currentState getAccessibilityInfo];
+        if (![pre isEqualToString:_lastPre]) {
+            [[NavCogFuncViewController sharedNavCogFuntionViewController] setHintText:_lastPre = pre withTag:BUTTON_PRE];
+        }
+        if (![surround isEqualToString:_lastSurround]) {
+            [[NavCogFuncViewController sharedNavCogFuntionViewController] setHintText:_lastSurround = surround withTag:BUTTON_SURROUND];
+        }
+        if (![access isEqualToString:_lastAccess]) {
+            [[NavCogFuncViewController sharedNavCogFuntionViewController] setHintText:_lastAccess = access withTag:BUTTON_ACCESS];
         }
     }
 }

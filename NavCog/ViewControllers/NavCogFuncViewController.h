@@ -22,6 +22,12 @@
 
 #import <UIKit/UIKit.h>
 
+typedef NS_ENUM(NSUInteger, ButtonTags) {
+    BUTTON_PRE = 100,
+    BUTTON_ACCESS,
+    BUTTON_SURROUND
+};
+
 @protocol NavCogFuncViewControllerDelegate;
 
 @interface NavCogFuncViewController : UIViewController <UIWebViewDelegate>
@@ -30,6 +36,7 @@
 
 @property (strong, nonatomic) id <NavCogFuncViewControllerDelegate> delegate;
 - (void)runCmdWithString:(NSString *)str;
+- (void)setHintText:(NSString *)str withTag:(NSInteger)tag;
 
 @end
 

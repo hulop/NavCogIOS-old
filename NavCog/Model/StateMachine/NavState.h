@@ -59,6 +59,9 @@ enum StateType {STATE_TYPE_WALKING, STATE_TYPE_TRANSITION};
 - (void)repeatPreviousInstruction;
 - (void)announceSurroundInfo;
 - (void)announceAccessibilityInfo;
+- (NSString*)getPreviousInstruction;
+- (NSString*)getSurroundInfo;
+- (NSString*)getAccessibilityInfo;
 
 - (BOOL)isMeter;
 - (int)toMeter:(int) feet;
