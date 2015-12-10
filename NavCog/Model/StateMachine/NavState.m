@@ -156,7 +156,7 @@
     }
     float threshold = 5;
     if (_type == STATE_TYPE_WALKING) {
-        // snap y within edge
+/*        // snap y within edge
         float targetDist = [self getTargetDistance:pos];
         if (targetDist < 0) {
             NSLog(@"SnapDistance,%f",targetDist);
@@ -172,7 +172,7 @@
                 NSLog(@"ForceNextState,%f,%f,%f,%f",_closestDist, pos.knndist, nextStartDist, nextPos.knndist);
                 dist = 0;
             }
-        }
+        }*/
         NSString *distFormat = NSLocalizedString([self isMeter]?@"meterFormat":@"feetFormat", @"Use to express a distance in feet");
         // if you're walking, check distance to target node
         if (dist < _preAnnounceDist) {
