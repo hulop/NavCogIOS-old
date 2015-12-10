@@ -86,7 +86,7 @@ double limitAngle(double x, double l) { //limits angle change to l
     self = [super init];
     if (self) {
         _logReplay = false;
-        _gyroDrift = -110;
+        _gyroDrift = -20;
         _gyroDriftMultiplier = 100;
         _gyroDriftLimit = 3;
         _initialState = nil;
