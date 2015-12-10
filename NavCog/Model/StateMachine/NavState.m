@@ -154,28 +154,25 @@
         _didTrickyNotification = true;
         [NavNotificationSpeaker speakImmediatelyAndSlowly:NSLocalizedString(@"accessNotif", @"Alert that an accessibility notification is available")];
     }
-
-    // snap y within edge
-    float targetDist = [self getTargetDistance:pos];
-    if (targetDist < 0) {
-        NSLog(@"SnapDistance,%f",targetDist);
-        dist = 0;
-    }
-    _closestDist = MIN(dist, _closestDist);
-    if(_closestDist < 20 && _nextState != nil && _nextState.type == STATE_TYPE_WALKING) {
-        // check if we already on the next edge
-        struct NavPoint nextPos = [_nextState.walkingEdge getCurrentPositionInEdgeUsingBeacons:beacons];
-        float nextStartDist = [_nextState getStartRatio:nextPos];
-        float nextStartRatio = [_nextState getStartRatio:nextPos];
-        if (nextStartDist > 20 || nextStartRatio > 0.25) {
-            NSLog(@"ForceNextState,%f,%f,%f,%f",_closestDist, pos.knndist, nextStartDist, nextPos.knndist);
-            dist = 0;
-            pos.knndist = 0; // for exit transition
-        }
-    }
-
     float threshold = 5;
     if (_type == STATE_TYPE_WALKING) {
+        // snap y within edge
+        float targetDist = [self getTargetDistance:pos];
+        if (targetDist < 0) {
+            NSLog(@"SnapDistance,%f",targetDist);
+            dist = 0;
+        }
+        _closestDist = MIN(dist, _closestDist);
+        if(dist > 0 && _closestDist < 20 && _nextState != nil && _nextState.type == STATE_TYPE_WALKING) {
+            // check if we already on the next edge
+            struct NavPoint nextPos = [_nextState.walkingEdge getCurrentPositionInEdgeUsingBeacons:beacons];
+            float nextStartDist = [_nextState getStartDistance:nextPos];
+            float nextStartRatio = [_nextState getStartRatio:nextPos];
+            if (nextStartDist > 20 || (nextStartDist > 10 && nextStartRatio > 0.25)) {
+                NSLog(@"ForceNextState,%f,%f,%f,%f",_closestDist, pos.knndist, nextStartDist, nextPos.knndist);
+                dist = 0;
+            }
+        }
         NSString *distFormat = NSLocalizedString([self isMeter]?@"meterFormat":@"feetFormat", @"Use to express a distance in feet");
         // if you're walking, check distance to target node
         if (dist < _preAnnounceDist) {
@@ -239,8 +236,23 @@
         }
     } else if (_type == STATE_TYPE_TRANSITION) {
         pos.knndist = (pos.knndist - _targetEdge.minKnnDist) / (_targetEdge.maxKnnDist - _targetEdge.minKnnDist);
-        pos.knndist = pos.knndist < 0 ? 0 : pos.knndist;
-        pos.knndist = pos.knndist > 1 ? 1 : pos.knndist;
+/*        if (_prevState != nil && _prevState.type == STATE_TYPE_WALKING) {
+            float nextKnndist = pos.knndist;
+            // compare knn distance to previous and next edge
+            NavEdge *prevEdge = _prevState.walkingEdge;
+            struct NavPoint prevPos = [prevEdge getCurrentPositionInEdgeUsingBeacons:beacons];
+            float prevKnndist = (prevPos.knndist - prevEdge.minKnnDist) / (prevEdge.maxKnnDist - prevEdge.minKnnDist);
+            float nearRatio = MAX(0.25, nextKnndist / prevKnndist);
+            if (nearRatio < 1.0) {
+                // Adjust dist and knndist
+                float orgDist = dist, orgKnndist = pos.knndist;
+                dist *= (nearRatio * 1.0);
+                pos.knndist *= (nearRatio * 1.0);
+                NSLog(@"BoostTransition,%f,%f,%f,%f,%f,%f,%f)",nearRatio, prevKnndist, nextKnndist, orgDist, orgKnndist ,dist, pos.knndist);
+            }
+        }*/
+//        pos.knndist = pos.knndist < 0 ? 0 : pos.knndist;
+//        pos.knndist = pos.knndist > 1 ? 1 : pos.knndist;
         
         NSLog(@"type=%d y=%f knnDist=%f dist=%f", _type, pos.y, pos.knndist, dist);
 

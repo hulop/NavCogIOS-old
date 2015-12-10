@@ -669,7 +669,7 @@ double limitAngle(double x, double l) { //limits angle change to l
             struct NavPoint pos = [_currentState.walkingEdge getCurrentPositionInEdgeUsingBeacons:beacons];
             float startDist = [_currentState getStartDistance:pos];
             float startRatio = [_currentState getStartRatio:pos];
-            if (startDist > 20 || startRatio > 0.25) {
+            if (startDist > 20 || (startDist > 10 && startRatio > 0.25)) {
                 NSLog(@"ForceTurn,%f,%f",startDist, startRatio);
                 [NavSoundEffects playSuccessSound];
                 _navState = NAV_STATE_WALKING;
@@ -678,7 +678,9 @@ double limitAngle(double x, double l) { //limits angle change to l
         if (_navState == NAV_STATE_WALKING) {
             if ([beacons count] > 0) {
                 if ([_currentState checkStateStatusUsingBeacons:beacons withSpeechOn:_speechEnabled withClickOn:_clickEnabled]) {
+                    NavState *prev = _currentState;
                     _currentState = _currentState.nextState;
+                    _currentState.prevState = prev;
                     if (_currentState == nil) {
                         [_delegate navigationFinished];
                         [NavNotificationSpeaker speakWithCustomizedSpeed:NSLocalizedString(@"arrived", @"Spoken when you arrive at a destination")];

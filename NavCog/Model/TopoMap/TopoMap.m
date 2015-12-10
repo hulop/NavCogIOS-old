@@ -92,8 +92,8 @@
             node.transitInfo = [nodeJson objectForKey:@"transitInfo"];
             node.transitKnnDistThres = ((NSNumber *)[nodeJson objectForKey:@"knnDistThres"]).floatValue;
             node.transitPosThres = ((NSNumber *)[nodeJson objectForKey:@"posDistThres"]).floatValue;
-            node.transitKnnDistThres = MAX(1.0, node.transitKnnDistThres);
-            node.transitPosThres = MAX(10, node.transitPosThres);
+//            node.transitKnnDistThres = MAX(1.0, node.transitKnnDistThres);
+//            node.transitPosThres = MAX(10, node.transitPosThres);
             node.parentLayer = layer;
             [_nodeNameNodeIDDict setObject:node.nodeID forKey:node.name];
             [_nodeNameLayerIDDict setObject:zIndex forKey:node.name];
