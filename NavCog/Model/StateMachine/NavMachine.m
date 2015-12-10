@@ -58,7 +58,7 @@ double clipAngle(double x) { //clips the angle between 0 and 360
     x = fmod(x, 360);
     if (x<0)
         x+=360;
-        
+
         return x;
 }
 
@@ -66,7 +66,7 @@ double clipAngle2(double x) { //clips the angle between -180 and 180
     x = fmod(x+180, 360);
     if (x<0)
         x+=360;
-    
+
     return x-180;
 }
 
@@ -112,11 +112,11 @@ double limitAngle(double x, double l) { //limits angle change to l
         NavNode *node1 = [pathNodes objectAtIndex:i];
         NavNode *node2 = [pathNodes objectAtIndex:i-1];
         NSMutableString *startInfo = [[NSMutableString alloc] init];
-        
+
         NavState *newState = [[NavState alloc] init];
         newState.startNode = node1;
         newState.targetNode = node2;
-        
+
         // if node2 is node1's transit node, then is should be a transition.
         if ([node1 transitEnabledToNode:node2]) {
             newState.type = STATE_TYPE_TRANSITION;
@@ -161,7 +161,7 @@ double limitAngle(double x, double l) { //limits angle change to l
             } else {
                 [startInfo appendFormat:NSLocalizedString([newState isMeter]?@"meterPauseFormat":@"feetPauseFormat", @"Use to express a distance in feet with a pause"), edgeLen];
             }
-            
+
             float curOri = [node2.preEdgeInPath getOriFromNode:node1];
             newState.ori = curOri;
             newState.sx = [node1 getXInEdgeWithID:node2.preEdgeInPath.edgeID];
@@ -217,11 +217,11 @@ double limitAngle(double x, double l) { //limits angle change to l
                 [startInfo appendString:NSLocalizedString(@"destination", @"Destination alert")];
             }
         }
-        
+
         if (![node1.buildingName isEqualToString:node2.buildingName]) {
             [startInfo appendString:[NSString stringWithFormat:NSLocalizedString(@"enteringFormat", @"Spoken when entering a location"), node2.buildingName]];
         }
-        
+
         newState.stateStartInfo = startInfo;
         if (i == (int)[pathNodes count] - 1) {
             _initialState = newState;
@@ -230,13 +230,13 @@ double limitAngle(double x, double l) { //limits angle change to l
         }
         _currentState = newState;
     }
-    
+
     _currentState = _initialState;
     // check if we need a initial turning
-    
+
     if (_initialState.type == STATE_TYPE_WALKING) {
         float diff = ABS(_curOri - _initialState.ori);
-        
+
         if (diff < 180) {
             if (diff > 15) {
                 _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri - _gyroDrift) toOri:_initialState.ori];
@@ -255,7 +255,7 @@ double limitAngle(double x, double l) { //limits angle change to l
             }
         }
     }
-    
+
     NavState *state = _initialState;
     while (state != nil) {
         NSLog(@"*****************************************************************");
@@ -272,7 +272,7 @@ double limitAngle(double x, double l) { //limits angle change to l
 
 - (NSString *)getFloorString:(int)floor {
     NSString *ordinalNumber;
-    
+
     // TODO(cgleason): find way to remove special case for floor numbering in Japanese
     NSString *language = [[[NSBundle mainBundle] preferredLocalizations] objectAtIndex:0];
     if([@"ja" compare:language] == NSOrderedSame) {
@@ -291,7 +291,7 @@ double limitAngle(double x, double l) { //limits angle change to l
     if (curOri == nextOri || ABS(curOri - nextOri) == 180) {
         return NSLocalizedString(@"keepStraight", @"Instruction to keep straight");
     }
-    
+
     float diff = ABS(curOri - nextOri);
     NSString *slightLeft = NSLocalizedString(@"slightLeft", @"Instruction to turn slightly left");
     NSString *slightRight = NSLocalizedString(@"slightRight", @"Instruction to turn slightly right");
@@ -310,7 +310,7 @@ double limitAngle(double x, double l) { //limits angle change to l
             return nextOri < curOri ? turnRight : turnLeft;
         }
     }
-    
+
     return @"";
 }
 
@@ -318,7 +318,7 @@ double limitAngle(double x, double l) { //limits angle change to l
     if (curOri == nextOri || ABS(curOri - nextOri) == 180) {
         return NSLocalizedString(@"keepStraight", @"Instruction to keep straight");
     }
-    
+
     int diff = ABS(curOri - nextOri);
     NSString *leftFormat = NSLocalizedString(@"turnLeftDegreeFormat", @"Format string to turn left in degrees");
     NSString *rightFormat = NSLocalizedString(@"turnRightDegreeFormat", @"Format string to turn right in degrees");
@@ -327,23 +327,23 @@ double limitAngle(double x, double l) { //limits angle change to l
     } else {
         return nextOri < curOri ? [NSString stringWithFormat:rightFormat, diff ] : [NSString stringWithFormat:leftFormat, diff] ;
     }
-    
+
     return @"";
 }
 
 - (void)initializeOrientation {
-    
+
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesUsingReferenceFrame: CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
-        
+
         [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
         [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.roll] forKey:@"roll"];
         [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
-        
+
         [self triggerMotionWithData:motionData];
     }];
-    
+
     [_motionManager stopAccelerometerUpdates];
     [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
         [NavLog logAcc:acc];
@@ -351,14 +351,14 @@ double limitAngle(double x, double l) { //limits angle change to l
 }
 
 - (void)triggerMotionWithData: (NSMutableDictionary*) data {
-    
+
     NSNumber* yaw = [data objectForKey:@"yaw"];
-    
+
     _curOri = - [yaw doubleValue] / M_PI * 180;
-    
+
     [NavLog logMotion:data];
     [self logState];
-    
+
     if (_navState == NAV_STATE_TURNING) {
         //if (ABS(_curOri - _currentState.ori) <= 10) {
         float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
@@ -373,7 +373,7 @@ double limitAngle(double x, double l) { //limits angle change to l
             edgeori = _currentState.walkingEdge.ori1;
         else
             edgeori = _currentState.walkingEdge.ori2;
-        
+
         //model that gracefully adapts to drift.
         _gyroDrift += (clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)))/_gyroDriftMultiplier;
         //limit drift correction to some degrees each update. very naive
@@ -394,14 +394,14 @@ double limitAngle(double x, double l) { //limits angle change to l
     _logReplay = false;
     [NavLog startLog];
     [NavLog logArray:@[fromNodeName,toNodeName] withType:@"Route"];
-    
+
     // set speech rate of notification speaker
     [NavNotificationSpeaker setFastSpeechOnAndOff:fastSpeechEnabled];
-    
+
     // set UI type (speech and click sound)
     _speechEnabled = speechEnabled;
     _clickEnabled = clickEnabled;
-    
+
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
@@ -417,7 +417,7 @@ double limitAngle(double x, double l) { //limits angle change to l
         _isStartFromCurrentLocation = true;
         _isNavigationStarted = false;
     }
-    
+
     // start navigation
     _beaconManager = [[CLLocationManager alloc] init];
     if([_beaconManager respondsToSelector:@selector(requestAlwaysAuthorization)]) {
@@ -432,38 +432,38 @@ double limitAngle(double x, double l) { //limits angle change to l
 
 - (void)simulateNavigationOnTopoMap:(TopoMap *)topoMap usingLogFileWithPath:(NSString *)logFilePath usingBeaconsWithUUID:(NSString *)uuidstr withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled {
     _logReplay = true;
-    
+
     //if started kill motionmanager
     [_motionManager stopAccelerometerUpdates];
     [_motionManager stopDeviceMotionUpdates];
     [_beaconManager stopRangingBeaconsInRegion:_beaconRegion];
-    
+
     NSString* fromNodeName;
     NSString* toNodeName;
     NSDateFormatter* dateFormat = [[NSDateFormatter alloc] init];
     [dateFormat setDateFormat:@"yyyy-MM-dd HH:mm:ss.SSS"];
     NSDate* startTime;
-    
+
     //parse log to array
-    
+
     //create dictionary with time -> object: either motion or beaconlist
     NSMutableArray* timesArray = [[NSMutableArray alloc] init];
     NSMutableArray* objectsArray = [[NSMutableArray alloc] init];
-    
+
     //motion holds just 3 values, beaconlist holds array of clbeacons
     NSString *fileContents = [NSString stringWithContentsOfFile:logFilePath encoding:NSUTF8StringEncoding error:NULL];
     for (NSString *line in [fileContents componentsSeparatedByCharactersInSet:[NSCharacterSet newlineCharacterSet]]) {
-        
+
         if ([line isEqualToString:@""])
             break;
-        
+
         //Explode the line with space
         NSString* dateAndTime = [line substringToIndex:23];
         NSArray *breakarray = [line componentsSeparatedByString:@"]"];
         NSString* typeAndData = [breakarray[1] substringFromIndex:1];
         NSArray *typeAndDataStringArray = [typeAndData componentsSeparatedByString:@","];
-        
-        
+
+
         if ([typeAndDataStringArray[0] isEqualToString: @"Route"]) {
             startTime = [dateFormat dateFromString: dateAndTime];
             fromNodeName = typeAndDataStringArray[1];
@@ -471,53 +471,53 @@ double limitAngle(double x, double l) { //limits angle change to l
         } else if ([typeAndDataStringArray[0] isEqualToString: @"Motion"]) {
             //get time
             NSDate* currentTime = [dateFormat dateFromString: dateAndTime];
-            
+
             //create motion data object
             NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
-            
+
             [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
             [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
             [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
-            
+
             //feed to object
             [timesArray addObject: currentTime];
             [objectsArray addObject: motionData];
-            
+
         } else if ([typeAndDataStringArray[0] isEqualToString: @"Beacon"]) { //beacon data
             //get number of beacons
             int beaconsNumber = [typeAndDataStringArray[1] intValue];
             NSMutableArray* beaconArrayTmp = [NSMutableArray arrayWithCapacity:beaconsNumber];
-            
+
             for (int i = 0; i < beaconsNumber; i++) {
                 CLBeacon* newBeacon = [[CLBeacon alloc] init];
                 [newBeacon setValue:[NSNumber numberWithInt:[typeAndDataStringArray[3*i+2] intValue]] forKey:@"major"];
                 [newBeacon setValue:[NSNumber numberWithInt:[typeAndDataStringArray[3*i+3] intValue]] forKey:@"minor"];
                 [newBeacon setValue:[NSNumber numberWithInt:[typeAndDataStringArray[3*i+4] intValue]] forKey:@"rssi"];
                 [newBeacon setValue:[[NSUUID alloc] initWithUUIDString:uuidstr] forKey:@"proximityUUID"];
-                
+
                 [beaconArrayTmp addObject:newBeacon];
             }
             //transform it to nsarray
             NSArray* beaconArray = [NSArray arrayWithArray:beaconArrayTmp];
             //get time
             NSDate* currentTime = [dateFormat dateFromString: dateAndTime];
-            
+
             //feed to object
             [timesArray addObject: currentTime];
             [objectsArray addObject: beaconArray];
         }
     }
-    
+
     //logging
     [NavLog startLog];
     [NavLog logArray:@[fromNodeName,toNodeName] withType:@"Route"];
     // set speech rate of notification speaker
     [NavNotificationSpeaker setFastSpeechOnAndOff:fastSpeechEnabled];
-    
+
     // set UI type (speech and click sound)
     _speechEnabled = speechEnabled;
     _clickEnabled = clickEnabled;
-    
+
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
@@ -533,59 +533,59 @@ double limitAngle(double x, double l) { //limits angle change to l
         _isStartFromCurrentLocation = true;
         _isNavigationStarted = false;
     }
-    
+
     dispatch_queue_t queue = dispatch_queue_create("com.navcog.logsimulatorqueue", NULL);
-    
+
     unsigned long int arraySize = [timesArray count];
-    
+
     dispatch_async(queue, ^{
-        
+
         NSDate* time = startTime;
-        
+
         for (int i=0; i < arraySize; i++) {
-            
+
             if (_navState == NAV_STATE_IDLE)
                 break;
-            
+
             if ([objectsArray[i] isKindOfClass: [NSArray class]]) {
                 //create
                 NSTimeInterval waitTime = [timesArray[i] timeIntervalSinceDate:time];
-                
+
                 NSArray* beacons = objectsArray[i];
-                
+
                 //call beacons
                 [NSThread sleepForTimeInterval:waitTime];
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [self receivedBeaconsArray: beacons];
                 });
-                
+
                 time = timesArray[i];
-                
+
             } else if ([objectsArray[i] isKindOfClass: [NSMutableDictionary class]]) {
-                
+
                 NSTimeInterval waitTime = [timesArray[i] timeIntervalSinceDate:time];
-                
+
                 NSMutableDictionary* motionData = objectsArray[i];
-                
+
                 //call motion
                 [NSThread sleepForTimeInterval:waitTime];
                 dispatch_sync(dispatch_get_main_queue(), ^{
                     [self triggerMotionWithData:motionData];
                 });
-                
+
                 time = timesArray[i];
-                
+
             }
-            
+
         }
-        
+
         dispatch_sync(dispatch_get_main_queue(), ^{
             [self stopNavigation];
             [_delegate navigationFinished];
         });
-        
+
     });
-    
+
 }
 
 - (void)stopNavigation {
@@ -638,12 +638,14 @@ double limitAngle(double x, double l) { //limits angle change to l
 
 - (void)receivedBeaconsArray:(NSArray *)beacons {
     [NavLog logBeacons:beacons];
-    // if we start navigation from current location
-    // and the navigation does not start yet
     [self logState];
     _previousLocation = _currentLocation;
-    _currentLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons];
+    // if navigation has not started yet, then init all edge localization
+    // otherwise ignore
+    _currentLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons withInit:!_isNavigationStarted];
 
+    // if we start navigation from current location
+    // and the navigation does not start yet
     if (_isStartFromCurrentLocation && !_isNavigationStarted) {
         if (_currentLocation.edgeID == nil)
             return;
@@ -703,8 +705,8 @@ double limitAngle(double x, double l) { //limits angle change to l
                         //                            }
                         //                        }
                         //                    }
-                        
-                        
+
+
                         //                        if (ABS(_curOri - _currentState.ori) > 15) {
                         float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
                         if (diff > 15 && diff < 345) {

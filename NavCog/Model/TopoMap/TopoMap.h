@@ -42,8 +42,8 @@
 - (NSString *)initializaWithFile:(NSString *)filePath;
 - (NSArray *)findShortestPathFromNodeWithName:(NSString *)fromName toNodeWithName:(NSString *)toName;
 - (NSArray *)getAllLocationNamesOnMap;
-- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons;
-- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons withInit:(BOOL)init;
+- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons withInit:(Boolean)init;
+- (NavLocation *)getLocationInEdges:(NSArray *)edges withBeacons:(NSArray *)beacons withKNNThreshold:(float)knnThreshold withInit:(Boolean)init;
 - (NSArray *)findShortestPathFromCurrentLocation:(NavLocation *)curLocation toNodeWithName:(NSString *)toNodeName;
 - (void)cleanTmpNodeAndEdges;
 

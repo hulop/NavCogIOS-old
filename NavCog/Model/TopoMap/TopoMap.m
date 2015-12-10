@@ -462,60 +462,19 @@
     return [layer.nodes objectForKey:nodeID];
 }
 
-- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons {
-    return [self getCurrentLocationOnMapUsingBeacons:beacons withInit:YES];
-}
-
 // get current location on the map
 // check which layer and which edge you're in
 // find a edge in which we get a minimum normalized KNN Distance
-- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons withInit:(BOOL)init {
-    NavLocation *location = [[NavLocation alloc] init];
-    float minKnnDist = 1;
-    float lastKnnDist = 0;
+- (NavLocation *)getCurrentLocationOnMapUsingBeacons:(NSArray *)beacons withInit:(Boolean)init {
+    NSMutableArray *edges = [[NSMutableArray alloc] init];
     for (NSString *layerID in _layers) {
         NavLayer *layer = [_layers objectForKey:layerID];
         for (NSString *edgeID in layer.edges) {
-            NavEdge *edge = [layer.edges objectForKey:edgeID];
-            if (init) {
-                [edge initLocalization];
-            }
-            struct NavPoint pos = [edge getCurrentPositionInEdgeUsingBeacons:beacons];
-            float dist = (pos.knndist - edge.minKnnDist) / (edge.maxKnnDist - edge.minKnnDist);
-            NSMutableArray *data = [[NSMutableArray alloc] init];
-            [data addObject:[NSNumber numberWithFloat:dist]];
-            [data addObject:layerID];
-            [data addObject:edgeID];
-            [data addObject:[NSNumber numberWithFloat:pos.x]];
-            [data addObject:[NSNumber numberWithFloat:pos.y]];
-            [data addObject:[NSNumber numberWithFloat:pos.knndist]];
-//            dist = dist < 0 ? 0 : dist;
-//            dist = dist > 1 ? 1 : dist;
-            if (dist < minKnnDist) {
-                minKnnDist = dist;
-                lastKnnDist = pos.knndist;
-                location.layerID = layerID;
-                location.edgeID = edgeID;
-                location.xInEdge = pos.x;
-                location.yInEdge = pos.y;
-                [data addObject:@"OK"];
-            }
-            [NavLog logArray:data withType:@"SearchingCurrentLocation"];
+            [edges addObject:[layer.edges objectForKey:edgeID]];
         }
     }
-    if (location.edgeID == NULL) {
-        location.edgeID = nil;
-        NSLog(@"NoCurrentLocation");
-    } else {
-        NSMutableArray *data = [[NSMutableArray alloc] init];
-        [data addObject:[NSNumber numberWithFloat:minKnnDist]];
-        [data addObject:location.layerID];
-        [data addObject:location.edgeID];
-        [data addObject:[NSNumber numberWithFloat:location.xInEdge]];
-        [data addObject:[NSNumber numberWithFloat:location.yInEdge]];
-        [data addObject:[NSNumber numberWithFloat:lastKnnDist]];
-        [NavLog logArray:data withType:@"FoundCurrentLocation"];
-    }
+    NavLocation *location = [self getLocationInEdges:edges withBeacons:beacons withKNNThreshold:1.0 withInit:init];
+
     if ([NavLog isLogging] == YES) {
         if (location.edgeID == nil) {
             [[NavCogFuncViewController sharedNavCogFuntionViewController] runCmdWithString:@"updateRedDot(null)"];
@@ -537,6 +496,52 @@
             NSString *cmd = [NSString stringWithFormat:@"updateRedDot({lat:%f, lng:%f})", lat, lng];
             [[NavCogFuncViewController sharedNavCogFuntionViewController] runCmdWithString:cmd];
         }
+    }
+    return location;
+}
+
+- (NavLocation *)getLocationInEdges:(NSArray *)edges withBeacons:(NSArray *)beacons withKNNThreshold:(float)minKnnDist withInit:(Boolean)init {
+    NavLocation *location = [[NavLocation alloc] init];
+    float lastKnnDist = 0;
+    for (NavEdge *edge in edges) {
+        if (init) {
+            [edge initLocalization];
+        }
+        struct NavPoint pos = [edge getCurrentPositionInEdgeUsingBeacons:beacons];
+        float dist = (pos.knndist - edge.minKnnDist) / (edge.maxKnnDist - edge.minKnnDist);
+        // Log search information for edge
+        NSMutableArray *data = [[NSMutableArray alloc] init];
+        [data addObject:[NSNumber numberWithFloat:dist]];
+        [data addObject:edge.parentLayer.zIndex];
+        [data addObject:edge.edgeID];
+        [data addObject:[NSNumber numberWithFloat:pos.x]];
+        [data addObject:[NSNumber numberWithFloat:pos.y]];
+        [data addObject:[NSNumber numberWithFloat:pos.knndist]];
+        [NavLog logArray:data withType:@"SearchingCurrentLocation"];
+        // if distance is less than threshold, set new location
+        if (dist < minKnnDist) {
+            minKnnDist = dist;
+            lastKnnDist = pos.knndist;
+            location.layerID = edge.parentLayer.zIndex;
+            location.edgeID = edge.edgeID;
+            location.xInEdge = pos.x;
+            location.yInEdge = pos.y;
+            [data addObject:@"OK"];
+        }
+    } // end for
+    // Log info if location found
+    if (location.edgeID == NULL) {
+        location.edgeID = nil;
+        NSLog(@"NoCurrentLocation");
+    } else {
+        NSMutableArray *data = [[NSMutableArray alloc] init];
+        [data addObject:[NSNumber numberWithFloat:minKnnDist]];
+        [data addObject:location.layerID];
+        [data addObject:location.edgeID];
+        [data addObject:[NSNumber numberWithFloat:location.xInEdge]];
+        [data addObject:[NSNumber numberWithFloat:location.yInEdge]];
+        [data addObject:[NSNumber numberWithFloat:lastKnnDist]];
+        [NavLog logArray:data withType:@"FoundCurrentLocation"];
     }
     return location;
 }
