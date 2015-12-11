@@ -334,7 +334,7 @@ double limitAngle(double x, double l) { //limits angle change to l
 - (void)initializeOrientation {
 
     [_motionManager stopDeviceMotionUpdates];
-    [_motionManager startDeviceMotionUpdatesUsingReferenceFrame: CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
+    [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
 
         [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
@@ -458,8 +458,12 @@ double limitAngle(double x, double l) { //limits angle change to l
             break;
 
         //Explode the line with space
+        if ([line length] < 23)
+            continue;
         NSString* dateAndTime = [line substringToIndex:23];
         NSArray *breakarray = [line componentsSeparatedByString:@"]"];
+        if ([breakarray count] < 2)
+            continue;
         NSString* typeAndData = [breakarray[1] substringFromIndex:1];
         NSArray *typeAndDataStringArray = [typeAndData componentsSeparatedByString:@","];
 

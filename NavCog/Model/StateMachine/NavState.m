@@ -156,7 +156,7 @@
     }
     float threshold = 5;
     if (_type == STATE_TYPE_WALKING) {
-/*        // snap y within edge
+        // snap y within edge
         float targetDist = [self getTargetDistance:pos];
         if (targetDist < 0) {
             NSLog(@"SnapDistance,%f",targetDist);
@@ -172,7 +172,7 @@
                 NSLog(@"ForceNextState,%f,%f,%f,%f",_closestDist, pos.knndist, nextStartDist, nextPos.knndist);
                 dist = 0;
             }
-        }*/
+        }
         NSString *distFormat = NSLocalizedString([self isMeter]?@"meterFormat":@"feetFormat", @"Use to express a distance in feet");
         // if you're walking, check distance to target node
         if (dist < _preAnnounceDist) {
@@ -236,7 +236,7 @@
         }
     } else if (_type == STATE_TYPE_TRANSITION) {
         pos.knndist = (pos.knndist - _targetEdge.minKnnDist) / (_targetEdge.maxKnnDist - _targetEdge.minKnnDist);
-        if (_prevState != nil && _prevState.type == STATE_TYPE_WALKING) {
+/*        if (_prevState != nil && _prevState.type == STATE_TYPE_WALKING) {
             float nextKnndist = pos.knndist;
             // compare knn distance to previous and next edge
             NavEdge *prevEdge = _prevState.walkingEdge;
@@ -250,7 +250,7 @@
                 pos.knndist *= (nearRatio * 1.0);
                 NSLog(@"BoostTransition,%f,%f,%f,%f,%f,%f,%f)",nearRatio, prevKnndist, nextKnndist, orgDist, orgKnndist ,dist, pos.knndist);
             }
-        }
+        }*/
 //        pos.knndist = pos.knndist < 0 ? 0 : pos.knndist;
 //        pos.knndist = pos.knndist > 1 ? 1 : pos.knndist;
         

@@ -188,11 +188,11 @@ using namespace std;
     float jump = JUMPING_BOUND, smooth = SMOOTHING_WEIGHT;
     if (_bStart && _jumpDate) {
         double duration = [now timeIntervalSinceDate:_jumpDate];
-        if (duration > 1) {
+        if (duration > 10) {
             // Adjust jump & smooth parameter based on jumping duration
-//            jump = jump * duration * 2;
+            jump = jump * duration;
 //            smooth = 1.0;
-//            NSLog(@"duration=%f, jump=%f, smooth=%f", duration, jump, smooth);
+            NSLog(@"duration=%f, jump=%f, smooth=%f", duration, jump, smooth);
         }
     }
     for (int i = 0; i < _beaconNum; i++) {
