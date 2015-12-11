@@ -255,6 +255,7 @@ double limitAngle(double x, double l) { //limits angle change to l
             }
         }
     }
+    [self setHintTexts];
 
     NavState *state = _initialState;
     while (state != nil) {
