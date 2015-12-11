@@ -236,7 +236,7 @@
         }
     } else if (_type == STATE_TYPE_TRANSITION) {
         pos.knndist = (pos.knndist - _targetEdge.minKnnDist) / (_targetEdge.maxKnnDist - _targetEdge.minKnnDist);
-/*        if (_prevState != nil && _prevState.type == STATE_TYPE_WALKING) {
+        if (_prevState != nil && _prevState.type == STATE_TYPE_WALKING) {
             float nextKnndist = pos.knndist;
             // compare knn distance to previous and next edge
             NavEdge *prevEdge = _prevState.walkingEdge;
@@ -250,7 +250,7 @@
                 pos.knndist *= (nearRatio * 1.0);
                 NSLog(@"BoostTransition,%f,%f,%f,%f,%f,%f,%f)",nearRatio, prevKnndist, nextKnndist, orgDist, orgKnndist ,dist, pos.knndist);
             }
-        }*/
+        }
 //        pos.knndist = pos.knndist < 0 ? 0 : pos.knndist;
 //        pos.knndist = pos.knndist > 1 ? 1 : pos.knndist;
         

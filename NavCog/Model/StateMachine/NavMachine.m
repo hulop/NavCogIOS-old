@@ -639,14 +639,14 @@ double limitAngle(double x, double l) { //limits angle change to l
 - (void)receivedBeaconsArray:(NSArray *)beacons {
     [NavLog logBeacons:beacons];
     [self logState];
-    _previousLocation = _currentLocation;
-    // if navigation has not started yet, then init all edge localization
-    // otherwise ignore
-    _currentLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons withInit:!_isNavigationStarted];
 
     // if we start navigation from current location
     // and the navigation does not start yet
     if (_isStartFromCurrentLocation && !_isNavigationStarted) {
+        //_previousLocation = _currentLocation;
+        // if navigation has not started yet, then init all edge localization
+        // otherwise ignore
+        _currentLocation = [_topoMap getCurrentLocationOnMapUsingBeacons:beacons withInit:!_isNavigationStarted];
         if (_currentLocation.edgeID == nil)
             return;
 

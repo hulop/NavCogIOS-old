@@ -28,7 +28,7 @@
 
 #define KNN_NUM 5
 #define TREE_NUM 5
-#define SMOOTHING_WEIGHT 0.8 // 0.6
+#define SMOOTHING_WEIGHT 0.6
 #define JUMPING_BOUND 3
 
 using namespace std;
@@ -190,9 +190,9 @@ using namespace std;
         double duration = [now timeIntervalSinceDate:_jumpDate];
         if (duration > 1) {
             // Adjust jump & smooth parameter based on jumping duration
-            jump = jump * duration * 2;
-            smooth = 1.0;
-            NSLog(@"duration=%f, jump=%f, smooth=%f", duration, jump, smooth);
+//            jump = jump * duration * 2;
+//            smooth = 1.0;
+//            NSLog(@"duration=%f, jump=%f, smooth=%f", duration, jump, smooth);
         }
     }
     for (int i = 0; i < _beaconNum; i++) {
