@@ -347,12 +347,6 @@ double limitAngle(double x, double l) { //limits angle change to l
             [NavLog logAcc:acc];
         }
     }];
-    
-    [_motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMMagnetometerData *mag, NSError *error) {
-        if(!_logReplay) {
-            [NavLog logMag:mag];
-        }
-    }];
 }
 
 - (void)triggerMotionWithData: (NSMutableDictionary*) data {
@@ -439,6 +433,13 @@ double limitAngle(double x, double l) { //limits angle change to l
     NSUUID *uuid = [[NSUUID alloc] initWithUUIDString:uuidstr];
     _beaconRegion = [[CLBeaconRegion alloc] initWithProximityUUID:uuid major:majorID identifier:@"cmaccess"];
     [_beaconManager startRangingBeaconsInRegion:_beaconRegion];
+    
+    [_beaconManager startUpdatingLocation];
+    
+    if ([CLLocationManager headingAvailable]) {
+        _beaconManager.headingFilter = 5;
+        [_beaconManager startUpdatingHeading];
+    }
 }
 
 - (void)simulateNavigationOnTopoMap:(TopoMap *)topoMap usingLogFileWithPath:(NSString *)logFilePath usingBeaconsWithUUID:(NSString *)uuidstr withSpeechOn:(Boolean)speechEnabled withClickOn:(Boolean)clickEnabled withFastSpeechOn:(Boolean)fastSpeechEnabled {
@@ -657,6 +658,17 @@ double limitAngle(double x, double l) { //limits angle change to l
         [self receivedBeaconsArray:beacons];
     }
 }
+
+- (void)locationManager:(CLLocationManager*)manager didUpdateHeading:(CLHeading *)newHeading {
+    if(!_logReplay) {
+        [self receivedHeading:newHeading];
+    }
+}
+
+- (void)receivedHeading:(CLHeading*) heading {
+    [NavLog logHeading:heading];
+}
+
 
 - (void)receivedBeaconsArray:(NSArray *)beacons {
     [NavLog logBeacons:beacons];
