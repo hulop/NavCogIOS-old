@@ -109,4 +109,12 @@
     return nil;
 }
 
+- (NSArray *)getConnectingEdges {
+    NSMutableArray *edges = [[NSMutableArray alloc] init];
+    for (NavNeighbor *neighbor in _neighbors) {
+        [edges addObject:neighbor.edge];
+    }
+    return edges;
+}
+
 @end

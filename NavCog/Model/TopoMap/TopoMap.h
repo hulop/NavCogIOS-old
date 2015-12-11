@@ -20,18 +20,18 @@
  * THE SOFTWARE.
  *******************************************************************************/
 
-#import "NavLayer.h"
-#import "NavNeighbor.h"
+#ifndef TopoMap_h
+#define TopoMap_h
+
 #import <Foundation/Foundation.h>
+#import <CoreFoundation/CoreFoundation.h>
 
-@interface NavLocation : NSObject
-
-@property (strong, nonatomic) NSString *layerID;
-@property (strong, nonatomic) NSString *edgeID;
-@property (nonatomic) float yInEdge;
-@property (nonatomic) float xInEdge;
-
-@end
+#import "NavLayer.h"
+#import "NavLocation.h"
+#import "NavNeighbor.h"
+#import "NavMinHeap.h"
+#import "NavLog.h"
+#import "NavCogFuncViewController.h"
 
 @interface TopoMap : NSObject
 
@@ -48,3 +48,5 @@
 - (void)cleanTmpNodeAndEdges;
 
 @end
+
+#endif /* TopoMap_h */
