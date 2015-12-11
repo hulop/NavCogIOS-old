@@ -86,7 +86,7 @@ double limitAngle(double x, double l) { //limits angle change to l
     self = [super init];
     if (self) {
         _logReplay = false;
-        _gyroDrift = -20;
+        _gyroDrift = 60;
         _gyroDriftMultiplier = 100;
         _gyroDriftLimit = 3;
         _initialState = nil;
@@ -345,6 +345,12 @@ double limitAngle(double x, double l) { //limits angle change to l
     [_motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMAccelerometerData *acc, NSError *error) {
         if(!_logReplay) {
             [NavLog logAcc:acc];
+        }
+    }];
+    
+    [_motionManager startMagnetometerUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMMagnetometerData *mag, NSError *error) {
+        if(!_logReplay) {
+            [NavLog logMag:mag];
         }
     }];
 }

@@ -100,7 +100,7 @@
         } else {
             minIndex = leftIndex;
         }
-//    } else {
+    //} else {
         NavNode *node = [_dataArray objectAtIndex:nodeIndex];
         NavNode *child = [_dataArray objectAtIndex:minIndex];
         if (node.distFromStartNode > child.distFromStartNode) {

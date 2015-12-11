@@ -110,8 +110,17 @@ static int stderrSave = 0;
     NSLog(@"Motion,%f,%f,%f", [pitch doubleValue], [roll doubleValue], [yaw doubleValue]);
 }
 
-+(void)logGyroDrift:(double)drift edge: (double)edgeori curori: (double)curOri fixedDelta: (double)fixed oldDelta: (double) old{
++(void)logMag:(CMMagnetometerData *) data{
 
+    if(stderrSave == 0) {
+        return;
+    }
+    
+    NSLog(@"Magnetometer");
+}
+
++(void)logGyroDrift:(double)drift edge: (double)edgeori curori: (double)curOri fixedDelta: (double)fixed oldDelta: (double) old{
+    
     if(stderrSave == 0) {
         return;
     }
