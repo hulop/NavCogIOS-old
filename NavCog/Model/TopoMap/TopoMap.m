@@ -486,7 +486,6 @@
         [data addObject:[NSNumber numberWithFloat:pos.x]];
         [data addObject:[NSNumber numberWithFloat:pos.y]];
         [data addObject:[NSNumber numberWithFloat:pos.knndist]];
-        [NavLog logArray:data withType:@"SearchingCurrentLocation"];
         // if distance is less than threshold, set new location
         if (dist < minKnnDist) {
             minKnnDist = dist;
@@ -497,6 +496,7 @@
             location.yInEdge = pos.y;
             [data addObject:@"OK"];
         }
+        [NavLog logArray:data withType:@"SearchingCurrentLocation"];
     } // end for
     // Log info if location found
     if (location.edgeID == NULL) {

@@ -45,6 +45,7 @@
     self.view.bounds = [[UIScreen mainScreen] bounds];
     self.view.backgroundColor = [UIColor clearColor];
     [self setupUI];
+    [self setupCurrentLocationObserver];
 }
 
 - (void)setupUI {
@@ -142,23 +143,24 @@
 }
 
 - (void)setupCurrentLocationObserver {
-    NSNotificationCenter *center = [NSNotificationCenter defaultCenter];
-    [center addObserverForName:@CURRENT_LOCATION_NOTIFICATION_NAME
-                        object:nil
-                         queue:nil
-                    usingBlock:^(NSNotification *notification)
-    {
-        NSLog(@"%@", notification.name);
-    }];
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+        selector:@selector(updateRedDotWithLocation:)
+        name:@CURRENT_LOCATION_NOTIFICATION_NAME
+        object:nil];
 }
 
 - (void)runCmdWithString:(NSString *)str {
     [_webView stringByEvaluatingJavaScriptFromString:str];
 }
 
-- (void)updateRedDotWithLocation:(NavLocation *)location {
+- (void)updateRedDotWithLocation:(NSNotification *)notification {
+    if (![NavLog isLogging]) {
+        return;
+    }
+    NavLocation *location = notification.userInfo[@"location"];
     if (location.edgeID == nil) {
-        [[NavCogFuncViewController sharedNavCogFuntionViewController] runCmdWithString:@"updateRedDot(null)"];
+        [self runCmdWithString:@"updateRedDot(null)"];
     } else {
         NavEdge *edge = [location getEdge];
         NavNode *node1 = edge.node1, *node2 = edge.node2;
@@ -175,7 +177,7 @@
         float lat = slat + ratio * (tlat - slat);
         float lng = slng + ratio * (tlng - slng);
         NSString *cmd = [NSString stringWithFormat:@"updateRedDot({lat:%f, lng:%f})", lat, lng];
-        [[NavCogFuncViewController sharedNavCogFuntionViewController] runCmdWithString:cmd];
+        [self runCmdWithString:cmd];
     }
 }
 

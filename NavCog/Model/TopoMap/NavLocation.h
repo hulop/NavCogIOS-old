@@ -12,6 +12,8 @@
 #import "TopoMap.h"
 #import "NavEdge.h"
 
+@class TopoMap;
+
 @interface NavLocation : NSObject
 
 @property (strong, nonatomic) NSString *layerID;

@@ -32,6 +32,7 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 @property (strong, nonatomic) CLLocationManager *beaconManager;
 @property (strong, nonatomic) CLBeaconRegion *beaconRegion;
 @property (strong, nonatomic) CMMotionManager *motionManager;
+@property (strong, nonatomic) NavCurrentLocationManager *currentLocationManager;
 @property (strong, nonatomic) NavState *initialState;
 @property (strong, nonatomic) NavState *currentState;
 @property (strong, nonatomic) NavLocation *currentLocation;
@@ -402,6 +403,9 @@ double limitAngle(double x, double l) { //limits angle change to l
     _speechEnabled = speechEnabled;
     _clickEnabled = clickEnabled;
 
+    // turn on the current location manager (just used for red dot right now)
+    _currentLocationManager = [[NavCurrentLocationManager alloc] initWithMap:topoMap usingBeaconsWithUUID:uuidstr andMajorID:majorID];
+    
     // search a path
     _topoMap = topoMap;
     _pathNodes = nil;
