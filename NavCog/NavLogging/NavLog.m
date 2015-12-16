@@ -98,26 +98,17 @@ static int stderrSave = 0;
     NSLog(@"Acc,%f,%f,%f",data.acceleration.x,data.acceleration.y,data.acceleration.z);
 }
 
-+(void)logMotion:(NSDictionary *)data {
-    if(stderrSave == 0) {
-        return;
-    }
-    
-    NSNumber *pitch = [data objectForKey:@"pitch"];
-    NSNumber *roll = [data objectForKey:@"roll"];
-    NSNumber *yaw = [data objectForKey:@"yaw"];
-    
-    NSLog(@"Motion,%f,%f,%f", [pitch doubleValue], [roll doubleValue], [yaw doubleValue]);
-}
-
-+(void)logMag:(CMMagnetometerData *) data{
-
-    if(stderrSave == 0) {
-        return;
-    }
-    
-    NSLog(@"Magnetometer");
-}
+//+(void)logMotion:(NSDictionary *)data {
+//    if(stderrSave == 0) {
+//        return;
+//    }
+//    
+//    NSNumber *pitch = [data objectForKey:@"pitch"];
+//    NSNumber *roll = [data objectForKey:@"roll"];
+//    NSNumber *yaw = [data objectForKey:@"yaw"];
+//    
+//    NSLog(@"Motion,%f,%f,%f", [pitch doubleValue], [roll doubleValue], [yaw doubleValue]);
+//}
 
 +(void)logGyroDrift:(double)drift edge: (double)edgeori curori: (double)curOri fixedDelta: (double)fixed oldDelta: (double) old{
     
@@ -127,6 +118,16 @@ static int stderrSave = 0;
     
     NSLog(@"Drift,%f,%f,%f,%f,%f", drift, edgeori, curOri, fixed, old);
 }
+
++ (void)logHeading:(CLHeading *) data {
+    
+    if(stderrSave == 0) {
+        return;
+    }
+    
+    NSLog(@"Heading,%f", [data trueHeading]);
+}
+
 
 +(void)logArray:(NSArray *)data withType:(NSString *)type {
     if(stderrSave == 0) {

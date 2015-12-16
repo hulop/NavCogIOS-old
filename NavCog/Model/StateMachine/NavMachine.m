@@ -38,11 +38,14 @@ enum NavigationState {NAV_STATE_IDLE, NAV_STATE_INIT, NAV_STATE_WALKING, NAV_STA
 @property (strong, nonatomic) NavLocation *previousLocation;
 @property (nonatomic) enum NavigationState navState;
 @property (nonatomic) float curOri;
+@property (nonatomic) float curHeading;
 @property (nonatomic) float gyroDrift;
 @property (nonatomic) float gyroDriftMultiplier;
 @property (nonatomic) float gyroDriftLimit;
+@property (nonatomic) float gyroDriftMinEdgeLength;
 @property (strong, nonatomic) NSDateFormatter *dateFormatter;
 @property (nonatomic) Boolean logReplay;
+@property (nonatomic) Boolean curHeadingSet;
 @property (nonatomic) Boolean speechEnabled;
 @property (nonatomic) Boolean clickEnabled;
 @property (nonatomic) Boolean isStartFromCurrentLocation;
@@ -86,9 +89,11 @@ double limitAngle(double x, double l) { //limits angle change to l
     self = [super init];
     if (self) {
         _logReplay = false;
-        _gyroDrift = 60;
+        _gyroDrift = 110;
         _gyroDriftMultiplier = 100;
         _gyroDriftLimit = 3;
+        _gyroDriftMinEdgeLength = 3;
+        _curHeadingSet = false;
         _initialState = nil;
         _currentState = nil;
         _currentLocation = nil;
@@ -331,13 +336,13 @@ double limitAngle(double x, double l) { //limits angle change to l
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesUsingReferenceFrame: CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         if(!_logReplay) {
-            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
+//            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
+//            
+//            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
+//            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.roll] forKey:@"roll"];
+//            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
             
-            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
-            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.roll] forKey:@"roll"];
-            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
-            
-            [self triggerMotionWithData:motionData];
+            [self triggerMotionWithData:dm];
         }
     }];
 
@@ -349,13 +354,12 @@ double limitAngle(double x, double l) { //limits angle change to l
     }];
 }
 
-- (void)triggerMotionWithData: (NSMutableDictionary*) data {
+//- (void)triggerMotionWithData: (NSMutableDictionary*) data {
+- (void)triggerMotionWithData: (CMDeviceMotion*) data {
 
-    NSNumber* yaw = [data objectForKey:@"yaw"];
+    _curOri = - data.attitude.yaw / M_PI * 180;
 
-    _curOri = - [yaw doubleValue] / M_PI * 180;
-
-    [NavLog logMotion:data];
+    [NavLog logMotion:data withFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical];
     [self logState];
 
     if (_navState == NAV_STATE_TURNING) {
@@ -493,15 +497,20 @@ double limitAngle(double x, double l) { //limits angle change to l
             NSDate* currentTime = dateAndTime;
 
             //create motion data object
-            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
+            CMDeviceMotion* newMotion = [[CMDeviceMotion alloc] init];
+            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
+            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
+            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
 
-            [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
-            [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
-            [motionData setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
+//            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
+//
+//            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
+//            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
+//            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
 
             //feed to object
             [timesArray addObject: currentTime];
-            [objectsArray addObject: motionData];
+            [objectsArray addObject: newMotion];
 
         } else if ([typeAndDataStringArray[0] isEqualToString: @"Beacon"]) { //beacon data
             //get number of beacons
@@ -581,11 +590,11 @@ double limitAngle(double x, double l) { //limits angle change to l
 
                 time = timesArray[i];
 
-            } else if ([objectsArray[i] isKindOfClass: [NSMutableDictionary class]]) {
+            } else if ([objectsArray[i] isKindOfClass: [CMDeviceMotion class]]) {
 
                 NSTimeInterval waitTime = [timesArray[i] timeIntervalSinceDate:time];
 
-                NSMutableDictionary* motionData = objectsArray[i];
+                CMDeviceMotion* motionData = objectsArray[i];
 
                 //call motion
                 [NSThread sleepForTimeInterval:waitTime];
@@ -653,12 +662,6 @@ double limitAngle(double x, double l) { //limits angle change to l
     }
 }
 
-- (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region {
-    if(!_logReplay) {
-        [self receivedBeaconsArray:beacons];
-    }
-}
-
 - (void)locationManager:(CLLocationManager*)manager didUpdateHeading:(CLHeading *)newHeading {
     if(!_logReplay) {
         [self receivedHeading:newHeading];
@@ -666,9 +669,21 @@ double limitAngle(double x, double l) { //limits angle change to l
 }
 
 - (void)receivedHeading:(CLHeading*) heading {
+    if(!_curHeadingSet) {
+        _curHeadingSet = true;
+        _gyroDrift = clipAngle2(_curOri - _curHeading);
+    }
+
+    _curHeading = clipAngle2(heading.trueHeading);
+    _gyroDrift += clipAngle2(clipAngle2(_curOri - _gyroDrift) - clipAngle2(_curHeading))/_gyroDriftMultiplier;
     [NavLog logHeading:heading];
 }
 
+- (void)locationManager:(CLLocationManager *)manager didRangeBeacons:(NSArray *)beacons inRegion:(CLBeaconRegion *)region {
+    if(!_logReplay) {
+        [self receivedBeaconsArray:beacons];
+    }
+}
 
 - (void)receivedBeaconsArray:(NSArray *)beacons {
     [NavLog logBeacons:beacons];
