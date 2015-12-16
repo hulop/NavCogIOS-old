@@ -30,8 +30,8 @@
 + (void)stopLog;
 + (BOOL)isLogging;
 + (void)logBeacons:(NSArray *)beacons;
-+ (void)logMotion:(CMDeviceMotion*) data withFrame:(CMAttitudeReferenceFrame) frame;
-//+ (void)logMotion:(NSDictionary *) data;
+//+ (void)logMotion:(CMDeviceMotion*) data withFrame:(CMAttitudeReferenceFrame) frame;
++ (void)logMotion:(NSDictionary *) data;
 + (void)logAcc:(CMAccelerometerData *) data;
 + (void)logArray:(NSArray*) data withType:(NSString*) type;
 + (void)logGyroDrift:(double)drift edge: (double)edgeori curori: (double)curOri fixedDelta: (double)fixed oldDelta: (double) old;

@@ -336,13 +336,13 @@ double limitAngle(double x, double l) { //limits angle change to l
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesUsingReferenceFrame: CMAttitudeReferenceFrameXTrueNorthZVertical toQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         if(!_logReplay) {
-//            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
-//            
-//            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
-//            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.roll] forKey:@"roll"];
-//            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
+            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
             
-            [self triggerMotionWithData:dm];
+            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.pitch] forKey:@"pitch"];
+            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.roll] forKey:@"roll"];
+            [motionData setObject: [[NSNumber alloc] initWithDouble: dm.attitude.yaw] forKey:@"yaw"];
+            
+            [self triggerMotionWithData:motionData];
         }
     }];
 
@@ -354,12 +354,14 @@ double limitAngle(double x, double l) { //limits angle change to l
     }];
 }
 
-//- (void)triggerMotionWithData: (NSMutableDictionary*) data {
-- (void)triggerMotionWithData: (CMDeviceMotion*) data {
+- (void)triggerMotionWithData: (NSMutableDictionary*) data {
+//- (void)triggerMotionWithData: (CMDeviceMotion*) data {
 
-    _curOri = - data.attitude.yaw / M_PI * 180;
+    _curOri = - [[data objectForKey:@"yaw"] doubleValue] / M_PI * 180;
+    //_curOri = - data.attitude.yaw / M_PI * 180;
 
-    [NavLog logMotion:data withFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical];
+    //[NavLog logMotion:data withFrame:CMAttitudeReferenceFrameXArbitraryCorrectedZVertical];
+    [NavLog logMotion:data];
     [self logState];
 
     if (_navState == NAV_STATE_TURNING) {
@@ -497,16 +499,16 @@ double limitAngle(double x, double l) { //limits angle change to l
             NSDate* currentTime = dateAndTime;
 
             //create motion data object
-            CMDeviceMotion* newMotion = [[CMDeviceMotion alloc] init];
-            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
-            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
-            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
+//            CMDeviceMotion* newMotion = [[CMDeviceMotion alloc] init];
+//            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
+//            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
+//            [newMotion setValue:[NSNumber numberWithFloat:[typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
 
-//            NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
-//
-//            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
-//            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
-//            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
+            NSMutableDictionary* newMotion = [[NSMutableDictionary alloc] init];
+
+            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[1] floatValue]] forKey:@"pitch"];
+            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[2] floatValue]] forKey:@"roll"];
+            [newMotion setObject: [[NSNumber alloc] initWithFloat: [typeAndDataStringArray[3] floatValue]] forKey:@"yaw"];
 
             //feed to object
             [timesArray addObject: currentTime];
@@ -590,11 +592,11 @@ double limitAngle(double x, double l) { //limits angle change to l
 
                 time = timesArray[i];
 
-            } else if ([objectsArray[i] isKindOfClass: [CMDeviceMotion class]]) {
+            } else if ([objectsArray[i] isKindOfClass: [NSMutableDictionary class]]) {
 
                 NSTimeInterval waitTime = [timesArray[i] timeIntervalSinceDate:time];
 
-                CMDeviceMotion* motionData = objectsArray[i];
+                NSMutableDictionary* motionData = objectsArray[i];
 
                 //call motion
                 [NSThread sleepForTimeInterval:waitTime];
@@ -674,8 +676,8 @@ double limitAngle(double x, double l) { //limits angle change to l
         _gyroDrift = clipAngle2(_curOri - _curHeading);
     }
 
-    _curHeading = clipAngle2(heading.trueHeading);
-    _gyroDrift += clipAngle2(clipAngle2(_curOri - _gyroDrift) - clipAngle2(_curHeading))/_gyroDriftMultiplier;
+    //_curHeading = clipAngle2(heading.trueHeading);
+    //_gyroDrift += clipAngle2(clipAngle2(_curOri - _gyroDrift) - clipAngle2(_curHeading))/_gyroDriftMultiplier;
     [NavLog logHeading:heading];
 }
 

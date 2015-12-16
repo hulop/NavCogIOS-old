@@ -84,12 +84,12 @@ static int stderrSave = 0;
     NSLog(@"%@", str);
 }
 
-+(void)logMotion:(CMDeviceMotion *)data withFrame:(CMAttitudeReferenceFrame)frame {
-    if(stderrSave == 0) {
-        return;
-    }
-    NSLog(@"Motion,%f,%f,%f",data.attitude.pitch,data.attitude.roll,data.attitude.yaw);
-}
+//+(void)logMotion:(CMDeviceMotion *)data withFrame:(CMAttitudeReferenceFrame)frame {
+//    if(stderrSave == 0) {
+//        return;
+//    }
+//    NSLog(@"Motion,%f,%f,%f",data.attitude.pitch,data.attitude.roll,data.attitude.yaw);
+//}
 
 +(void)logAcc:(CMAccelerometerData *) data {
     if(stderrSave == 0) {
@@ -98,17 +98,17 @@ static int stderrSave = 0;
     NSLog(@"Acc,%f,%f,%f",data.acceleration.x,data.acceleration.y,data.acceleration.z);
 }
 
-//+(void)logMotion:(NSDictionary *)data {
-//    if(stderrSave == 0) {
-//        return;
-//    }
-//    
-//    NSNumber *pitch = [data objectForKey:@"pitch"];
-//    NSNumber *roll = [data objectForKey:@"roll"];
-//    NSNumber *yaw = [data objectForKey:@"yaw"];
-//    
-//    NSLog(@"Motion,%f,%f,%f", [pitch doubleValue], [roll doubleValue], [yaw doubleValue]);
-//}
++(void)logMotion:(NSDictionary *)data {
+    if(stderrSave == 0) {
+        return;
+    }
+    
+    NSNumber *pitch = [data objectForKey:@"pitch"];
+    NSNumber *roll = [data objectForKey:@"roll"];
+    NSNumber *yaw = [data objectForKey:@"yaw"];
+    
+    NSLog(@"Motion,%f,%f,%f", [pitch doubleValue], [roll doubleValue], [yaw doubleValue]);
+}
 
 +(void)logGyroDrift:(double)drift edge: (double)edgeori curori: (double)curOri fixedDelta: (double)fixed oldDelta: (double) old{
     
