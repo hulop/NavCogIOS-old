@@ -85,7 +85,7 @@ double limitAngle(double x, double l) { //limits angle change to l
 {
     self = [super init];
     if (self) {
-        _gyroDrift = 20;
+        _gyroDrift = 0;
         _gyroDriftMultiplier = 100;
         _gyroDriftLimit = 3;
         _initialState = nil;
@@ -235,24 +235,14 @@ double limitAngle(double x, double l) { //limits angle change to l
     // check if we need a initial turning
 
     if (_initialState.type == STATE_TYPE_WALKING) {
-        float diff = ABS(_curOri - _initialState.ori);
+        float diff = clipAngle2(clipAngle2(_curOri - _gyroDrift) - clipAngle2(_initialState.ori));
 
-        if (diff < 180) {
-            if (diff > 15) {
-                _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri - _gyroDrift) toOri:_initialState.ori];
-                [NavNotificationSpeaker speakWithCustomizedSpeedImmediately:_currentState.previousInstruction];
-                _navState = NAV_STATE_TURNING;
-            } else {
-                _navState = NAV_STATE_WALKING;
-            }
-        } else {
-            if (diff < 345) {
-                _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri - _gyroDrift) toOri:_initialState.ori];
-                [NavNotificationSpeaker speakWithCustomizedSpeedImmediately:_currentState.previousInstruction];
-                _navState = NAV_STATE_TURNING;
-            } else {
-                _navState = NAV_STATE_WALKING;
-            }
+        if (ABS(diff) > 15) { //have to rotate
+            _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri-_gyroDrift) toOri:_currentState.ori];
+            [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
+            _navState = NAV_STATE_TURNING;
+        } else { //straight
+            _navState = NAV_STATE_WALKING;
         }
     }
     [self setHintTexts];
@@ -289,38 +279,40 @@ double limitAngle(double x, double l) { //limits angle change to l
 }
 
 - (NSString *)getTurnStringFromOri:(float)curOri toOri:(float)nextOri {
-    if (curOri == nextOri || ABS(curOri - nextOri) == 180) {
-        return NSLocalizedString(@"keepStraight", @"Instruction to keep straight");
-    }
+    curOri = clipAngle2(curOri);
+    nextOri = clipAngle2(nextOri);
 
-    float diff = ABS(curOri - nextOri);
+    float diff = clipAngle2(curOri - nextOri);
+
     NSString *slightLeft = NSLocalizedString(@"slightLeft", @"Instruction to turn slightly left");
     NSString *slightRight = NSLocalizedString(@"slightRight", @"Instruction to turn slightly right");
     NSString *turnLeft = NSLocalizedString(@"turnLeft", @"Instruction to turn left");
     NSString *turnRight = NSLocalizedString(@"turnRight", @"Instruction to turn right");
-    if (diff < 180) {
-        if (diff < 45) {
-            return nextOri < curOri ? slightLeft : slightRight;
-        } else {
-            return nextOri < curOri ? turnLeft : turnRight;
+    NSString *keepStraight = NSLocalizedString(@"keepStraight", @"Instruction to keep straight");
+    
+    if (diff > 0) { //definitely right
+        if (diff > 45) {
+            return turnLeft;
+        } else if (diff > 15) {
+            return slightLeft;
         }
-    } else {
-        if (diff > 315) {
-            return nextOri < curOri ? slightRight : slightLeft;
-        } else {
-            return nextOri < curOri ? turnRight : turnLeft;
+    } else { //definitely left
+        if (diff < -45) {
+            return turnRight;
+        } else if (diff < -15) {
+            return slightRight;
         }
     }
 
-    return @"";
+    return keepStraight;
 }
 
 - (NSString *)getTurnStringWithDegreeFromOri:(float)curOri toOri:(float)nextOri {
-    if (curOri == nextOri || ABS(curOri - nextOri) == 180) {
+    if (curOri == nextOri || clipAngle2(curOri - nextOri) == -180) {
         return NSLocalizedString(@"keepStraight", @"Instruction to keep straight");
     }
 
-    int diff = ABS(curOri - nextOri);
+    int diff = clipAngle(curOri - nextOri);
     NSString *leftFormat = NSLocalizedString(@"turnLeftDegreeFormat", @"Format string to turn left in degrees");
     NSString *rightFormat = NSLocalizedString(@"turnRightDegreeFormat", @"Format string to turn right in degrees");
     if (diff < 180) {
@@ -334,6 +326,7 @@ double limitAngle(double x, double l) { //limits angle change to l
 
 - (void)initializeOrientation {
 
+    _gyroDrift = 0;
     [_motionManager stopDeviceMotionUpdates];
     [_motionManager startDeviceMotionUpdatesToQueue:[NSOperationQueue currentQueue] withHandler:^(CMDeviceMotion *dm, NSError *error){
         NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
@@ -362,8 +355,8 @@ double limitAngle(double x, double l) { //limits angle change to l
 
     if (_navState == NAV_STATE_TURNING) {
         //if (ABS(_curOri - _currentState.ori) <= 10) {
-        float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
-        if (diff <= 10 || diff >= 350) {
+        float diff = clipAngle2(clipAngle2(_curOri - _gyroDrift) - clipAngle2(_currentState.ori));
+        if (ABS(diff) <= 10) {
             [NavSoundEffects playSuccessSound];
             _navState = NAV_STATE_WALKING;
             [self logState];
@@ -374,14 +367,20 @@ double limitAngle(double x, double l) { //limits angle change to l
             edgeori = _currentState.walkingEdge.ori1;
         else
             edgeori = _currentState.walkingEdge.ori2;
-
-        //model that gracefully adapts to drift.
-        _gyroDrift += (clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)))/_gyroDriftMultiplier;
-        //limit drift correction to some degrees each update. very naive
-        //_gyroDrift += limitAngle(clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)));
-        //simple model that completely offsets drift
-        //_gyroDrift = clipAngle2(_curOri - clipAngle2(edgeori));
-        [NavLog logGyroDrift:_gyroDrift edge:clipAngle2(edgeori) curori:_curOri fixedDelta: clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)) oldDelta: clipAngle2(_curOri - clipAngle(edgeori))];
+        
+//        double deltay = ABS(_currentState.walkingEdge.node1.lat - _currentState.walkingEdge.node2.lat);
+//        double deltax = ABS(_currentState.walkingEdge.node1.lng - _currentState.walkingEdge.node2.lng);
+//        double delta=sqrt(deltax*deltax+deltay*deltax);
+        
+//        if (delta > _gyroDriftMinEdgeLength) {
+            //model that gracefully adapts to drift.
+            _gyroDrift += clipAngle2(clipAngle2(_curOri - _gyroDrift) - clipAngle2(edgeori))/_gyroDriftMultiplier;
+            //limit drift correction to some degrees each update. very naive
+            //_gyroDrift += limitAngle(clipAngle2(_curOri - _gyroDrift - clipAngle2(edgeori)));
+            //simple model that completely offsets drift
+            //_gyroDrift = clipAngle2(_curOri - clipAngle2(edgeori));
+            [NavLog logGyroDrift:_gyroDrift edge:clipAngle2(edgeori) curori:_curOri fixedDelta: clipAngle2(clipAngle2(_curOri - _gyroDrift) - clipAngle2(edgeori)) oldDelta: clipAngle2(_curOri - clipAngle2(edgeori))];
+//        }
     }
 }
 
@@ -461,21 +460,25 @@ double limitAngle(double x, double l) { //limits angle change to l
         //Explode the line with space
         if ([line length] < 23)
             continue;
-        NSString* dateAndTime = [line substringToIndex:23];
+        NSDate* dateAndTime = [dateFormat dateFromString:[line substringToIndex:23]];
+        
+        if (dateAndTime == nil)
+            continue;
+        
         NSArray *breakarray = [line componentsSeparatedByString:@"]"];
         if ([breakarray count] < 2)
             continue;
+        
         NSString* typeAndData = [breakarray[1] substringFromIndex:1];
         NSArray *typeAndDataStringArray = [typeAndData componentsSeparatedByString:@","];
 
-
         if ([typeAndDataStringArray[0] isEqualToString: @"Route"]) {
-            startTime = [dateFormat dateFromString: dateAndTime];
+            startTime = dateAndTime;
             fromNodeName = typeAndDataStringArray[1];
             toNodeName = typeAndDataStringArray[2];
         } else if ([typeAndDataStringArray[0] isEqualToString: @"Motion"]) {
             //get time
-            NSDate* currentTime = [dateFormat dateFromString: dateAndTime];
+            NSDate* currentTime = dateAndTime;
 
             //create motion data object
             NSMutableDictionary* motionData = [[NSMutableDictionary alloc] init];
@@ -505,7 +508,7 @@ double limitAngle(double x, double l) { //limits angle change to l
             //transform it to nsarray
             NSArray* beaconArray = [NSArray arrayWithArray:beaconArrayTmp];
             //get time
-            NSDate* currentTime = [dateFormat dateFromString: dateAndTime];
+            NSDate* currentTime = dateAndTime;
 
             //feed to object
             [timesArray addObject: currentTime];
@@ -715,9 +718,9 @@ double limitAngle(double x, double l) { //limits angle change to l
 
 
                         //                        if (ABS(_curOri - _currentState.ori) > 15) {
-                        float diff = ABS(_curOri - _gyroDrift - _currentState.ori);
-                        if (diff > 15 && diff < 345) {
-                            _currentState.previousInstruction = [self getTurnStringFromOri:(_curOri-_gyroDrift) toOri:_currentState.ori];
+                        float diff = clipAngle2(clipAngle2(_curOri - _gyroDrift) - clipAngle2(_currentState.ori));
+                        if (ABS(diff) > 15) {
+                            _currentState.previousInstruction = [self getTurnStringFromOri:clipAngle(_curOri-_gyroDrift) toOri:_currentState.ori];
                             [NavNotificationSpeaker speakWithCustomizedSpeed:_currentState.previousInstruction];
                             _navState = NAV_STATE_TURNING;
                         } else {
