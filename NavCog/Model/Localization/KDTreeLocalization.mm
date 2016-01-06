@@ -106,6 +106,11 @@ using namespace std;
     for (int i = 0; i < _beaconNum; i++) {
         _preFeatVec[i] = -100;
     }
+    
+    if (_beaconNum == 0) {
+        _beaconNum = 0;
+    }
+    
     _featMap.create(_sampleNum, _beaconNum, CV_32F);
     _posMap.create(_sampleNum, 2, CV_32F);
     for (int i = 0; i < _sampleNum; i++) {
@@ -149,6 +154,9 @@ using namespace std;
     _preFeatVec.resize(_beaconNum);
     for (int i = 0; i < _beaconNum; i++) {
         _preFeatVec[i] = -100;
+    }
+    if (_beaconNum == 0) {
+        _beaconNum = 0;
     }
     _featMap.create(_sampleNum, _beaconNum, CV_32F);
     _posMap.create(_sampleNum, 2, CV_32F);
@@ -204,11 +212,11 @@ using namespace std;
         }
     }
     
-    for (int i = 0; i < _beaconNum; i++) {
-        if (_preFeatVec[i] > -90) {
-            _featVec[i] = (_featVec[i] < -99 ? _preFeatVec[i] : _featVec[i]);
-        }
-    }
+//    for (int i = 0; i < _beaconNum; i++) {
+//        if (_preFeatVec[i] > -90) {
+//            _featVec[i] = (_featVec[i] < -99 ? _preFeatVec[i] : _featVec[i]);
+//        }
+//    }
     
     if (_bStart) {
         for (int i = 0; i < _beaconNum; i++) {
