@@ -1,5 +1,5 @@
 /* Alert that an accessibility notification is available */
-"accessNotif" = "Accessibily Notification!";
+"accessNotif" = "Accessibility Nsotification!";
 
 /* HTML Label for accessibility instruction button in view */
 "accessibilityInstructionButton" = "Accessbility
