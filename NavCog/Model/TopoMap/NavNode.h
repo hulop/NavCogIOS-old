@@ -23,6 +23,7 @@
 #ifndef HELLO_NAV_NODE
 #define HEELO_NAV_NODE HI_NAV_NODE
 #import <Foundation/Foundation.h>
+#import "NavNeighbor.h"
 
 @class NavEdge;
 @class NavLayer;
@@ -60,6 +61,7 @@ enum NodeType {NODE_TYPE_NORMAL, NODE_TYPE_DOOR_TRANSIT, NODE_TYPE_STAIR_TRANSIT
 - (float)getYInEdgeWithID:(NSString *)edgeID;
 - (Boolean)isTrickyComingFromEdgeWithID:(NSString *)edgeID;
 - (NSString *)getTrickyInfoComingFromEdgeWithID:(NSString *)edgeID;
+- (NSArray *)getConnectingEdges;
 
 @end
 

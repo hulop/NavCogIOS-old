@@ -27,6 +27,7 @@
 #import "NavState.h"
 #import "TopoMap.h"
 #import "TTTOrdinalNumberFormatter.h"
+#import "NavCurrentLocationManager.h"
 
 @protocol NavMachineDelegate;
 

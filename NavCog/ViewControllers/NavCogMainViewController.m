@@ -109,7 +109,7 @@
     _startNavButton.enabled = false;
     [self.view addSubview:_startNavButton];
     
-    // pikcers
+    // pickers
     float ph = (ot - bb - 2 * bm) / 2;
     float pw = (sw - 2 * bm) * 5 / 4;
     float par = 0.8;

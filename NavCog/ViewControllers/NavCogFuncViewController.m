@@ -45,6 +45,7 @@
     self.view.bounds = [[UIScreen mainScreen] bounds];
     self.view.backgroundColor = [UIColor clearColor];
     [self setupUI];
+    [self setupCurrentLocationObserver];
 }
 
 - (void)setupUI {
@@ -141,8 +142,43 @@
     [self.view addSubview:stopButton];
 }
 
+- (void)setupCurrentLocationObserver {
+    [[NSNotificationCenter defaultCenter]
+        addObserver:self
+        selector:@selector(updateRedDotWithLocation:)
+        name:@CURRENT_LOCATION_NOTIFICATION_NAME
+        object:nil];
+}
+
 - (void)runCmdWithString:(NSString *)str {
     [_webView stringByEvaluatingJavaScriptFromString:str];
+}
+
+- (void)updateRedDotWithLocation:(NSNotification *)notification {
+    if (![NavLog isLogging]) {
+        return;
+    }
+    NavLocation *location = notification.userInfo[@"location"];
+    if (location.edgeID == nil) {
+        [self runCmdWithString:@"updateRedDot(null)"];
+    } else {
+        NavEdge *edge = [location getEdge];
+        NavNode *node1 = edge.node1, *node2 = edge.node2;
+        NSDictionary* info1 = [node1.infoFromEdges objectForKey:edge.edgeID];
+        NSDictionary* info2 = [node2.infoFromEdges objectForKey:edge.edgeID];
+        float cy = location.yInEdge;
+        float slat = node1.lat;
+        float slng = node1.lng;
+        float tlat = node2.lat;
+        float tlng = node2.lng;
+        float sy = ((NSNumber *)[info1 objectForKey:@"y"]).floatValue;
+        float ty = ((NSNumber *)[info2 objectForKey:@"y"]).floatValue;
+        float ratio = (cy - sy) / (ty - sy);
+        float lat = slat + ratio * (tlat - slat);
+        float lng = slng + ratio * (tlng - slng);
+        NSString *cmd = [NSString stringWithFormat:@"updateRedDot({lat:%f, lng:%f})", lat, lng];
+        [self runCmdWithString:cmd];
+    }
 }
 
 // web view delegate methods

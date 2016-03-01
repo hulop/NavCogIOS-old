@@ -21,6 +21,8 @@
  *******************************************************************************/
 
 #import <UIKit/UIKit.h>
+#import "TopoMap.h"
+#import "NavCurrentLocationManager.h"
 
 typedef NS_ENUM(NSUInteger, ButtonTags) {
     BUTTON_PRE = 100,
